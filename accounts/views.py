@@ -69,8 +69,32 @@ def init_tpo_admin(request):
     email = "tpo@college.edu"
     password = "SecureTPOPassword123!"
     
+    # Auto-populate default branches
+    from students.models import Branch, Skill
+    
+    branches = [
+        {"name": "Computer Science and Engineering", "code": "CSE"},
+        {"name": "Information Technology", "code": "IT"},
+        {"name": "Electronics and Communication Engineering", "code": "ECE"},
+        {"name": "Mechanical Engineering", "code": "ME"},
+        {"name": "Civil Engineering", "code": "CE"},
+        {"name": "Electrical Engineering", "code": "EE"}
+    ]
+    
+    for b in branches:
+        Branch.objects.get_or_create(name=b["name"], defaults={"code": b["code"]})
+        
+    # Auto-populate default skills
+    skills = [
+        "Python", "Java", "C++", "JavaScript", "Django", "React", "Angular", 
+        "SQL", "Machine Learning", "Data Structures", "HTML5", "CSS3", "Node.js"
+    ]
+    
+    for s in skills:
+        Skill.objects.get_or_create(name=s)
+    
     if User.objects.filter(email=email).exists():
-        return HttpResponse("<h3>TPO Admin Account already exists!</h3><p>You can login using <strong>tpo@college.edu</strong></p>")
+        return HttpResponse("<h3>TPO Admin Account already exists!</h3><p>And default academic branches (CSE, IT, ECE, ME, CE) and technical skills have been successfully populated!</p><p>You can login using <strong>tpo@college.edu</strong></p>")
         
     User.objects.create_superuser(
         email=email,
@@ -78,4 +102,4 @@ def init_tpo_admin(request):
         first_name="Admin",
         last_name="TPO"
     )
-    return HttpResponse(f"<h3>TPO Admin Account successfully initialized!</h3><p>Email: <strong>{email}</strong><br>Password: <strong>{password}</strong></p><p><a href='/login/'>Click here to Login</a></p>")
+    return HttpResponse(f"<h3>TPO Admin Account successfully initialized!</h3><p>Email: <strong>{email}</strong><br>Password: <strong>{password}</strong></p><p>Standard academic branches (CSE, IT, ECE, ME, CE, EE) and core engineering skills have been automatically seeded into the database!</p><p><a href='/login/'>Click here to Login</a></p>")
