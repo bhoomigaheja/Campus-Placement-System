@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}{% if is_edit %}Edit Drive{% else %}Create Drive{% endif %} | TPO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card card-premium shadow-soft mt-2">
+            <div class="card-header bg-white py-4 border-bottom d-flex align-items-center justify-content-between">
+                <div>
+                    <h4 class="mb-0 fw-bold text-dark">
+                        <i class="bi {% if is_edit %}bi-pencil-square text-warning{% else %}bi-plus-circle text-primary{% endif %} me-2"></i>
+                        {% if is_edit %}Edit Placement Drive{% else %}Create Placement Drive{% endif %}
+                    </h4>
+                    <p class="text-muted mb-0 small mt-1">Fill out the job criteria, details, branches, and required skillsets below.</p>
+                </div>
+                <a href="{% url 'tpo_drive_list' %}" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Drives
+                </a>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="form-section-header">1. Company & Role Info</div>
+                    <div class="row g-4 mb-4">
+                        {% for field in form %}
+                            {% if field.name == 'company_name' or field.name == 'title' or field.name == 'employment_type' or field.name == 'location' %}
+                                <div class="col-md-6">
+                                    <label for="{{ field.id_for_label }}" class="form-label-premium">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}<small class="helper-text-premium">{{ field.help_text|safe }}</small>{% endif %}
+                                    {% if field.errors %}<div class="text-danger small fw-medium mt-1">{{ field.errors.0 }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-section-header mt-5">2. Requirements & Eligibility</div>
+                    <div class="row g-4 mb-4">
+                        {% for field in form %}
+                            {% if field.name == 'salary_package' or field.name == 'min_cgpa' or field.name == 'deadline_to_apply' %}
+                                <div class="col-md-4">
+                                    <label for="{{ field.id_for_label }}" class="form-label-premium">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}<small class="helper-text-premium">{{ field.help_text|safe }}</small>{% endif %}
+                                    {% if field.errors %}<div class="text-danger small fw-medium mt-1">{{ field.errors.0 }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% for field in form %}
+                            {% if field.name == 'eligible_branches' %}
+                                <div class="col-12">
+                                    <label for="{{ field.id_for_label }}" class="form-label-premium">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}<small class="helper-text-premium">{{ field.help_text|safe }}</small>{% endif %}
+                                    {% if field.errors %}<div class="text-danger small fw-medium mt-1">{{ field.errors.0 }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-section-header mt-5">3. Job Description & Skills</div>
+                    <div class="row g-4">
+                        {% for field in form %}
+                            {% if field.name == 'required_skills' or field.name == 'description' %}
+                                <div class="col-12">
+                                    <label for="{{ field.id_for_label }}" class="form-label-premium">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}<small class="helper-text-premium">{{ field.help_text|safe }}</small>{% endif %}
+                                    {% if field.errors %}<div class="text-danger small fw-medium mt-1">{{ field.errors.0 }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="sticky-action-bar">
+                        <a href="{% url 'tpo_drive_list' %}" class="btn btn-light fw-bold py-2 shadow-sm px-4">Cancel</a>
+                        <button type="submit" class="btn btn-primary px-5 fw-bold py-2 shadow-sm">
+                            {% if is_edit %}<i class="bi bi-save me-1"></i> Save Changes{% else %}<i class="bi bi-rocket me-1"></i> Post Drive Initiative{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

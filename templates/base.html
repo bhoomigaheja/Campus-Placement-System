@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Campus Placement Cell{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary: #0f172a;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text-heading: #1e293b;
+            --text-body: #475569;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background);
+            color: var(--text-body);
+            overflow-x: hidden;
+        }
+
+        /* SaaS Styling Helpers */
+        .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important; }
+        .shadow-hover:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; transform: translateY(-2px); transition: all 0.3s ease; }
+        .rounded-xl { border-radius: 12px !important; }
+        .card { border: none; border-radius: 12px; transition: all 0.3s ease; background: var(--surface); }
+
+        h1, h2, h3, h4, h5, h6 { color: var(--text-heading); font-weight: 600; letter-spacing: -0.02em; }
+        
+        /* Layout Structure */
+        #wrapper { display: flex; width: 100%; align-items: stretch; min-height: 100vh; }
+        
+        /* Sidebar Styling */
+        #sidebar { 
+            min-width: 260px; max-width: 260px; 
+            background: var(--surface); 
+            border-right: 1px solid #e2e8f0; 
+            transition: all 0.3s;
+            display: flex; flex-direction: column;
+            position: sticky; top: 0; height: 100vh; z-index: 1000;
+        }
+        #sidebar .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary); display: flex; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        #sidebar ul.components { padding: 1rem 0; flex-grow: 1; overflow-y: auto; }
+        #sidebar ul li a { 
+            padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;
+            font-size: 0.95rem; font-weight: 500; color: var(--text-body); 
+            text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent;
+        }
+        #sidebar ul li a:hover, #sidebar ul li.active > a { 
+            color: var(--primary); background: #eff6ff; border-left-color: var(--primary);
+        }
+        #sidebar ul li a i { font-size: 1.1rem; width: 20px; text-align: center; }
+        
+        /* Main Content */
+        #content { width: 100%; min-width: 0; display: flex; flex-direction: column; background: var(--background); }
+        .top-navbar { 
+            background: var(--surface); padding: 1rem 2rem; 
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); 
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 999;
+        }
+        main { padding: 2rem; flex-grow: 1; }
+        
+        /* Buttons & Forms */
+        .btn-primary { background-color: var(--primary); border-color: var(--primary); font-weight: 500; padding: 0.6rem 1.25rem; border-radius: 8px; transition: all 0.2s; box-shadow: 0 1px 2px 0 rgba(79, 70, 229, 0.4); }
+        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4); }
+        .form-control, .form-select { border-radius: 8px; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; background-color: #f8fafc; font-size: 0.95rem; }
+        .form-control:focus { background-color: #fff; border-color: var(--primary); box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.15); }
+        
+        /* Tables */
+        .table { margin-bottom: 0; }
+        .table th { border-bottom: 2px solid #e2e8f0; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; padding: 1rem; background: #f8fafc; }
+        .table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
+        
+        @media (max-width: 768px) {
+            #sidebar { margin-left: -260px; position: fixed; }
+            #sidebar.active { margin-left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
+            main { padding: 1rem; }
+        }
+        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: opacity 0.3s; }
+        .page-loader.active { visibility: visible; opacity: 1; }
+    </style>
+    <link rel="stylesheet" href="/static/css/components.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="page-loader" id="globalLoader">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <div id="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <i class="bi bi-rocket-takeoff-fill me-2 fs-4"></i>
+                <span>CampusSaaS</span>
+            </div>
+            
+            <ul class="list-unstyled components">
+                {% if user.is_authenticated %}
+                    <li class="px-3 mb-2 mt-2 text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Main Menu</li>
+                    {% if user.is_admin %}
+                        <li><a href="{% url 'tpo_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+                        <li><a href="{% url 'tpo_company_list' %}"><i class="bi bi-buildings-fill"></i> Companies</a></li>
+                        <li><a href="{% url 'tpo_drive_list' %}"><i class="bi bi-briefcase-fill"></i> Job Drives</a></li>
+                    {% elif user.is_student %}
+                        <li><a href="{% url 'student_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
+                        <li><a href="{% url 'student_profile_update' %}"><i class="bi bi-person-lines-fill"></i> My Profile</a></li>
+                        <li><a href="{% url 'student_drive_list' %}"><i class="bi bi-briefcase-fill"></i> Opportunities</a></li>
+                        <li><a href="{% url 'student_applications_list' %}"><i class="bi bi-send-check-fill"></i> My Applications</a></li>
+                    {% elif user.is_company %}
+                        <li><a href="{% url 'company_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Employer Panel</a></li>
+                        <li><a href="{% url 'company_jobs' %}"><i class="bi bi-megaphone-fill"></i> Active Postings</a></li>
+                        <li><a href="{% url 'company_applications' %}"><i class="bi bi-people-fill"></i> Applicant Tracking</a></li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+                    <li><a href="{% url 'signup' %}"><i class="bi bi-person-plus-fill"></i> Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        <!-- Page Content -->
+        <div id="content">
+            <!-- Top Navbar -->
+            <div class="top-navbar">
+                <div class="d-flex align-items-center">
+                    <button type="button" id="sidebarCollapse" class="btn btn-light d-md-none me-3 shadow-sm rounded-circle">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h5 class="mb-0 fw-bold text-dark d-none d-md-block">{% block page_title %}{% endblock %}</h5>
+                </div>
+                
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                        <!-- Notification Dropdown -->
+                        <div class="dropdown">
+                            <a class="text-secondary position-relative text-decoration-none px-2" href="#" id="notifDropdown" data-bs-toggle="dropdown">
+                                <i class="bi bi-bell fs-5"></i>
+                                {% if unread_notif_count > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-soft border-0 rounded-xl p-2 mt-2" style="width: 320px;">
+                                <li><h6 class="dropdown-header fw-bold text-dark">Notifications</h6></li>
+                                {% for n in nav_notifications %}
+                                <li>
+                                    <a class="dropdown-item py-2 text-wrap rounded" href="{% url 'notification_read' n.pk %}">
+                                        <div class="d-flex gap-2">
+                                            <div class="mt-1"><i class="bi bi-circle-fill {% if not n.is_read %}text-primary{% else %}text-muted{% endif %}" style="font-size: 8px;"></i></div>
+                                            <div>
+                                                <small class="d-block text-dark lh-sm">{{ n.message }}</small>
+                                                <small class="text-muted" style="font-size: 0.7rem;">{{ n.created_at|timesince }} ago</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                {% empty %}
+                                <li><span class="dropdown-item text-muted small text-center py-3">You're all caught up!</span></li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-center text-primary fw-semibold small rounded" href="{% url 'notification_list' %}">View All</a></li>
+                            </ul>
+                        </div>
+
+                        <!-- User Menu -->
+                        <div class="dropdown">
+                            <a class="d-flex align-items-center text-decoration-none text-dark fw-medium dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 35px; height: 35px;">
+                                    {{ user.email|make_list|first|upper }}
+                                </div>
+                                <span class="d-none d-md-block">{{ user.first_name|default:"User" }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-soft border-0 rounded-xl mt-2">
+                                <li>
+                                    <form action="{% url 'logout' %}" method="post" class="m-0 p-1">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item text-danger fw-medium rounded"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Django Messages hidden container -->
+            <div id="django-messages" data-render-id="{% now "U.u" %}" style="display: none;">
+                {% if messages %}
+                    {% for message in messages %}
+                        <span data-tag="{{ message.tags }}">{{ message }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Main Page Content -->
+            <main>
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Global Deletion Confirmation Modal -->
+    <div class="modal fade" id="globalDeleteModal" tabindex="-1" aria-labelledby="globalDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-xl">
+                <div class="modal-header border-0 pt-4 px-4 pb-0">
+                    <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="globalDeleteModalLabel">
+                        <i class="bi bi-exclamation-triangle-fill text-danger me-2 fs-4"></i> Confirm Action
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 py-3">
+                    <p class="text-muted mb-0" id="globalDeleteModalBody">Are you sure you want to permanently delete this item? This action is irreversible.</p>
+                </div>
+                <div class="modal-footer border-0 pb-4 px-4 pt-0">
+                    <button type="button" class="btn btn-light fw-bold px-3 py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                    <form id="globalDeleteForm" method="post" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm">Delete Forever</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="/static/js/components.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Apply bootstrap classes to inputs
+            const inputs = document.querySelectorAll("input, select, textarea");
+            inputs.forEach(input => {
+                if (input.type !== 'checkbox' && input.type !== 'submit' && input.type !== 'hidden') {
+                    input.classList.add("form-control");
+                } else if (input.type === 'checkbox') {
+                    input.classList.add("form-check-input");
+                }
+            });
+
+         
+
+            // Mobile Sidebar Toggle
+            const sidebarBtn = document.getElementById('sidebarCollapse');
+            if(sidebarBtn) {
+                sidebarBtn.addEventListener('click', function() {
+                    document.getElementById('sidebar').classList.toggle('active');
+                });
+            }
+
+            // Global Delete Confirmation Modal Handler
+            document.addEventListener("click", function(e) {
+                const deleteBtn = e.target.closest('.btn-delete-trigger');
+                if (deleteBtn) {
+                    const deleteUrl = deleteBtn.dataset.url;
+                    const deleteText = deleteBtn.dataset.text || "Are you sure you want to permanently delete this item?";
+                    const form = document.getElementById('globalDeleteForm');
+                    const modalBody = document.getElementById('globalDeleteModalBody');
+                    
+                    if (form && modalBody) {
+                        form.action = deleteUrl;
+                        modalBody.innerText = deleteText;
+                    }
+                }
+            });
+        });
+    </script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>
+ 

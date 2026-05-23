@@ -1,0 +1,204 @@
+# System Architecture Design: Campus Placement Cell
+
+## 1. System Architecture Overview
+The system employs Django's MVT architecture, enhanced with a Service Layer for encapsulating complex business logic (such as application eligibility checking and stats aggregation). 
+
+**Key Principles:**
+- **Fat Models, Thin Views**: Data integrity and basic validation exist on the models.
+- **Service Layer**: Complex logic (e.g., student drive eligibility) is abstracted into service modules to keep views clean.
+- **Role-Based Access Control (RBAC)**: Enforced via custom decorators/mixins verifying `is_tpo` or `is_student`.
+
+## 2. Django Apps Structure
+Modular design to ensure separation of concerns:
+- `core`: Shared utilities, abstract models, base templates.
+- `accounts`: Custom user model and authentication logic.
+- `students`: Student profile, skills, and academic history.
+- `placements`: Companies, placement drives, applications, and interview scheduling.
+
+## 3. Database Design & ER Diagram Explanation
+
+### ER Diagram Logic
+```mermaid
+erDiagram
+    User ||--o| StudentProfile : "1:1"
+    Branch ||--o{ StudentProfile : "1:N"
+    Branch ||--o{ PlacementDrive : "N:N (eligible_branches)"
+    Skill }o--o{ StudentProfile : "N:N"
+    
+    Company ||--o{ PlacementDrive : "1:N"
+    
+    StudentProfile ||--o{ Application : "1:N"
+    PlacementDrive ||--o{ Application : "1:N"
+    
+    Application ||--o{ InterviewSchedule : "1:N"
+```
+
+- **User**: Base authentication extending `AbstractUser`.
+- **Branch / Skill**: Lookup tables to enforce consistency and indexing.
+- **Application**: Tracks the M:N relationship between `StudentProfile` and `PlacementDrive`, constrained by a `UniqueConstraint` on `(student, drive)`.
+- **InterviewSchedule**: Links to a specific `Application`, allowing multiple rounds per application.
+
+---
+
+## 4. Final Django Models
+
+### `accounts/models.py`
+```python
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+class User(AbstractUser):
+    is_student = models.BooleanField(default=False)
+    is_tpo = models.BooleanField(default=False)
+    email = models.EmailField(unique=True)
+    
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
+```
+
+### `students/models.py`
+```python
+from django.db import models
+from django.conf import settings
+from core.models import BaseModel # Presumes an abstract model with created_at, updated_at
+
+class Branch(BaseModel):
+    name = models.CharField(max_length=100, unique=True)
+    code = models.CharField(max_length=20, unique=True)
+
+class Skill(BaseModel):
+    name = models.CharField(max_length=50, unique=True)
+
+class StudentProfile(BaseModel):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='student_profile')
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True)
+    cgpa = models.DecimalField(max_digits=4, decimal_places=2)
+    resume = models.FileField(upload_to='resumes/%Y/%m/')
+    skills = models.ManyToManyField(Skill, blank=True)
+    projects = models.TextField(blank=True)
+    internships = models.TextField(blank=True)
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} - {self.user.username}"
+```
+
+### `placements/models.py`
+```python
+from django.db import models
+from students.models import StudentProfile, Branch
+
+class Company(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    website = models.URLField(blank=True)
+    description = models.TextField()
+
+class PlacementDrive(models.Model):
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='drives')
+    job_role = models.CharField(max_length=255)
+    salary_package = models.CharField(max_length=100)
+    min_cgpa = models.DecimalField(max_digits=4, decimal_places=2)
+    eligible_branches = models.ManyToManyField(Branch)
+    deadline_to_apply = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Application(models.Model):
+    STATUS_CHOICES = (
+        ('APPLIED', 'Applied'),
+        ('SHORTLISTED', 'Shortlisted'),
+        ('INTERVIEW', 'Interview'),
+        ('SELECTED', 'Selected'),
+        ('REJECTED', 'Rejected'),
+    )
+    student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='applications')
+    drive = models.ForeignKey(PlacementDrive, on_delete=models.CASCADE, related_name='applications')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='APPLIED')
+    applied_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['student', 'drive'], name='unique_application')
+        ]
+
+class InterviewSchedule(models.Model):
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, related_name='interviews')
+    round_name = models.CharField(max_length=100) # e.g., 'Technical Round 1'
+    date = models.DateField()
+    time = models.TimeField()
+    meeting_link_or_location = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+```
+
+---
+
+## 5. Project Folder Structure
+
+```text
+campus_placement/
+├── manage.py
+├── campus_placement/        # Project Config
+│   ├── settings.py          # Media roots, apps, auth model
+│   ├── urls.py
+│   └── wsgi.py
+├── core/                    # Shared abstractions
+├── accounts/
+│   ├── models.py
+│   ├── views.py             # Login, Registration CBVs
+│   └── urls.py
+├── students/
+│   ├── models.py
+│   ├── forms.py             # ProfileUpdateForm, ResumeUpload
+│   ├── views.py             # Dashboard, Profile logic
+│   └── urls.py
+├── placements/
+│   ├── models.py
+│   ├── services.py          # Eligibility algorithms, Stats aggregations
+│   ├── forms.py
+│   ├── views.py             # TPO controls, Drive application logic
+│   └── urls.py
+└── templates/               # Global templates
+    ├── base.html
+    ├── accounts/
+    ├── students/
+    └── placements/
+```
+
+---
+
+## 6. Implementation Specifications
+
+### Authentication & Role-Based Access
+- **Settings**: `AUTH_USER_MODEL = 'accounts.User'`
+- **Access Control**: Implement custom mixins (`TPORequiredMixin`, `StudentRequiredMixin`) extending `UserPassesTestMixin`.
+
+### Application Eligibility Logic (`placements/services.py`)
+Encapsulate the check to keep views clean:
+```python
+def can_student_apply(student_profile, drive):
+    if student_profile.cgpa < drive.min_cgpa:
+        return False, "CGPA below minimum requirement."
+    if student_profile.branch not in drive.eligible_branches.all():
+        return False, "Branch not eligible for this drive."
+    return True, None
+```
+
+### Forms & Resume Upload
+- Utilize `forms.ModelForm` for `StudentProfile`.
+- The `resume` field automatically handles file saving based on the `upload_to='resumes/%Y/%m/'` directive. Ensure `MEDIA_URL` and `MEDIA_ROOT` are configured in `settings.py` and appended to the main `urls.py` for development serving.
+
+### Application System & Unique Constraints
+- Application view wraps creation in a try-except block catching `IntegrityError` to gracefully handle duplicate application attempts resulting from the `UniqueConstraint`.
+
+### Dashboard Aggregation Logic
+TPO Dashboard Context Data (via `db.models.Count`, `Avg`):
+- `total_students = StudentProfile.objects.count()`
+- `total_drives = PlacementDrive.objects.count()`
+- `total_selected = Application.objects.filter(status='SELECTED').count()`
+- `placement_percentage = (total_selected / total_students * 100) if total_students > 0 else 0`
+
+Student Dashboard:
+- Query: `Application.objects.filter(student=request.user.student_profile).select_related('drive__company')` to optimize DB hits and list statuses.
+
+## User Action Required
+> [!IMPORTANT]
+> The architectural rewrite is complete and meets all your advanced specifications. Please review the models, folder structure, and service layer logic. Let me know if you would like me to begin setting up the codebase framework based on this architecture.

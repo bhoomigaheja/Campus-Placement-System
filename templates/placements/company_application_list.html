@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Applicant Tracking{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Applicant Tracking System</h2>
+</div>
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th class="ps-4">Candidate</th>
+                    <th>Applying For</th>
+                    <th>CGPA</th>
+                    <th>Core Skills</th>
+                    <th>Resume Parsing</th>
+                    <th>Status</th>
+                    <th>Review</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td class="ps-4 fw-medium text-dark">{{ app.student.user.first_name }} {{ app.student.user.last_name }}<br><small class="text-muted fw-normal">{{ app.student.branch }}</small></td>
+                    <td class="fw-semibold text-primary">{{ app.job.title }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ app.student.cgpa }}</span></td>
+                    <td style="max-width: 15rem;"><small class="text-muted">{% for skill in app.student.skills.all %}{{ skill.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</small></td>
+                    <td style="min-width: 120px;">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1" style="height: 6px;"><div class="progress-bar bg-success" style="width: {{ app.match_score }}%"></div></div>
+                            <small class="text-muted fw-bold">{{ app.match_score|floatformat:0 }}%</small>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge {% if app.status == 'OFFERED' %}bg-success{% elif app.status == 'REJECTED' %}bg-danger{% elif app.status == 'SHORTLISTED' %}bg-primary{% else %}bg-secondary{% endif %} px-2">{{ app.get_status_display }}</span>
+                    </td>
+                    <td><a href="{% url 'company_application_update' app.pk %}" class="btn btn-sm btn-outline-primary fw-medium px-3">Process</a></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-people fs-1 d-block mb-3"></i>
+                        No applicants found matching filter criteria.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

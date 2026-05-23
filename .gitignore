@@ -1,0 +1,26 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local database
+db.sqlite3
+
+# Media and Static folders
+media/
+staticfiles/
+
+# Environment configurations and secrets
+.env
+.env.example.saved
+secrets.json
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# OS-specific temp files
+.DS_Store
+Thumbs.db

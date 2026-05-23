@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Company | CampusConnect{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-white py-3">
+                <h4 class="mb-0 fw-bold">Register New Company</h4>
+                <small class="text-muted">Enter company profile and login credentials</small>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary px-4 fw-bold">Save Company</button>
+                        <a href="{% url 'tpo_company_list' %}" class="btn btn-light px-4 border">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

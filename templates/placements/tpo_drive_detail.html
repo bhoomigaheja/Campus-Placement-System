@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}{{ drive.title }} | TPO Command Center{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Opportunity Details</h2>
+    <div class="d-flex gap-2">
+        <a href="{% url 'tpo_drive_edit' drive.pk %}" class="btn btn-primary fw-semibold shadow-sm">
+            <i class="bi bi-pencil-square me-1"></i> Edit Drive Details
+        </a>
+        <button type="button" class="btn btn-outline-danger fw-semibold btn-delete-trigger shadow-sm"
+                data-bs-toggle="modal" 
+                data-bs-target="#globalDeleteModal" 
+                data-url="{% url 'tpo_drive_delete' drive.pk %}" 
+                data-text="Are you sure you want to permanently delete the drive for '{{ drive.title }}' at '{{ drive.company.company_name }}'?">
+            <i class="bi bi-trash me-1"></i> Delete Drive
+        </button>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Main Job details -->
+    <div class="col-lg-8 col-md-12">
+        <div class="card card-premium p-4 p-md-5 mb-4">
+            <div class="d-flex align-items-center mb-4">
+                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fs-1 shadow-sm me-3" style="width: 70px; height: 70px; font-weight: 700;">
+                    {{ drive.company.company_name|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h3 class="fw-bold text-dark mb-1">{{ drive.title }}</h3>
+                    <h5 class="text-muted mb-0">
+                        <i class="bi bi-building me-1"></i> {{ drive.company.company_name }}
+                        {% if drive.company.website %}
+                        <a href="{{ drive.company.website }}" target="_blank" class="ms-2 text-decoration-none text-primary fs-6" title="Visit website">
+                            <i class="bi bi-link-45deg"></i>
+                        </a>
+                        {% endif %}
+                    </h5>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-4 pb-4 border-bottom">
+                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-briefcase me-1 text-primary"></i> {{ drive.employment_type|default:"Full-time" }}</span>
+                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ drive.location|default:"On-site" }}</span>
+                <span class="badge bg-light text-dark border px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1 text-success"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
+            </div>
+
+            <!-- Job Description Section -->
+            <h5 class="fw-bold text-dark mt-2 mb-3">Job Description</h5>
+            <div class="text-muted lh-base mb-4" style="white-space: pre-line;">{{ drive.description }}</div>
+
+            <!-- Skills Required Section -->
+            <h5 class="fw-bold text-dark mt-4 mb-3">Required Skillsets</h5>
+            <div class="d-flex flex-wrap mb-4">
+                {% for skill in drive.required_skills.all %}
+                    <span class="badge-tag-premium me-2 mb-2">{{ skill.name }}</span>
+                {% empty %}
+                    <span class="text-muted small">No specific skills listed.</span>
+                {% endfor %}
+            </div>
+
+            <!-- Eligible Branches Section -->
+            <h5 class="fw-bold text-dark mt-4 mb-3">Eligible Branches</h5>
+            <div class="d-flex flex-wrap">
+                {% for branch in drive.eligible_branches.all %}
+                    <span class="badge-branch-premium me-2 mb-2">
+                        <i class="bi bi-mortarboard-fill me-1"></i> {{ branch.name }} ({{ branch.code }})
+                    </span>
+                {% empty %}
+                    <span class="badge bg-secondary">All branches are eligible to apply.</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Compact Info Cards -->
+    <div class="col-lg-4 col-md-12">
+        <div class="card card-premium p-4 mb-4">
+            <h5 class="fw-bold text-dark border-bottom pb-3 mb-3">Job Summary</h5>
+            
+            <div class="row g-3">
+                <div class="col-12">
+                    <div class="meta-info-card d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 text-success rounded p-2 me-3"><i class="bi bi-currency-rupee fs-4"></i></div>
+                        <div>
+                            <small class="text-muted d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Salary Package</small>
+                            <span class="fw-bold text-dark">{{ drive.salary_package|default:"Not disclosed" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="meta-info-card d-flex align-items-center">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3"><i class="bi bi-calendar-event fs-4"></i></div>
+                        <div>
+                            <small class="text-muted d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Application Deadline</small>
+                            <span class="fw-bold text-dark">{{ drive.deadline_to_apply|date:"d M, Y - h:i A" }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="meta-info-card d-flex align-items-center">
+                        <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3"><i class="bi bi-shield-check fs-4"></i></div>
+                        <div>
+                            <small class="text-muted d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Eligibility Limit</small>
+                            <span class="fw-bold text-dark">Min CGPA of {{ drive.min_cgpa }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="meta-info-card d-flex align-items-center">
+                        <div class="bg-info bg-opacity-10 text-info rounded p-2 me-3"><i class="bi bi-clock-history fs-4"></i></div>
+                        <div>
+                            <small class="text-muted d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Job Created On</small>
+                            <span class="fw-bold text-dark">{{ drive.created_at|date:"d M, Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employer Details Card -->
+        <div class="card card-premium p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-3 mb-3">Recruiter Profile</h5>
+            <div class="mb-3">
+                <small class="text-muted d-block">Industry Sector</small>
+                <span class="fw-bold text-dark">{{ drive.company.industry|default:"SaaS / Engineering" }}</span>
+            </div>
+            {% if drive.company.tier %}
+            <div class="mb-3">
+                <small class="text-muted d-block">Company Tier</small>
+                <span class="badge bg-dark text-white px-2 py-1 rounded">{{ drive.company.tier }}</span>
+            </div>
+            {% endif %}
+            {% if drive.company.website %}
+            <div class="mt-2">
+                <a href="{{ drive.company.website }}" target="_blank" class="btn btn-outline-primary btn-sm w-100 py-2 rounded-pill fw-semibold">
+                    <i class="bi bi-globe me-1"></i> Visit Recruiter Profile
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Row: Candidate Applicants Track -->
+<div class="col-12 mt-4">
+    <div class="card card-premium shadow-soft">
+        <div class="card-header bg-white py-4 border-bottom d-flex align-items-center justify-content-between">
+            <div>
+                <h4 class="mb-0 fw-bold text-dark"><i class="bi bi-people-fill text-primary me-2"></i>Applicant Tracking System (ATS)</h4>
+                <p class="text-muted mb-0 small mt-1">Review candidates, CGPA eligibility checks, and matching scores generated by the platform.</p>
+            </div>
+            <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">{{ applications.count }} Applied</span>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Candidate Student</th>
+                        <th>Branch / Domain</th>
+                        <th>Academic CGPA</th>
+                        <th>ATS Compatibility</th>
+                        <th>Lifecycle Status</th>
+                        <th class="text-end pe-4">Command Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in applications %}
+                    <tr>
+                        <td class="ps-4 fw-medium text-dark">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                    {{ app.student.user.first_name|slice:":1"|upper }}{{ app.student.user.last_name|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <span class="d-block fw-semibold">{{ app.student.user.first_name }} {{ app.student.user.last_name }}</span>
+                                    <span class="text-muted small" style="font-size: 0.75rem;">{{ app.student.user.email }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="fw-semibold">{{ app.student.branch }}</td>
+                        <td class="fw-bold">{{ app.student.cgpa }}</td>
+                        <td>
+                            <div class="d-flex align-items-center" style="max-width: 140px;">
+                                <div class="progress flex-grow-1 me-2" style="height:6px;">
+                                    <div class="progress-bar bg-primary" style="width: {{ app.match_score }}%"></div>
+                                </div>
+                                <small class="fw-bold text-dark">{{ app.match_score|floatformat:0 }}%</small>
+                            </div>
+                        </td>
+                        <td>
+                            {% if app.status == 'OFFERED' %}
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-check-circle-fill me-1"></i>Offered</span>
+                            {% elif app.status == 'REJECTED' %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-x-circle-fill me-1"></i>Rejected</span>
+                            {% elif app.status == 'INTERVIEW' %}
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-chat-left-dots-fill me-1"></i>Interview</span>
+                            {% elif app.status == 'SHORTLISTED' %}
+                                <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-bookmark-star-fill me-1"></i>Shortlisted</span>
+                            {% else %}
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-clock-fill me-1"></i>{{ app.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="btn-group">
+                                <a href="{% url 'tpo_application_update' app.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">
+                                    <i class="bi bi-sliders me-1"></i> Update Candidate
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-people fs-1 d-block mb-2 text-muted text-opacity-50"></i>
+                            No student applications received yet for this placement drive initiative.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
