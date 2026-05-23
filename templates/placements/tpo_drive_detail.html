@@ -204,7 +204,11 @@
                                 {% if app.interview %}
                                     <div class="mt-1" style="line-height: 1.1;"><small class="text-success fw-bold" style="font-size: 0.72rem;"><i class="bi bi-calendar2-check me-1"></i>{{ app.interview.scheduled_at|date:"d M - h:i A" }}</small></div>
                                     {% if app.interview.meeting_link %}
-                                        <div><a href="{{ app.interview.meeting_link }}" target="_blank" class="badge bg-success text-white border-0 mt-1" style="font-size: 0.65rem; text-decoration: none;"><i class="bi bi-camera-video me-1"></i>Join Meet</a></div>
+                                        {% if "http" in app.interview.meeting_link %}
+                                            <div><a href="{{ app.interview.meeting_link }}" target="_blank" class="badge bg-success text-white border-0 mt-1" style="font-size: 0.65rem; text-decoration: none;"><i class="bi bi-camera-video me-1"></i>Join Meet</a></div>
+                                        {% else %}
+                                            <div class="mt-1 text-muted" style="font-size: 0.65rem; line-height: 1.1;"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ app.interview.meeting_link }}</div>
+                                        {% endif %}
                                     {% endif %}
                                 {% else %}
                                     <div class="mt-1"><small class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>No Schedule</small></div>

@@ -142,13 +142,41 @@ class ApplicationStatusForm(forms.ModelForm):
         }
 
 class CompanyApplicationUpdateForm(forms.ModelForm):
+    interview_scheduled_at = forms.DateTimeField(
+        label="Interview Date & Time",
+        required=False,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
+    )
+    interview_meeting_link = forms.CharField(
+        label="Meeting Link / Physical Venue Location",
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. https://meet.google.com/abc OR Seminar Hall, Block-A'})
+    )
+    interview_notes = forms.CharField(
+        label="Interview Notes / Instructions",
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Instructions for the candidate (e.g. bring project files)'})
+    )
+
     class Meta:
         model = Application
         fields = ['status', 'remarks']
         widgets = {
-            'status': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+            'status': forms.Select(attrs={'class': 'form-select form-select-lg', 'id': 'id_status'}),
             'remarks': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Optional internal remarks about the candidate...'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            try:
+                interview = self.instance.interview
+                if interview.scheduled_at:
+                    self.initial['interview_scheduled_at'] = interview.scheduled_at.strftime('%Y-%m-%dT%H:%M')
+                self.initial['interview_meeting_link'] = interview.meeting_link
+                self.initial['interview_notes'] = interview.notes
+            except Exception:
+                pass
 
 class InterviewForm(forms.ModelForm):
     class Meta:

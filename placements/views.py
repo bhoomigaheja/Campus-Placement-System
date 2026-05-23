@@ -262,12 +262,34 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
         return Application.objects.none()
     
     def form_valid(self, form):
-        messages.success(self.request, f"Application for {self.object.student.user.first_name} updated successfully.")
-        response = super().form_valid(form)
+        self.object = form.save()
+        
+        status = form.cleaned_data.get('status')
+        scheduled_at = form.cleaned_data.get('interview_scheduled_at')
+        meeting_link = form.cleaned_data.get('interview_meeting_link')
+        notes = form.cleaned_data.get('interview_notes')
+        
+        if status == 'SHORTLISTED' and scheduled_at:
+            interview, created = Interview.objects.get_or_create(
+                application=self.object,
+                defaults={'scheduled_at': scheduled_at}
+            )
+            interview.scheduled_at = scheduled_at
+            interview.meeting_link = meeting_link
+            interview.notes = notes
+            interview.save()
+            
+            Notification.objects.create(
+                user=self.object.student.user,
+                message=f"Interview scheduled for {self.object.job.title} on {scheduled_at.strftime('%d %b, %Y - %I:%M %p')}."
+            )
+            
         ApplicationService.update_application_status(
             self.object, 
             self.object.status, 
             remarks=self.object.remarks,
             updated_by_role='Employer'
         )
-        return response
+        
+        messages.success(self.request, f"Application for {self.object.student.user.first_name} updated successfully.")
+        return redirect(self.get_success_url())

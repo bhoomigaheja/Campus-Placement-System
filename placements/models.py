@@ -39,7 +39,7 @@ class Application(models.Model):
 class Interview(models.Model):
     application = models.OneToOneField(Application, on_delete=models.CASCADE, related_name='interview')
     scheduled_at = models.DateTimeField()
-    meeting_link = models.URLField(blank=True, null=True)
+    meeting_link = models.CharField(max_length=255, blank=True, null=True, help_text="Online meeting URL or physical venue location")
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):

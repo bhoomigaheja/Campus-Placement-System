@@ -61,6 +61,24 @@
                         <label class="form-label fw-bold">{{ form.status.label }}</label>
                         {{ form.status }}
                     </div>
+                    
+                    <!-- Dynamic Interview Scheduling Fields (Shown only when Shortlisted) -->
+                    <div id="interview-scheduling-section" class="mb-4 p-4 bg-light border border-primary border-opacity-10 rounded-3 shadow-sm" style="display: none; transition: all 0.3s ease-in-out;">
+                        <h6 class="fw-bold text-primary mb-3"><i class="bi bi-calendar2-event-fill me-2"></i>Schedule Interview Details</h6>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_scheduled_at.label }}</label>
+                            {{ form.interview_scheduled_at }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_meeting_link.label }}</label>
+                            {{ form.interview_meeting_link }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_notes.label }}</label>
+                            {{ form.interview_notes }}
+                        </div>
+                    </div>
+
                     <div class="mb-4">
                         <label class="form-label fw-bold">{{ form.remarks.label }}</label>
                         {{ form.remarks }}
@@ -75,4 +93,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const statusSelect = document.getElementById("id_status");
+        const interviewSection = document.getElementById("interview-scheduling-section");
+        
+        function toggleInterviewFields() {
+            if (statusSelect && statusSelect.value === "SHORTLISTED") {
+                interviewSection.style.display = "block";
+            } else {
+                interviewSection.style.display = "none";
+            }
+        }
+        
+        if (statusSelect) {
+            statusSelect.addEventListener("change", toggleInterviewFields);
+            // Run on page load to handle already saved values
+            toggleInterviewFields();
+        }
+    });
+</script>
 {% endblock %}
