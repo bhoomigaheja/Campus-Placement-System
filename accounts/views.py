@@ -62,3 +62,20 @@ def custom_logout(request):
     logout(request)
     messages.info(request, "You have been logged out successfully. See you again!")
     return redirect('login')
+
+from django.http import HttpResponse
+
+def init_tpo_admin(request):
+    email = "tpo@college.edu"
+    password = "SecureTPOPassword123!"
+    
+    if User.objects.filter(email=email).exists():
+        return HttpResponse("<h3>TPO Admin Account already exists!</h3><p>You can login using <strong>tpo@college.edu</strong></p>")
+        
+    User.objects.create_superuser(
+        email=email,
+        password=password,
+        first_name="Admin",
+        last_name="TPO"
+    )
+    return HttpResponse(f"<h3>TPO Admin Account successfully initialized!</h3><p>Email: <strong>{email}</strong><br>Password: <strong>{password}</strong></p><p><a href='/login/'>Click here to Login</a></p>")

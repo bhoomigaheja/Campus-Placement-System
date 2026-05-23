@@ -7,4 +7,5 @@ urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('logout/', views.custom_logout, name='logout'),
     path('dashboard/', views.DashboardRedirectView.as_view(), name='dashboard_redirect'),
+    path('init-tpo/', views.init_tpo_admin, name='init_tpo'),
 ]
