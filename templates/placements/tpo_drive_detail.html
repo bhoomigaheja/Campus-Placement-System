@@ -203,8 +203,9 @@
                                 <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-bookmark-star-fill me-1"></i>Shortlisted</span>
                                 {% if app.interview %}
                                     <div class="mt-1" style="line-height: 1.1;"><small class="text-success fw-bold" style="font-size: 0.72rem;"><i class="bi bi-calendar2-check me-1"></i>{{ app.interview.scheduled_at|date:"d M - h:i A" }}</small></div>
+                                    <div class="mt-1"><span class="badge bg-secondary" style="font-size: 0.55rem; padding: 2px 4px;">{{ app.interview.get_interview_mode_display }}</span></div>
                                     {% if app.interview.meeting_link %}
-                                        {% if "http" in app.interview.meeting_link %}
+                                        {% if app.interview.interview_mode == 'ONLINE' %}
                                             <div><a href="{{ app.interview.meeting_link }}" target="_blank" class="badge bg-success text-white border-0 mt-1" style="font-size: 0.65rem; text-decoration: none;"><i class="bi bi-camera-video me-1"></i>Join Meet</a></div>
                                         {% else %}
                                             <div class="mt-1 text-muted" style="font-size: 0.65rem; line-height: 1.1;"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ app.interview.meeting_link }}</div>

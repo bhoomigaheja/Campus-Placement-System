@@ -266,7 +266,9 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
         
         status = form.cleaned_data.get('status')
         scheduled_at = form.cleaned_data.get('interview_scheduled_at')
+        mode = form.cleaned_data.get('interview_mode')
         meeting_link = form.cleaned_data.get('interview_meeting_link')
+        venue = form.cleaned_data.get('interview_venue')
         notes = form.cleaned_data.get('interview_notes')
         
         if status == 'SHORTLISTED' and scheduled_at:
@@ -275,13 +277,18 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
                 defaults={'scheduled_at': scheduled_at}
             )
             interview.scheduled_at = scheduled_at
-            interview.meeting_link = meeting_link
+            interview.interview_mode = mode
+            if mode == 'ONLINE':
+                interview.meeting_link = meeting_link
+            else:
+                interview.meeting_link = venue
             interview.notes = notes
             interview.save()
             
+            mode_display = "Online" if mode == 'ONLINE' else "In-Person"
             Notification.objects.create(
                 user=self.object.student.user,
-                message=f"Interview scheduled for {self.object.job.title} on {scheduled_at.strftime('%d %b, %Y - %I:%M %p')}."
+                message=f"{mode_display} Interview scheduled for {self.object.job.title} on {scheduled_at.strftime('%d %b, %Y - %I:%M %p')}."
             )
             
         ApplicationService.update_application_status(

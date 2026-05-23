@@ -142,15 +142,25 @@ class ApplicationStatusForm(forms.ModelForm):
         }
 
 class CompanyApplicationUpdateForm(forms.ModelForm):
+    interview_mode = forms.ChoiceField(
+        label="Interview Mode",
+        choices=[('ONLINE', 'Online (Virtual)'), ('IN_PERSON', 'In-Person (Physical)')],
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_interview_mode'})
+    )
+    interview_meeting_link = forms.URLField(
+        label="Meeting Link (Zoom / Google Meet)",
+        required=False,
+        widget=forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://meet.google.com/abc-defg-hij', 'id': 'id_interview_meeting_link'})
+    )
+    interview_venue = forms.CharField(
+        label="Physical Venue Address / Location",
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. Placement Seminar Hall, Room 302', 'id': 'id_interview_venue'})
+    )
     interview_scheduled_at = forms.DateTimeField(
         label="Interview Date & Time",
         required=False,
         widget=forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'})
-    )
-    interview_meeting_link = forms.CharField(
-        label="Meeting Link / Physical Venue Location",
-        required=False,
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. https://meet.google.com/abc OR Seminar Hall, Block-A'})
     )
     interview_notes = forms.CharField(
         label="Interview Notes / Instructions",
@@ -171,9 +181,13 @@ class CompanyApplicationUpdateForm(forms.ModelForm):
         if self.instance and self.instance.pk:
             try:
                 interview = self.instance.interview
+                self.initial['interview_mode'] = interview.interview_mode
                 if interview.scheduled_at:
                     self.initial['interview_scheduled_at'] = interview.scheduled_at.strftime('%Y-%m-%dT%H:%M')
-                self.initial['interview_meeting_link'] = interview.meeting_link
+                if interview.interview_mode == 'ONLINE':
+                    self.initial['interview_meeting_link'] = interview.meeting_link
+                else:
+                    self.initial['interview_venue'] = interview.meeting_link
                 self.initial['interview_notes'] = interview.notes
             except Exception:
                 pass

@@ -65,14 +65,27 @@
                     <!-- Dynamic Interview Scheduling Fields (Shown only when Shortlisted) -->
                     <div id="interview-scheduling-section" class="mb-4 p-4 bg-light border border-primary border-opacity-10 rounded-3 shadow-sm" style="display: none; transition: all 0.3s ease-in-out;">
                         <h6 class="fw-bold text-primary mb-3"><i class="bi bi-calendar2-event-fill me-2"></i>Schedule Interview Details</h6>
+                        
                         <div class="mb-3">
                             <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_scheduled_at.label }}</label>
                             {{ form.interview_scheduled_at }}
                         </div>
+
                         <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_mode.label }}</label>
+                            {{ form.interview_mode }}
+                        </div>
+
+                        <div class="mb-3" id="div_interview_meeting_link">
                             <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_meeting_link.label }}</label>
                             {{ form.interview_meeting_link }}
                         </div>
+
+                        <div class="mb-3" id="div_interview_venue" style="display: none;">
+                            <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_venue.label }}</label>
+                            {{ form.interview_venue }}
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label small fw-semibold text-muted mb-1">{{ form.interview_notes.label }}</label>
                             {{ form.interview_notes }}
@@ -99,6 +112,10 @@
         const statusSelect = document.getElementById("id_status");
         const interviewSection = document.getElementById("interview-scheduling-section");
         
+        const modeSelect = document.getElementById("id_interview_mode");
+        const divMeetingLink = document.getElementById("div_interview_meeting_link");
+        const divVenue = document.getElementById("div_interview_venue");
+        
         function toggleInterviewFields() {
             if (statusSelect && statusSelect.value === "SHORTLISTED") {
                 interviewSection.style.display = "block";
@@ -106,11 +123,27 @@
                 interviewSection.style.display = "none";
             }
         }
+
+        function toggleModeFields() {
+            if (modeSelect) {
+                if (modeSelect.value === "ONLINE") {
+                    divMeetingLink.style.display = "block";
+                    divVenue.style.display = "none";
+                } else {
+                    divMeetingLink.style.display = "none";
+                    divVenue.style.display = "block";
+                }
+            }
+        }
         
         if (statusSelect) {
             statusSelect.addEventListener("change", toggleInterviewFields);
-            // Run on page load to handle already saved values
             toggleInterviewFields();
+        }
+
+        if (modeSelect) {
+            modeSelect.addEventListener("change", toggleModeFields);
+            toggleModeFields();
         }
     });
 </script>

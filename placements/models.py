@@ -37,8 +37,13 @@ class Application(models.Model):
         return f"{self.student.user.email} -> {self.job.title} ({self.status})"
 
 class Interview(models.Model):
+    MODE_CHOICES = [
+        ('ONLINE', 'Online'),
+        ('IN_PERSON', 'In-Person'),
+    ]
     application = models.OneToOneField(Application, on_delete=models.CASCADE, related_name='interview')
     scheduled_at = models.DateTimeField()
+    interview_mode = models.CharField(max_length=20, choices=MODE_CHOICES, default='ONLINE')
     meeting_link = models.CharField(max_length=255, blank=True, null=True, help_text="Online meeting URL or physical venue location")
     notes = models.TextField(blank=True, null=True)
 
