@@ -35,6 +35,19 @@
                             <span class="badge bg-danger px-3">Rejected</span>
                         {% elif app.status == 'SHORTLISTED' %}
                             <span class="badge bg-primary px-3">Shortlisted</span>
+                            {% if app.interview %}
+                                <div class="mt-2 text-start p-2 bg-light border border-primary border-opacity-25 rounded" style="min-width: 210px;">
+                                    <small class="d-block fw-bold text-success"><i class="bi bi-calendar-check me-1"></i> {{ app.interview.scheduled_at|date:"d M, Y - h:i A" }}</small>
+                                    {% if app.interview.meeting_link %}
+                                        <a href="{{ app.interview.meeting_link }}" target="_blank" class="btn btn-xs btn-success fw-bold py-1 px-2 mt-1" style="font-size: 0.7rem;"><i class="bi bi-camera-video me-1"></i> Join Interview</a>
+                                    {% endif %}
+                                    {% if app.interview.notes %}
+                                        <small class="d-block text-muted mt-1" style="font-size: 0.7rem;"><strong>Notes:</strong> {{ app.interview.notes }}</small>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <div class="mt-1"><small class="text-muted" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i> Waiting for schedule</small></div>
+                            {% endif %}
                         {% else %}
                             <span class="badge bg-info text-dark px-3">{{ app.get_status_display }}</span>
                         {% endif %}

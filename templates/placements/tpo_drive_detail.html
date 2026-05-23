@@ -201,6 +201,14 @@
                                 <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-chat-left-dots-fill me-1"></i>Interview</span>
                             {% elif app.status == 'SHORTLISTED' %}
                                 <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-bookmark-star-fill me-1"></i>Shortlisted</span>
+                                {% if app.interview %}
+                                    <div class="mt-1" style="line-height: 1.1;"><small class="text-success fw-bold" style="font-size: 0.72rem;"><i class="bi bi-calendar2-check me-1"></i>{{ app.interview.scheduled_at|date:"d M - h:i A" }}</small></div>
+                                    {% if app.interview.meeting_link %}
+                                        <div><a href="{{ app.interview.meeting_link }}" target="_blank" class="badge bg-success text-white border-0 mt-1" style="font-size: 0.65rem; text-decoration: none;"><i class="bi bi-camera-video me-1"></i>Join Meet</a></div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="mt-1"><small class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>No Schedule</small></div>
+                                {% endif %}
                             {% else %}
                                 <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-clock-fill me-1"></i>{{ app.get_status_display }}</span>
                             {% endif %}
