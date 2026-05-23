@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Campus Placement Cell — Enterprise SaaS Platform
 
 An enterprise-grade, scalable, and secure SaaS platform designed to modernize university placement drives. The platform features role-based dashboards for Training & Placement Officers (TPOs), Recruiting Companies, and Students, complete with automated ATS resume compatibility parsing, searchable branch filters, skill tags inventories, and an advanced, zero-replay toast notification architecture.
@@ -77,3 +78,6 @@ The project is fully pre-configured for direct, one-click deployments on **Rende
 ### 💼 Main Command Options:
 * **Build Command:** `./build.sh`
 * **Start Command:** `gunicorn campus_placement.wsgi:application`
+=======
+# Campus-Placement-System
+>>>>>>> b88bc7bc20fd6697ca9a245dddddf4a7ddeca3bd
