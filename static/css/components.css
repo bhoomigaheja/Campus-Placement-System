@@ -109,7 +109,7 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 }
 
 /* Global Form Resets for Django Defaults */
-input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="url"], input[type="file"], select, textarea {
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="url"], select, textarea {
     background-color: var(--bg-input) !important;
     border: 1px solid var(--border-color) !important;
     color: var(--text-title) !important;
@@ -123,6 +123,31 @@ input:focus, select:focus, textarea:focus {
     border-color: var(--accent-primary) !important;
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
     outline: none;
+}
+
+/* File Upload Custom SaaS Styling */
+input[type="file"] {
+    background-color: var(--bg-input) !important;
+    border: 1px dashed var(--border-color) !important;
+    color: var(--text-desc) !important;
+    padding: 10px !important;
+    border-radius: 12px;
+    width: 100%;
+    transition: var(--transition-fast);
+}
+input[type="file"]::file-selector-button {
+    background: var(--accent-primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-right: 16px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+input[type="file"]::file-selector-button:hover {
+    background: var(--accent-hover);
 }
 
 /* Scrollbars */
@@ -294,18 +319,49 @@ main {
 /* ==========================================================================
    PREMIUM COMPONENT STYLES
    ========================================================================== */
-/* Override Bootstrap utilities for Dark Mode */
-.bg-white, .bg-light {
+/* ==========================================================================
+   GLOBAL BOOTSTRAP UTILITY & COMPONENT OVERRIDES (ANTIGRAVITY QA FIX)
+   ========================================================================== */
+.bg-white, .bg-light, .bg-transparent {
     background-color: var(--bg-card) !important;
 }
 .text-dark {
     color: var(--text-title) !important;
 }
-.text-secondary, .text-muted {
+.text-secondary, .text-muted, .text-black, .text-light {
     color: var(--text-desc) !important;
 }
-.opacity-75 {
-    opacity: 0.8 !important; /* Bump slightly for better contrast */
+
+/* Force opacity utility to act as secondary text color instead of fading primary text */
+.opacity-75, .opacity-50 {
+    color: var(--text-desc) !important;
+    opacity: 1 !important; 
+}
+
+/* Force standard Bootstrap Cards to match SaaS Premium Cards globally */
+.card, .modal-content, .offcanvas, .toast {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--card-shadow) !important;
+    border-radius: 16px !important;
+    color: var(--text-title);
+}
+
+/* Force standard Bootstrap Tables to match SaaS Premium Tables globally */
+.table, .table-light, .table-dark, .table-hover>tbody>tr:hover>td, .table-hover>tbody>tr:hover>th {
+    background-color: transparent !important;
+    color: var(--text-desc) !important;
+    border-color: var(--border-color) !important;
+}
+.table-light th, .table thead th {
+    background-color: var(--bg-sidebar) !important;
+    color: var(--text-title) !important;
+    border-bottom: 2px solid var(--border-color) !important;
+}
+.table td {
+    color: var(--text-title) !important;
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border-color) !important;
 }
 
 /* Fix Toastify Close Icon positioning */
@@ -327,14 +383,6 @@ main {
     opacity: 1;
 }
 
-.card, .premium-card {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-color) !important;
-    box-shadow: var(--card-shadow);
-    border-radius: 20px !important;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
     backdrop-filter: var(--glass-blur);
 }
 
