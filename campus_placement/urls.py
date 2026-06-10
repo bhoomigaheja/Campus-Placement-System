@@ -17,3 +17,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+from placements.views import email_debug
+urlpatterns += [path('email-debug/', email_debug)]

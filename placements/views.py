@@ -410,3 +410,9 @@ class DownloadCompanyTemplateView(LoginRequiredMixin, TPORequiredMixin, View):
         )
         response['Content-Disposition'] = 'attachment; filename="company_import_template.xlsx"'
         return response
+
+
+from django.http import HttpResponse
+def email_debug(request):
+    from django.conf import settings
+    return HttpResponse(f'EMAIL_HOST: {settings.EMAIL_HOST} <br> EMAIL_USER: {settings.EMAIL_HOST_USER} <br> DEFAULT_FROM: {settings.DEFAULT_FROM_EMAIL}')
