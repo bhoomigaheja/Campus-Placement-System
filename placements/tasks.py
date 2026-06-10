@@ -3,16 +3,20 @@ from django.core.mail import send_mail
 from .models import Application
 from .ml_services import calculate_resume_match
 
+import threading
+
 @shared_task
 def send_email_task(subject, message, recipient_list):
-    send_mail(
-        subject,
-        message,
-        'noreply@campusplacement.com',
-        recipient_list,
-        fail_silently=True,
-    )
-    return f"Email sent to {recipient_list}"
+    def _send_async():
+        send_mail(
+            subject,
+            message,
+            'noreply@campusplacement.com',
+            recipient_list,
+            fail_silently=True,
+        )
+    threading.Thread(target=_send_async, daemon=True).start()
+    return f"Email dispatch initiated for {recipient_list}"
 
 @shared_task
 def parse_resume_and_score_task(application_id):

@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
+import threading
 from .models import Notification
 
 logger = logging.getLogger(__name__)
@@ -28,16 +29,22 @@ class NotificationService:
                     html_message = None
                     plain_message = message
 
-                send_mail(
-                    subject=f"CampusConnect: {email_subject}",
-                    message=plain_message,
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusconnect.com'),
-                    recipient_list=[user.email],
-                    html_message=html_message,
-                    fail_silently=True
-                )
-                logger.info(f"Email sent successfully to {user.email} for: {email_subject}")
+                def _send_email_async():
+                    try:
+                        send_mail(
+                            subject=f"CampusConnect: {email_subject}",
+                            message=plain_message,
+                            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusconnect.com'),
+                            recipient_list=[user.email],
+                            html_message=html_message,
+                            fail_silently=True
+                        )
+                        logger.info(f"Email sent successfully to {user.email} for: {email_subject}")
+                    except Exception as e:
+                        logger.error(f"Failed to send email to {user.email}: {e}")
+                
+                threading.Thread(target=_send_email_async, daemon=True).start()
             except Exception as e:
-                logger.error(f"Failed to send email to {user.email}: {e}")
+                logger.error(f"Failed to initiate email thread for {user.email}: {e}")
 
         return notification
