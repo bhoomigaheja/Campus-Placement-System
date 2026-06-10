@@ -74,7 +74,7 @@ class BulkImportService:
                         password=password,
                         first_name=first_name,
                         last_name=last_name,
-                        role='STUDENT'
+                        is_student=True
                     )
                     
                     branch = None
@@ -170,7 +170,7 @@ class BulkImportService:
                         password=password,
                         first_name=first_name,
                         last_name=last_name,
-                        role='COMPANY'
+                        is_company=True
                     )
                     
                     CompanyProfile.objects.create(

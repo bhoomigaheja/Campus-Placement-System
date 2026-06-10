@@ -40,6 +40,8 @@ class User(AbstractUser):
 
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    enrollment_number = models.CharField(max_length=50, unique=True, null=True, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
     cgpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     # skills = models.TextField(help_text="Comma separated skills, e.g., Python, Django, React")
     skills = models.ManyToManyField(Skill, blank=True)
