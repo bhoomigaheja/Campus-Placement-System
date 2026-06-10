@@ -105,7 +105,24 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 /* Placeholders */
 ::placeholder {
     color: var(--text-desc) !important;
-    opacity: 0.5 !important;
+    opacity: 0.6 !important;
+}
+
+/* Global Form Resets for Django Defaults */
+input[type="text"], input[type="email"], input[type="password"], input[type="number"], input[type="url"], input[type="file"], select, textarea {
+    background-color: var(--bg-input) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-title) !important;
+    border-radius: 12px;
+    padding: 12px 18px;
+    width: 100%;
+    min-height: 50px;
+    transition: var(--transition-fast);
+}
+input:focus, select:focus, textarea:focus {
+    border-color: var(--accent-primary) !important;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+    outline: none;
 }
 
 /* Scrollbars */
@@ -283,6 +300,31 @@ main {
 }
 .text-dark {
     color: var(--text-title) !important;
+}
+.text-secondary, .text-muted {
+    color: var(--text-desc) !important;
+}
+.opacity-75 {
+    opacity: 0.8 !important; /* Bump slightly for better contrast */
+}
+
+/* Fix Toastify Close Icon positioning */
+.toastify-close {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: #fff !important;
+    opacity: 0.8;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+    cursor: pointer;
+}
+.toastify-close:hover {
+    opacity: 1;
 }
 
 .card, .premium-card {
