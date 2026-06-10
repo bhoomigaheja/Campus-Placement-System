@@ -10,5 +10,9 @@ def validate_file_extension(value):
 
 def validate_file_size(value):
     limit = 5 * 1024 * 1024 # 5 MB
-    if value.size > limit:
-        raise ValidationError(_('File size cannot exceed 5 MB.'))
+    try:
+        if value.size > limit:
+            raise ValidationError(_('File size cannot exceed 5 MB.'))
+    except (FileNotFoundError, OSError):
+        # File is missing on disk (e.g., ephemeral storage wipe), skip size validation
+        pass
