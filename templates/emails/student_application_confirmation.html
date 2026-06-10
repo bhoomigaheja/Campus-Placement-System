@@ -1,10 +1,33 @@
 {% extends "emails/base_notification.html" %}
 
 {% block content %}
-<h2>Application Confirmed! 🎉</h2>
-<p>Hi {{ student_name }},</p>
-<p>Your application for the position of <strong>{{ job_title }}</strong> at <strong>{{ company_name }}</strong> has been successfully submitted to the recruitment team!</p>
-<p>Our intelligent system has automatically forwarded your resume, verified your skills, and matched your CGPA. The recruiters will notify you if you are shortlisted for the next rounds.</p>
-<br>
-<a href="https://campus-placement-system-1.onrender.com/tpo/student/dashboard/" class="action-button">View Application Status</a>
+<div style="text-align: center; margin-bottom: 30px;">
+    <div style="display: inline-block; background-color: #e0e7ff; color: #4338ca; padding: 8px 16px; border-radius: 20px; font-weight: bold; font-size: 14px; margin-bottom: 15px;">
+        Application Received
+    </div>
+    <h2 style="margin-bottom: 10px;">Great job, {{ student_name }}! 🎉</h2>
+    <p style="color: #64748b; font-size: 16px; margin-top: 0;">Your career journey is moving forward.</p>
+</div>
+
+<p style="font-size: 16px; line-height: 1.6; color: #334155;">
+    Your application for the <strong>{{ job_title }}</strong> role at <strong>{{ company_name }}</strong> has been securely delivered to their recruitment team.
+</p>
+
+<div style="background-color: #f8fafc; border-left: 4px solid #10b981; padding: 15px 20px; margin: 25px 0; border-radius: 0 8px 8px 0;">
+    <p style="margin: 0; font-size: 15px; color: #0f172a;">
+        <strong>🚀 AI Smart Match Activated:</strong> Our intelligent system has analyzed your resume, verified your technical skills, and calculated your match score for the recruiters.
+    </p>
+</div>
+
+<p style="font-size: 16px; line-height: 1.6; color: #334155;">
+    Keep an eye on your inbox! The recruitment team will notify you directly if your profile is shortlisted for the upcoming interview rounds.
+</p>
+
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin: 35px auto 10px auto;">
+    <tr>
+        <td align="center">
+            <a href="https://campus-placement-system-1.onrender.com/tpo/student/dashboard/" class="action-button">Track Application Status</a>
+        </td>
+    </tr>
+</table>
 {% endblock %}
