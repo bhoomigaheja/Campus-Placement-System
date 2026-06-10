@@ -102,6 +102,12 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     letter-spacing: -0.03em;
 }
 
+/* Placeholders */
+::placeholder {
+    color: var(--text-desc) !important;
+    opacity: 0.5 !important;
+}
+
 /* Scrollbars */
 ::-webkit-scrollbar {
     width: 6px;
@@ -271,9 +277,17 @@ main {
 /* ==========================================================================
    PREMIUM COMPONENT STYLES
    ========================================================================== */
-.premium-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
+/* Override Bootstrap utilities for Dark Mode */
+.bg-white, .bg-light {
+    background-color: var(--bg-card) !important;
+}
+.text-dark {
+    color: var(--text-title) !important;
+}
+
+.card, .premium-card {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
     box-shadow: var(--card-shadow);
     border-radius: 20px !important;
     transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
