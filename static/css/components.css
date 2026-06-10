@@ -517,7 +517,7 @@ main {
     transform: translateY(-1px);
 }
 
-.form-control-premium {
+.form-control, .form-select {
     background: var(--bg-input) !important;
     border: 1px solid var(--border-color) !important;
     border-radius: 14px !important;
@@ -525,12 +525,50 @@ main {
     color: var(--text-title) !important;
     font-size: 0.95rem !important;
     transition: all 0.25s !important;
+    min-height: 50px !important;
 }
 
-.form-control-premium:focus {
+.form-control:focus, .form-select:focus {
     background: var(--bg-sidebar) !important;
     border-color: var(--accent-primary) !important;
     box-shadow: 0 0 0 4px var(--accent-glow) !important;
+    outline: none !important;
+}
+
+.form-section-header {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-title);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-label-premium {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-desc);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.helper-text-premium {
+    font-size: 0.75rem;
+    color: var(--text-desc);
+    opacity: 0.8;
+    margin-top: 0.35rem;
+    display: block;
+}
+
+.sticky-action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
 }
 
 /* ==========================================================================
@@ -610,9 +648,10 @@ main {
     border: 1px solid var(--border-color);
     border-radius: 14px;
     background-color: var(--bg-input);
-    min-height: 46px;
+    min-height: 50px;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    max-width: 100%;
 }
 
 .tags-input-wrapper:focus-within {
