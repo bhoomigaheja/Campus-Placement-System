@@ -10,7 +10,7 @@ def send_email_task(subject, message, recipient_list):
         message,
         'noreply@campusplacement.com',
         recipient_list,
-        fail_silently=False,
+        fail_silently=True,
     )
     return f"Email sent to {recipient_list}"
 
@@ -18,10 +18,14 @@ def send_email_task(subject, message, recipient_list):
 def parse_resume_and_score_task(application_id):
     try:
         app = Application.objects.select_related('student', 'job').get(id=application_id)
-        student_skills = app.student.skills
-        job_skills = app.job.skills_required
         
-        score = calculate_resume_match(student_skills, job_skills)
+        student_skills_qs = app.student.skills.all()
+        job_skills_qs = app.job.required_skills.all()
+        
+        student_skills_str = " ".join([s.name for s in student_skills_qs])
+        job_skills_str = " ".join([s.name for s in job_skills_qs])
+        
+        score = calculate_resume_match(student_skills_str, job_skills_str)
         app.match_score = score
         app.save(update_fields=['match_score'])
         return f"Scored App {application_id}: {score}%"
