@@ -7,6 +7,7 @@ from .forms import StudentSignUpForm
 from .models import User
 
 from django.contrib import messages
+from core.services import NotificationService
 
 class StudentSignUpView(CreateView):
     model = User
@@ -18,6 +19,20 @@ class StudentSignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         messages.success(self.request, "Account created successfully! Welcome to the Campus Placement Platform.")
+        
+        # Notify student of successful signup
+        NotificationService.create_and_send(
+            user=user,
+            message="Welcome to CampusConnect! Your student account has been created successfully.",
+            email_subject="Welcome to CampusConnect",
+            email_template="emails/base_notification.html",
+            context={
+                'title': 'Account Created',
+                'message': 'Welcome to CampusConnect! Your student account has been created successfully.',
+                'action_url': '#'
+            }
+        )
+        
         return redirect('dashboard_redirect')
 
 from .forms import CompanySignUpForm
@@ -32,6 +47,20 @@ class CompanySignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         messages.success(self.request, "Recruiter profile created successfully! Welcome to the Campus Placement Platform.")
+        
+        # Notify company of successful signup
+        NotificationService.create_and_send(
+            user=user,
+            message="Welcome to CampusConnect! Your recruiter profile has been created successfully.",
+            email_subject="Welcome to CampusConnect",
+            email_template="emails/base_notification.html",
+            context={
+                'title': 'Account Created',
+                'message': 'Welcome to CampusConnect! Your recruiter profile has been created successfully.',
+                'action_url': '#'
+            }
+        )
+        
         return redirect('dashboard_redirect')
 
 class CustomLoginView(LoginView):

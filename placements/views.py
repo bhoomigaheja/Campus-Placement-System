@@ -85,18 +85,6 @@ class DriveCreateView(LoginRequiredMixin, TPORequiredMixin, CreateView):
         job = self.object
         messages.success(self.request, f"Placement drive for '{job.title}' created successfully!")
         
-        # Notify all students
-        students = StudentProfile.objects.select_related('user').all()
-        for student in students:
-            msg = f"New placement drive for {job.title} at {company.company_name} has been posted."
-            NotificationService.create_and_send(
-                user=student.user,
-                message=msg,
-                email_subject=f"New Placement Drive: {job.title}",
-                email_template="emails/base_notification.html",
-                context={'title': 'New Placement Drive Posted', 'message': msg, 'action_url': '#'}
-            )
-        
         return response
 
 class DriveUpdateView(LoginRequiredMixin, TPORequiredMixin, UpdateView):

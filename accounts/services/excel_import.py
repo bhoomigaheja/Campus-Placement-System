@@ -25,7 +25,7 @@ class BulkImportService:
         
         # Check Headers
         header_row = [cell.value for cell in sheet[1]]
-        required_headers = ['Name', 'Email', 'Enrollment Number', 'Branch', 'CGPA', 'Phone Number', 'Skills']
+        required_headers = ['Name', 'Email', 'Password', 'Enrollment Number', 'Branch', 'CGPA', 'Phone Number', 'Skills']
         if not all(h in header_row for h in required_headers):
             results['errors'].append({'row': 1, 'reason': f"Missing required headers. Expected: {required_headers}"})
             return results
@@ -39,15 +39,16 @@ class BulkImportService:
             results['total'] += 1
             name = str(row[header_map['Name']] or '').strip()
             email = str(row[header_map['Email']] or '').strip()
+            password = str(row[header_map['Password']] or '').strip()
             enrollment = str(row[header_map['Enrollment Number']] or '').strip()
             branch_code = str(row[header_map['Branch']] or '').strip()
             cgpa_val = row[header_map['CGPA']]
             phone = str(row[header_map['Phone Number']] or '').strip()
             skills_str = str(row[header_map['Skills']] or '').strip()
             
-            if not email or not name:
+            if not email or not name or not password:
                 results['failed'] += 1
-                results['errors'].append({'row': row_idx, 'reason': "Missing Name or Email"})
+                results['errors'].append({'row': row_idx, 'reason': "Missing Name, Email, or Password"})
                 continue
                 
             if User.objects.filter(email=email).exists():
@@ -65,7 +66,6 @@ class BulkImportService:
                 
             try:
                 with transaction.atomic():
-                    password = get_random_string(12)
                     first_name = name.split()[0]
                     last_name = " ".join(name.split()[1:]) if len(name.split()) > 1 else ""
                     
@@ -95,20 +95,6 @@ class BulkImportService:
                             skill_obj, _ = Skill.objects.get_or_create(name=s_name)
                             profile.skills.add(skill_obj)
                             
-                    msg = f"Your CampusConnect Student account has been created by the TPO."
-                    NotificationService.create_and_send(
-                        user=user,
-                        message=msg,
-                        email_subject="Welcome to CampusConnect",
-                        email_template="emails/base_notification.html",
-                        context={
-                            'title': 'Account Created Successfully',
-                            'message': msg,
-                            'credentials': {'email': email, 'password': password},
-                            'action_url': '#'
-                        }
-                    )
-                    
                     results['success'] += 1
             except Exception as e:
                 results['failed'] += 1
@@ -130,7 +116,7 @@ class BulkImportService:
         }
         
         header_row = [cell.value for cell in sheet[1]]
-        required_headers = ['Company Name', 'Email', 'Website', 'Industry', 'Contact Person']
+        required_headers = ['Company Name', 'Email', 'Password', 'Website', 'Industry', 'Contact Person']
         if not all(h in header_row for h in required_headers):
             results['errors'].append({'row': 1, 'reason': f"Missing required headers. Expected: {required_headers}"})
             return results
@@ -144,13 +130,14 @@ class BulkImportService:
             results['total'] += 1
             company_name = str(row[header_map['Company Name']] or '').strip()
             email = str(row[header_map['Email']] or '').strip()
+            password = str(row[header_map['Password']] or '').strip()
             website = str(row[header_map['Website']] or '').strip()
             industry = str(row[header_map['Industry']] or '').strip()
             contact_person = str(row[header_map['Contact Person']] or '').strip()
             
-            if not email or not company_name:
+            if not email or not company_name or not password:
                 results['failed'] += 1
-                results['errors'].append({'row': row_idx, 'reason': "Missing Company Name or Email"})
+                results['errors'].append({'row': row_idx, 'reason': "Missing Company Name, Email, or Password"})
                 continue
                 
             if User.objects.filter(email=email).exists():
@@ -161,7 +148,6 @@ class BulkImportService:
                 
             try:
                 with transaction.atomic():
-                    password = get_random_string(12)
                     first_name = contact_person.split()[0] if contact_person else company_name
                     last_name = " ".join(contact_person.split()[1:]) if contact_person and len(contact_person.split()) > 1 else ""
                     
@@ -180,20 +166,6 @@ class BulkImportService:
                         industry=industry
                     )
                     
-                    msg = f"Your CampusConnect Company account has been created by the TPO."
-                    NotificationService.create_and_send(
-                        user=user,
-                        message=msg,
-                        email_subject="Company Account Created",
-                        email_template="emails/base_notification.html",
-                        context={
-                            'title': 'Welcome to CampusConnect',
-                            'message': msg,
-                            'credentials': {'email': email, 'password': password},
-                            'action_url': '#'
-                        }
-                    )
-                    
                     results['success'] += 1
             except Exception as e:
                 results['failed'] += 1
@@ -206,10 +178,10 @@ class BulkImportService:
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "Students"
-        headers = ['Name', 'Email', 'Enrollment Number', 'Branch', 'CGPA', 'Phone Number', 'Skills']
+        headers = ['Name', 'Email', 'Password', 'Enrollment Number', 'Branch', 'CGPA', 'Phone Number', 'Skills']
         ws.append(headers)
-        ws.append(['John Doe', 'john@example.com', 'ENR123456', 'CSE', 8.5, '9876543210', 'Python, Django, React'])
-        ws.append(['Jane Smith', 'jane@example.com', 'ENR654321', 'ECE', 9.1, '9876543211', 'C++, VLSI'])
+        ws.append(['John Doe', 'john@example.com', 'SecurePass123!', 'ENR123456', 'CSE', 8.5, '9876543210', 'Python, Django, React'])
+        ws.append(['Jane Smith', 'jane@example.com', 'SecurePass123!', 'ENR654321', 'ECE', 9.1, '9876543211', 'C++, VLSI'])
         
         output = BytesIO()
         wb.save(output)
@@ -221,10 +193,10 @@ class BulkImportService:
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "Companies"
-        headers = ['Company Name', 'Email', 'Website', 'Industry', 'Contact Person']
+        headers = ['Company Name', 'Email', 'Password', 'Website', 'Industry', 'Contact Person']
         ws.append(headers)
-        ws.append(['Google', 'hr@google.com', 'https://google.com', 'Technology', 'Sundar P.'])
-        ws.append(['Acme Corp', 'careers@acmecorp.com', 'https://acmecorp.com', 'Manufacturing', 'Wile E.'])
+        ws.append(['Google', 'hr@google.com', 'SecurePass123!', 'https://google.com', 'Technology', 'Sundar P.'])
+        ws.append(['Acme Corp', 'careers@acmecorp.com', 'SecurePass123!', 'https://acmecorp.com', 'Manufacturing', 'Wile E.'])
         
         output = BytesIO()
         wb.save(output)
