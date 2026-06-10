@@ -851,6 +851,67 @@ main {
     color: var(--text-desc);
 }
 
+/* ==========================================================================
+   GLOBAL OVERRIDES (MODALS, TABLES, BUTTONS)
+   ========================================================================== */
+.modal-content {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 20px !important;
+    box-shadow: var(--card-shadow) !important;
+    backdrop-filter: var(--glass-blur) !important;
+    color: var(--text-title) !important;
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--border-color) !important;
+}
+
+.table {
+    color: var(--text-desc) !important;
+}
+
+.table-light, .table-light th, .table-light td, .table-light thead th {
+    background-color: var(--bg-input) !important;
+    color: var(--text-desc) !important;
+    border-color: var(--border-color) !important;
+}
+
+.table td, .table th {
+    border-color: var(--border-color) !important;
+    background-color: transparent !important;
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    background-color: var(--sidebar-active-bg) !important;
+    color: var(--text-title) !important;
+}
+
+[data-theme="dark"] .btn-outline-primary {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+[data-theme="dark"] .btn-outline-primary:hover {
+    background-color: var(--accent-primary);
+    color: #fff;
+}
+[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-desc);
+    border-color: var(--border-color);
+}
+[data-theme="dark"] .btn-outline-secondary:hover {
+    background-color: var(--sidebar-active-bg);
+    color: var(--text-title);
+    border-color: var(--text-desc);
+}
+[data-theme="dark"] .btn-outline-danger {
+    color: var(--danger-text);
+    border-color: var(--danger-border);
+}
+[data-theme="dark"] .btn-outline-danger:hover {
+    background-color: var(--danger-bg);
+}
+
 .multi-select-search-input {
     width: 100%;
     padding: 8px 12px 8px 34px !important;
