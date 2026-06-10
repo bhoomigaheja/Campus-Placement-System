@@ -4,16 +4,16 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-10">
-        <div class="card card-premium shadow-soft mt-2">
-            <div class="card-header bg-white py-4 border-bottom d-flex align-items-center justify-content-between">
+        <div class="card premium-card shadow-soft mt-2 border-0">
+            <div class="card-header py-4 border-bottom d-flex align-items-center justify-content-between" style="background: transparent;">
                 <div>
-                    <h4 class="mb-0 fw-bold text-dark">
+                    <h4 class="mb-0 fw-bold" style="color: var(--text-title);">
                         <i class="bi {% if is_edit %}bi-pencil-square text-warning{% else %}bi-plus-circle text-primary{% endif %} me-2"></i>
                         {% if is_edit %}Edit Placement Drive{% else %}Create Placement Drive{% endif %}
                     </h4>
-                    <p class="text-muted mb-0 small mt-1">Fill out the job criteria, details, branches, and required skillsets below.</p>
+                    <p class="mb-0 small mt-1" style="color: var(--text-desc);">Fill out the job criteria, details, branches, and required skillsets below.</p>
                 </div>
-                <a href="{% url 'tpo_drive_list' %}" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold">
+                <a href="{% url 'tpo_drive_list' %}" class="btn btn-sm btn-premium btn-premium-secondary rounded-pill px-3 fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i> Back to Drives
                 </a>
             </div>
