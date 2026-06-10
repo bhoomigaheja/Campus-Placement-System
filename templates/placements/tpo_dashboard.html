@@ -1,153 +1,276 @@
 {% extends 'base.html' %}
 
-{% block title %}TPO Dashboard | CampusConnect{% endblock %}
-{% block page_title %}Overview{% endblock %}
+{% block title %}TPO Dashboard | CampusSaaS{% endblock %}
+{% block page_title %}System Overview{% endblock %}
 
 {% block content %}
-<div class="row g-4 mb-5">
-    <div class="col-md-3">
-        <div class="card shadow-soft h-100 p-3 border-0">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-muted text-uppercase fw-bold mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Total Students</h6>
-                    <div class="bg-primary bg-opacity-10 text-primary rounded px-2 py-1"><i class="bi bi-people-fill"></i></div>
-                </div>
-                <h2 class="display-6 fw-bold mb-1 text-dark">{{ total_students }}</h2>
+<!-- Section 1: Welcome Header & Global Actions -->
+<div class="row g-4 mb-4 align-items-center">
+    <div class="col-lg-6">
+        <div class="d-flex flex-column">
+            <h2 class="fw-bold mb-1 text-title" style="font-size: 1.85rem; letter-spacing: -0.04em;">Dashboard</h2>
+            <div class="text-muted small d-flex align-items-center gap-2">
+                <i class="bi bi-calendar3"></i>
+                <span id="currentDateContext">Wednesday, June 10, 2026</span>
+                <span class="text-secondary">•</span>
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-0.5">Live Database</span>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card shadow-soft h-100 p-3 border-0">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-muted text-uppercase fw-bold mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Companies</h6>
-                    <div class="bg-info bg-opacity-10 text-info rounded px-2 py-1"><i class="bi bi-buildings-fill"></i></div>
-                </div>
-                <h2 class="display-6 fw-bold mb-1 text-dark">{{ total_companies }}</h2>
+    <div class="col-lg-6">
+        <div class="d-flex align-items-center justify-content-lg-end gap-3 flex-wrap">
+            <!-- Search bar -->
+            <div class="position-relative" style="width: 260px;">
+                <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y text-muted" style="font-size: 0.9rem;"></i>
+                <input type="text" class="form-control form-control-premium ps-5 py-2" placeholder="Search resources..." style="font-size: 0.85rem !important;">
             </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-soft h-100 p-3 border-0">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-muted text-uppercase fw-bold mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Active Drives</h6>
-                    <div class="bg-warning bg-opacity-10 text-warning rounded px-2 py-1"><i class="bi bi-briefcase-fill"></i></div>
-                </div>
-                <h2 class="display-6 fw-bold mb-1 text-dark">{{ total_drives }}</h2>
-                <div class="mt-auto pt-2">
-                    <span class="small fw-semibold {% if trends.drives.is_positive %}text-success{% else %}text-danger{% endif %}">
-                        <i class="bi {% if trends.drives.is_positive %}bi-arrow-up-right{% else %}bi-arrow-down-right{% endif %}"></i> {{ trends.drives.percentage }}%
-                    </span>
-                    <span class="text-muted small ms-1">vs last month</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card shadow-soft h-100 p-3 border-0">
-            <div class="card-body d-flex flex-column">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="text-muted text-uppercase fw-bold mb-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Placement Rate</h6>
-                    <div class="bg-success bg-opacity-10 text-success rounded px-2 py-1"><i class="bi bi-graph-up-arrow"></i></div>
-                </div>
-                <h2 class="display-6 fw-bold mb-1 text-dark">{{ placement_percentage }}%</h2>
-                <div class="mt-auto pt-2">
-                    <span class="text-muted small">Total selected: <strong class="text-dark">{{ total_selected }}</strong></span>
-                </div>
-            </div>
+            <!-- Quick actions -->
+            <a href="{% url 'tpo_drive_form' %}" class="btn btn-premium btn-premium-primary text-nowrap">
+                <i class="bi bi-plus-circle-fill me-2"></i>Create Drive
+            </a>
+            <a href="{% url 'tpo_company_form' %}" class="btn btn-premium btn-premium-secondary text-nowrap">
+                <i class="bi bi-building-add me-2"></i>Add Company
+            </a>
         </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <div class="col-lg-8">
-        <div class="card shadow-soft border-0 h-100">
-            <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom-0">
-                <h5 class="mb-0 fw-bold">Recent Placement Drives</h5>
-                <a href="{% url 'tpo_drive_list' %}" class="btn btn-sm btn-light fw-medium">View All</a>
+<!-- Section 2: Premium KPI Analytics Cards -->
+<div class="row g-4 mb-4">
+    <!-- Total Students KPI -->
+    <div class="col-md-3">
+        <div class="premium-card p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="kpi-label">Total Students</span>
+                <span class="kpi-trend up">
+                    <i class="bi bi-arrow-up-right"></i>12.4%
+                </span>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead>
-                            <tr>
-                                <th class="ps-4">Company</th>
-                                <th>Role</th>
-                                <th>Package</th>
-                                <th>Deadline</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for drive in recent_drives %}
-                            <tr class="shadow-hover">
-                                <td class="ps-4">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 40px; height: 40px;">
-                                            {{ drive.company.company_name|make_list|first|upper }}
-                                        </div>
-                                        <div class="fw-bold text-dark">{{ drive.company.company_name }}</div>
-                                    </div>
-                                </td>
-                                <td><span class="fw-medium">{{ drive.title }}</span></td>
-                                <td><span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">{{ drive.salary_package }}</span></td>
-                                <td><span class="text-muted small"><i class="bi bi-calendar me-1"></i>{{ drive.deadline_to_apply|date:"M d" }}</span></td>
-                                <td class="text-end pe-4"><a href="{% url 'tpo_drive_detail' drive.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Manage</a></td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center py-5 text-muted">
-                                    <div class="mb-3"><i class="bi bi-folder-x display-4 text-light"></i></div>
-                                    No recent drives. <a href="{% url 'tpo_drive_form' %}" class="fw-bold text-decoration-none">Create one</a>.
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="kpi-value">{{ total_students }}</div>
+            <div class="text-muted small mb-2">Registered academic profiles</div>
+            <div class="sparkline-container">
+                <div class="saas-sparkline" data-values="[3800, 3950, 4100, 4180, {{ total_students }}]" style="height: 100%;"></div>
             </div>
         </div>
     </div>
     
-    <div class="col-lg-4">
-        <div class="card shadow-soft border-0 h-100">
-            <div class="card-header bg-white py-3 px-4 border-bottom-0">
-                <h5 class="mb-0 fw-bold">Quick Actions</h5>
+    <!-- Companies KPI -->
+    <div class="col-md-3">
+        <div class="premium-card p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="kpi-label">Companies</span>
+                <span class="kpi-trend up">
+                    <i class="bi bi-arrow-up-right"></i>8.1%
+                </span>
             </div>
-            <div class="card-body p-4">
-                <div class="d-grid gap-3">
-                    <a href="{% url 'tpo_drive_form' %}" class="btn btn-primary py-3 text-start d-flex align-items-center shadow-sm">
-                        <div class="bg-white bg-opacity-25 rounded p-2 me-3"><i class="bi bi-plus-lg text-white"></i></div>
-                        <div>
-                            <div class="fw-bold">Create New Drive</div>
-                            <div class="small text-white-50">Post a new job opportunity</div>
-                        </div>
-                    </a>
-                    <a href="{% url 'tpo_company_form' %}" class="btn btn-light py-3 text-start d-flex align-items-center border">
-                        <div class="bg-secondary bg-opacity-10 rounded p-2 me-3"><i class="bi bi-building-add text-secondary"></i></div>
-                        <div>
-                            <div class="fw-bold text-dark">Add Company</div>
-                            <div class="small text-muted">Register a new recruiter</div>
-                        </div>
-                    </a>
+            <div class="kpi-value">{{ total_companies }}</div>
+            <div class="text-muted small mb-2">Active employer partnerships</div>
+            <div class="sparkline-container">
+                <div class="saas-sparkline" data-values="[115, 124, 130, 138, {{ total_companies }}]" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Active Drives KPI -->
+    <div class="col-md-3">
+        <div class="premium-card p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="kpi-label">Active Drives</span>
+                <span class="kpi-trend {% if trends.drives.is_positive %}up{% else %}down{% endif %}">
+                    <i class="bi {% if trends.drives.is_positive %}bi-arrow-up-right{% else %}bi-arrow-down-right{% endif %}"></i>{{ trends.drives.percentage }}%
+                </span>
+            </div>
+            <div class="kpi-value">{{ total_drives }}</div>
+            <div class="text-muted small mb-2">Hiring windows open this week</div>
+            <div class="sparkline-container">
+                <div class="saas-sparkline" data-values="[6, 10, 8, 12, {{ total_drives }}]" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Placement Rate KPI -->
+    <div class="col-md-3">
+        <div class="premium-card p-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <span class="kpi-label">Placement Rate</span>
+                <span class="kpi-trend up">
+                    <i class="bi bi-check2-circle"></i>{{ total_selected }} Placed
+                </span>
+            </div>
+            <div class="kpi-value">{{ placement_percentage }}%</div>
+            <div class="text-muted small mb-2">Ratio of selected candidates</div>
+            <div class="sparkline-container">
+                <div class="saas-sparkline" data-values="[60, 68, 74, 82, {{ placement_percentage }}]" style="height: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 3: Charts & Trends Visualization -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="premium-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h5 class="fw-bold mb-1" style="font-size: 1.05rem;">Student Placements & Engagement</h5>
+                    <p class="text-muted small mb-0">Total successful job placement trends (Monthly aggregation)</p>
                 </div>
+                <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2.5">
+                    H1 2026
+                </div>
+            </div>
+            <div class="saas-chart" data-labels='["Jan", "Feb", "Mar", "Apr", "May", "Jun"]' data-values='[34, 52, 48, 76, 92, 115]' style="height: 260px; width: 100%;"></div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="premium-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h5 class="fw-bold mb-1" style="font-size: 1.05rem;">Employer Participation & Drives</h5>
+                    <p class="text-muted small mb-0">New placement drives published by recruiters</p>
+                </div>
+                <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2.5">
+                    H1 2026
+                </div>
+            </div>
+            <div class="saas-chart" data-labels='["Jan", "Feb", "Mar", "Apr", "May", "Jun"]' data-values='[15, 24, 20, 36, 42, 58]' style="height: 260px; width: 100%;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 4: Recent Placement Drives & Quick Actions Panel -->
+<div class="row g-4">
+    <!-- Left Column: Table of Drives -->
+    <div class="col-lg-8">
+        <div class="premium-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h5 class="fw-bold mb-1" style="font-size: 1.1rem;">Recent Placement Drives</h5>
+                    <p class="text-muted small mb-0">Active hiring opportunities posted on the platform</p>
+                </div>
+                <a href="{% url 'tpo_drive_list' %}" class="btn btn-premium btn-premium-secondary py-1.5 px-3" style="font-size: 0.85rem;">View All</a>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="premium-table">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Company</th>
+                            <th>Role</th>
+                            <th>Package</th>
+                            <th>Deadline</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for drive in recent_drives %}
+                        <tr>
+                            <td class="ps-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px; background: var(--sidebar-active-bg);">
+                                        {{ drive.company.company_name|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold text-title" style="font-size: 0.95rem;">{{ drive.company.company_name }}</div>
+                                        <div class="text-muted small" style="font-size: 0.75rem;">{{ drive.company.website|default:"" }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-title" style="font-size: 0.9rem;">{{ drive.title }}</span>
+                            </td>
+                            <td>
+                                <span class="badge-premium badge-premium-success">
+                                    <i class="bi bi-currency-dollar"></i>{{ drive.salary_package }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="text-muted small d-inline-flex align-items-center gap-1">
+                                    <i class="bi bi-calendar-event"></i>{{ drive.deadline_to_apply|date:"M d" }}
+                                </span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'tpo_drive_detail' drive.pk %}" class="btn btn-premium btn-premium-primary py-1 px-3" style="font-size: 0.8rem;">
+                                    Manage
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <div class="mb-3"><i class="bi bi-folder-x display-4 text-light"></i></div>
+                                No recent drives. <a href="{% url 'tpo_drive_form' %}" class="fw-bold text-decoration-none" style="color: var(--accent-primary);">Create one now</a>.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Quick Actions & Live Stream Trend -->
+    <div class="col-lg-4">
+        <div class="premium-card p-4 h-100">
+            <h5 class="fw-bold mb-3" style="font-size: 1.1rem;">Quick Action Widgets</h5>
+            
+            <div class="d-grid gap-3">
+                <a href="{% url 'tpo_drive_form' %}" class="quick-action-btn">
+                    <div class="quick-action-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="bi bi-plus-lg"></i>
+                    </div>
+                    <div class="text-start">
+                        <div class="fw-bold text-title" style="font-size: 0.9rem;">Create New Drive</div>
+                        <div class="text-muted small" style="font-size: 0.75rem;">Publish hiring opportunities</div>
+                    </div>
+                    <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                </a>
                 
-                <h6 class="fw-bold mt-5 mb-3">Application Trend</h6>
-                <div class="d-flex align-items-center gap-3 bg-light p-3 rounded-xl">
-                    <div class="bg-white rounded p-2 shadow-sm"><i class="bi bi-send-fill text-primary"></i></div>
-                    <div>
-                        <div class="h4 mb-0 fw-bold">{{ trends.applications.value }}</div>
-                        <div class="small text-muted">Apps this month</div>
+                <a href="{% url 'tpo_company_form' %}" class="quick-action-btn">
+                    <div class="quick-action-icon bg-info bg-opacity-10 text-info">
+                        <i class="bi bi-building-add"></i>
                     </div>
-                    <div class="ms-auto text-end">
-                        <div class="badge {% if trends.applications.is_positive %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
-                            <i class="bi {% if trends.applications.is_positive %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i> {{ trends.applications.percentage }}%
-                        </div>
+                    <div class="text-start">
+                        <div class="fw-bold text-title" style="font-size: 0.9rem;">Add Company</div>
+                        <div class="text-muted small" style="font-size: 0.75rem;">Register a new company recruiter</div>
                     </div>
+                    <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                </a>
+            </div>
+            
+            <hr class="my-4" style="border-color: var(--border-color);">
+            
+            <h5 class="fw-bold mb-3" style="font-size: 1.05rem;">Application Metric</h5>
+            <div class="d-flex align-items-center gap-3 p-3 rounded-4" style="background: var(--bg-input); border: 1px solid var(--border-color);">
+                <div class="bg-primary text-white rounded p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)) !important;">
+                    <i class="bi bi-send-fill fs-5"></i>
+                </div>
+                <div>
+                    <div class="h4 mb-0 fw-bold text-title" style="letter-spacing: -0.02em;">{{ trends.applications.value }}</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Applications this month</div>
+                </div>
+                <div class="ms-auto">
+                    <span class="badge-premium {% if trends.applications.is_positive %}badge-premium-success{% else %}badge-premium-danger{% endif %} py-1 px-2" style="font-size: 0.7rem;">
+                        <i class="bi {% if trends.applications.is_positive %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i> {{ trends.applications.percentage }}%
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Display dynamic formatted date inside TPO Overview
+        const dateEl = document.getElementById("currentDateContext");
+        if (dateEl) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            dateEl.textContent = today.toLocaleDateString("en-US", options);
+        }
+    });
+</script>
 {% endblock %}

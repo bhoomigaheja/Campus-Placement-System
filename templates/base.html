@@ -1,96 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Campus Placement Cell{% endblock %}</title>
+    
+    <!-- Anti-Flash Theme Script -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <link rel="stylesheet" href="/static/css/components.css">
     
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --secondary: #0f172a;
-            --background: #f8fafc;
-            --surface: #ffffff;
-            --text-heading: #1e293b;
-            --text-body: #475569;
+        /* Baseline Layout Overrides to prevent Bootstrap defaults from spilling over */
+        #content {
+            background-color: var(--bg-app);
+            min-height: 100vh;
         }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background);
-            color: var(--text-body);
-            overflow-x: hidden;
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-
-        /* SaaS Styling Helpers */
-        .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important; }
-        .shadow-hover:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; transform: translateY(-2px); transition: all 0.3s ease; }
-        .rounded-xl { border-radius: 12px !important; }
-        .card { border: none; border-radius: 12px; transition: all 0.3s ease; background: var(--surface); }
-
-        h1, h2, h3, h4, h5, h6 { color: var(--text-heading); font-weight: 600; letter-spacing: -0.02em; }
-        
-        /* Layout Structure */
-        #wrapper { display: flex; width: 100%; align-items: stretch; min-height: 100vh; }
-        
-        /* Sidebar Styling */
-        #sidebar { 
-            min-width: 260px; max-width: 260px; 
-            background: var(--surface); 
-            border-right: 1px solid #e2e8f0; 
-            transition: all 0.3s;
-            display: flex; flex-direction: column;
-            position: sticky; top: 0; height: 100vh; z-index: 1000;
+        .page-loader.active {
+            visibility: visible;
+            opacity: 1;
         }
-        #sidebar .sidebar-header { padding: 1.5rem; font-weight: 800; font-size: 1.25rem; color: var(--primary); display: flex; align-items: center; border-bottom: 1px solid #f1f5f9; }
-        #sidebar ul.components { padding: 1rem 0; flex-grow: 1; overflow-y: auto; }
-        #sidebar ul li a { 
-            padding: 0.8rem 1.5rem; display: flex; align-items: center; gap: 0.75rem;
-            font-size: 0.95rem; font-weight: 500; color: var(--text-body); 
-            text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent;
+        .dropdown-menu {
+            background: var(--bg-sidebar);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            border-radius: 14px;
         }
-        #sidebar ul li a:hover, #sidebar ul li.active > a { 
-            color: var(--primary); background: #eff6ff; border-left-color: var(--primary);
+        .dropdown-item {
+            color: var(--text-desc);
+            font-weight: 500;
         }
-        #sidebar ul li a i { font-size: 1.1rem; width: 20px; text-align: center; }
-        
-        /* Main Content */
-        #content { width: 100%; min-width: 0; display: flex; flex-direction: column; background: var(--background); }
-        .top-navbar { 
-            background: var(--surface); padding: 1rem 2rem; 
-            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); 
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 999;
+        .dropdown-item:hover {
+            background-color: var(--sidebar-active-bg);
+            color: var(--accent-primary);
         }
-        main { padding: 2rem; flex-grow: 1; }
-        
-        /* Buttons & Forms */
-        .btn-primary { background-color: var(--primary); border-color: var(--primary); font-weight: 500; padding: 0.6rem 1.25rem; border-radius: 8px; transition: all 0.2s; box-shadow: 0 1px 2px 0 rgba(79, 70, 229, 0.4); }
-        .btn-primary:hover { background-color: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4); }
-        .form-control, .form-select { border-radius: 8px; padding: 0.6rem 1rem; border: 1px solid #cbd5e1; background-color: #f8fafc; font-size: 0.95rem; }
-        .form-control:focus { background-color: #fff; border-color: var(--primary); box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.15); }
-        
-        /* Tables */
-        .table { margin-bottom: 0; }
-        .table th { border-bottom: 2px solid #e2e8f0; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; color: #64748b; padding: 1rem; background: #f8fafc; }
-        .table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; }
-        
-        @media (max-width: 768px) {
-            #sidebar { margin-left: -260px; position: fixed; }
-            #sidebar.active { margin-left: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.1); }
-            main { padding: 1rem; }
-        }
-        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: opacity 0.3s; }
-        .page-loader.active { visibility: visible; opacity: 1; }
     </style>
-    <link rel="stylesheet" href="/static/css/components.css">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -102,32 +72,70 @@
 
     <div id="wrapper">
         <!-- Sidebar -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <i class="bi bi-rocket-takeoff-fill me-2 fs-4"></i>
-                <span>CampusSaaS</span>
+        <nav id="sidebar" class="d-none d-md-flex">
+            <div class="sidebar-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-rocket-takeoff-fill fs-4" style="color: var(--accent-primary);"></i>
+                    <span class="fw-bold fs-5 text-title">CampusSaaS</span>
+                </div>
+            </div>
+
+            <!-- Workspace Switcher style widget -->
+            <div class="workspace-selector mb-4">
+                <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center fw-bold" style="width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)) !important; font-size: 0.85rem;">
+                    CP
+                </div>
+                <div class="d-flex flex-column text-start">
+                    <span class="fw-bold text-title" style="font-size: 0.85rem;">Placement Cell</span>
+                    <span class="text-muted" style="font-size: 0.7rem;">
+                        {% if user.is_authenticated %}
+                            {% if user.is_admin %}TPO Admin{% elif user.is_student %}Student Portal{% else %}Employer Console{% endif %}
+                        {% else %}Guest{% endif %}
+                    </span>
+                </div>
+                <i class="bi bi-chevron-expand ms-auto text-muted" style="font-size: 0.8rem;"></i>
             </div>
             
             <ul class="list-unstyled components">
                 {% if user.is_authenticated %}
-                    <li class="px-3 mb-2 mt-2 text-uppercase text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Main Menu</li>
+                    <li class="px-3 mb-2 mt-1 text-uppercase text-muted fw-bold menu-category-label" style="font-size: 0.65rem; letter-spacing: 0.08em;">Main Menu</li>
                     {% if user.is_admin %}
-                        <li><a href="{% url 'tpo_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
-                        <li><a href="{% url 'tpo_company_list' %}"><i class="bi bi-buildings-fill"></i> Companies</a></li>
-                        <li><a href="{% url 'tpo_drive_list' %}"><i class="bi bi-briefcase-fill"></i> Job Drives</a></li>
+                        <li class="{% if request.resolver_match.url_name == 'tpo_dashboard' %}active{% endif %}">
+                            <a href="{% url 'tpo_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'tpo_company_list' %}active{% endif %}">
+                            <a href="{% url 'tpo_company_list' %}"><i class="bi bi-buildings-fill"></i> <span>Companies</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'tpo_drive_list' %}active{% endif %}">
+                            <a href="{% url 'tpo_drive_list' %}"><i class="bi bi-briefcase-fill"></i> <span>Job Drives</span></a>
+                        </li>
                     {% elif user.is_student %}
-                        <li><a href="{% url 'student_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a></li>
-                        <li><a href="{% url 'student_profile_update' %}"><i class="bi bi-person-lines-fill"></i> My Profile</a></li>
-                        <li><a href="{% url 'student_drive_list' %}"><i class="bi bi-briefcase-fill"></i> Opportunities</a></li>
-                        <li><a href="{% url 'student_applications_list' %}"><i class="bi bi-send-check-fill"></i> My Applications</a></li>
+                        <li class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                            <a href="{% url 'student_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'student_profile_update' %}active{% endif %}">
+                            <a href="{% url 'student_profile_update' %}"><i class="bi bi-person-lines-fill"></i> <span>My Profile</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'student_drive_list' %}active{% endif %}">
+                            <a href="{% url 'student_drive_list' %}"><i class="bi bi-briefcase-fill"></i> <span>Opportunities</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'student_applications_list' %}active{% endif %}">
+                            <a href="{% url 'student_applications_list' %}"><i class="bi bi-send-check-fill"></i> <span>My Applications</span></a>
+                        </li>
                     {% elif user.is_company %}
-                        <li><a href="{% url 'company_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> Employer Panel</a></li>
-                        <li><a href="{% url 'company_jobs' %}"><i class="bi bi-megaphone-fill"></i> Active Postings</a></li>
-                        <li><a href="{% url 'company_applications' %}"><i class="bi bi-people-fill"></i> Applicant Tracking</a></li>
+                        <li class="{% if request.resolver_match.url_name == 'company_dashboard' %}active{% endif %}">
+                            <a href="{% url 'company_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Employer Panel</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'company_jobs' %}active{% endif %}">
+                            <a href="{% url 'company_jobs' %}"><i class="bi bi-megaphone-fill"></i> <span>Active Postings</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'company_applications' %}active{% endif %}">
+                            <a href="{% url 'company_applications' %}"><i class="bi bi-people-fill"></i> <span>Applicant Tracking</span></a>
+                        </li>
                     {% endif %}
                 {% else %}
-                    <li><a href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
-                    <li><a href="{% url 'signup' %}"><i class="bi bi-person-plus-fill"></i> Sign Up</a></li>
+                    <li><a href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> <span>Login</span></a></li>
+                    <li><a href="{% url 'signup' %}"><i class="bi bi-person-plus-fill"></i> <span>Sign Up</span></a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -140,28 +148,34 @@
                     <button type="button" id="sidebarCollapse" class="btn btn-light d-md-none me-3 shadow-sm rounded-circle">
                         <i class="bi bi-list"></i>
                     </button>
-                    <h5 class="mb-0 fw-bold text-dark d-none d-md-block">{% block page_title %}{% endblock %}</h5>
+                    <h4 class="mb-0 fw-bold text-title d-none d-md-block">{% block page_title %}{% endblock %}</h4>
                 </div>
                 
                 <div class="d-flex align-items-center gap-3">
+                    <!-- Theme Toggle Toggler -->
+                    <button type="button" class="theme-toggle-btn" id="themeToggler" title="Toggle theme">
+                        <i class="bi bi-sun" id="themeIconSun"></i>
+                        <i class="bi bi-moon d-none" id="themeIconMoon"></i>
+                    </button>
+
                     {% if user.is_authenticated %}
                         <!-- Notification Dropdown -->
                         <div class="dropdown">
                             <a class="text-secondary position-relative text-decoration-none px-2" href="#" id="notifDropdown" data-bs-toggle="dropdown">
-                                <i class="bi bi-bell fs-5"></i>
+                                <i class="bi bi-bell fs-5" style="color: var(--text-desc);"></i>
                                 {% if unread_notif_count > 0 %}
                                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
                                 {% endif %}
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-soft border-0 rounded-xl p-2 mt-2" style="width: 320px;">
-                                <li><h6 class="dropdown-header fw-bold text-dark">Notifications</h6></li>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2 mt-2" style="width: 320px;">
+                                <li><h6 class="dropdown-header fw-bold text-title px-2 pb-2">Notifications</h6></li>
                                 {% for n in nav_notifications %}
                                 <li>
                                     <a class="dropdown-item py-2 text-wrap rounded" href="{% url 'notification_read' n.pk %}">
                                         <div class="d-flex gap-2">
                                             <div class="mt-1"><i class="bi bi-circle-fill {% if not n.is_read %}text-primary{% else %}text-muted{% endif %}" style="font-size: 8px;"></i></div>
                                             <div>
-                                                <small class="d-block text-dark lh-sm">{{ n.message }}</small>
+                                                <small class="d-block text-title lh-sm">{{ n.message }}</small>
                                                 <small class="text-muted" style="font-size: 0.7rem;">{{ n.created_at|timesince }} ago</small>
                                             </div>
                                         </div>
@@ -177,17 +191,17 @@
 
                         <!-- User Menu -->
                         <div class="dropdown">
-                            <a class="d-flex align-items-center text-decoration-none text-dark fw-medium dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 35px; height: 35px;">
+                            <a class="d-flex align-items-center text-decoration-none text-title fw-medium dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2 shadow-sm" style="width: 35px; height: 35px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)) !important; font-weight: bold;">
                                     {{ user.email|make_list|first|upper }}
                                 </div>
-                                <span class="d-none d-md-block">{{ user.first_name|default:"User" }}</span>
+                                <span class="d-none d-md-block" style="font-size: 0.925rem;">{{ user.first_name|default:"User" }}</span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-soft border-0 rounded-xl mt-2">
+                            <ul class="dropdown-menu dropdown-menu-end border-0 mt-2 p-1">
                                 <li>
-                                    <form action="{% url 'logout' %}" method="post" class="m-0 p-1">
+                                    <form action="{% url 'logout' %}" method="post" class="m-0 p-0">
                                         {% csrf_token %}
-                                        <button type="submit" class="dropdown-item text-danger fw-medium rounded"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                        <button type="submit" class="dropdown-item text-danger fw-bold rounded py-2"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
                                     </form>
                                 </li>
                             </ul>
@@ -212,24 +226,85 @@
         </div>
     </div>
 
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav d-md-none position-fixed bottom-0 start-0 end-0 z-3 py-2">
+        <div class="d-flex justify-content-around align-items-center">
+            {% if user.is_authenticated %}
+                {% if user.is_admin %}
+                    <a href="{% url 'tpo_dashboard' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'tpo_dashboard' %}active{% endif %}">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Overview</span>
+                    </a>
+                    <a href="{% url 'tpo_company_list' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'tpo_company_list' %}active{% endif %}">
+                        <i class="bi bi-buildings-fill"></i>
+                        <span>Companies</span>
+                    </a>
+                    <a href="{% url 'tpo_drive_list' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'tpo_drive_list' %}active{% endif %}">
+                        <i class="bi bi-briefcase-fill"></i>
+                        <span>Job Drives</span>
+                    </a>
+                {% elif user.is_student %}
+                    <a href="{% url 'student_dashboard' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Journey</span>
+                    </a>
+                    <a href="{% url 'student_drive_list' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'student_drive_list' %}active{% endif %}">
+                        <i class="bi bi-briefcase-fill"></i>
+                        <span>Opportunities</span>
+                    </a>
+                    <a href="{% url 'student_applications_list' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'student_applications_list' %}active{% endif %}">
+                        <i class="bi bi-send-check-fill"></i>
+                        <span>Apps</span>
+                    </a>
+                    <a href="{% url 'student_profile_update' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'student_profile_update' %}active{% endif %}">
+                        <i class="bi bi-person-lines-fill"></i>
+                        <span>Profile</span>
+                    </a>
+                {% elif user.is_company %}
+                    <a href="{% url 'company_dashboard' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'company_dashboard' %}active{% endif %}">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Overview</span>
+                    </a>
+                    <a href="{% url 'company_jobs' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'company_jobs' %}active{% endif %}">
+                        <i class="bi bi-megaphone-fill"></i>
+                        <span>Postings</span>
+                    </a>
+                    <a href="{% url 'company_applications' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'company_applications' %}active{% endif %}">
+                        <i class="bi bi-people-fill"></i>
+                        <span>Applicants</span>
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'login' %}" class="mobile-nav-link">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    <span>Login</span>
+                </a>
+                <a href="{% url 'signup' %}" class="mobile-nav-link">
+                    <i class="bi bi-person-plus-fill"></i>
+                    <span>Register</span>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
     <!-- Global Deletion Confirmation Modal -->
     <div class="modal fade" id="globalDeleteModal" tabindex="-1" aria-labelledby="globalDeleteModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg rounded-xl">
+            <div class="modal-content border-0 shadow-lg" style="background: var(--bg-sidebar); border-radius: 20px;">
                 <div class="modal-header border-0 pt-4 px-4 pb-0">
-                    <h5 class="modal-title fw-bold text-dark d-flex align-items-center" id="globalDeleteModalLabel">
+                    <h5 class="modal-title fw-bold text-title d-flex align-items-center" id="globalDeleteModalLabel">
                         <i class="bi bi-exclamation-triangle-fill text-danger me-2 fs-4"></i> Confirm Action
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--theme-close-btn);"></button>
                 </div>
                 <div class="modal-body px-4 py-3">
-                    <p class="text-muted mb-0" id="globalDeleteModalBody">Are you sure you want to permanently delete this item? This action is irreversible.</p>
+                    <p class="text-muted mb-0" id="globalDeleteModalBody" style="color: var(--text-desc) !important;">Are you sure you want to permanently delete this item? This action is irreversible.</p>
                 </div>
                 <div class="modal-footer border-0 pb-4 px-4 pt-0">
-                    <button type="button" class="btn btn-light fw-bold px-3 py-2 rounded-pill shadow-sm" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-premium btn-premium-secondary px-3 py-2" data-bs-dismiss="modal">Cancel</button>
                     <form id="globalDeleteForm" method="post" class="m-0">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger fw-bold px-4 py-2 rounded-pill shadow-sm">Delete Forever</button>
+                        <button type="submit" class="btn btn-premium btn-premium-primary px-4 py-2" style="background: linear-gradient(135deg, var(--danger-text), #b91c1c) !important; box-shadow: none;">Delete Forever</button>
                     </form>
                 </div>
             </div>
@@ -241,17 +316,48 @@
     <script src="/static/js/components.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Apply bootstrap classes to inputs
+            // Apply premium styling to inputs dynamically (preserves original bootstrap loop)
             const inputs = document.querySelectorAll("input, select, textarea");
             inputs.forEach(input => {
                 if (input.type !== 'checkbox' && input.type !== 'submit' && input.type !== 'hidden') {
-                    input.classList.add("form-control");
+                    input.classList.add("form-control-premium");
                 } else if (input.type === 'checkbox') {
                     input.classList.add("form-check-input");
                 }
             });
 
-         
+            // Theme Toggle Logic
+            const toggler = document.getElementById('themeToggler');
+            const sunIcon = document.getElementById('themeIconSun');
+            const moonIcon = document.getElementById('themeIconMoon');
+            
+            function updateThemeIcons(theme) {
+                if (theme === 'dark') {
+                    sunIcon.classList.add('d-none');
+                    moonIcon.classList.remove('d-none');
+                    document.documentElement.style.setProperty('--theme-close-btn', 'invert(1)');
+                } else {
+                    sunIcon.classList.remove('d-none');
+                    moonIcon.classList.add('d-none');
+                    document.documentElement.style.setProperty('--theme-close-btn', 'none');
+                }
+            }
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            updateThemeIcons(currentTheme);
+            
+            if (toggler) {
+                toggler.addEventListener('click', function() {
+                    const activeTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', activeTheme);
+                    localStorage.setItem('theme', activeTheme);
+                    updateThemeIcons(activeTheme);
+                    
+                    // Trigger charts update if existing
+                    if (typeof initSaaSSparklines === 'function') initSaaSSparklines();
+                    if (typeof initSaaSCharts === 'function') initSaaSCharts();
+                });
+            }
 
             // Mobile Sidebar Toggle
             const sidebarBtn = document.getElementById('sidebarCollapse');
@@ -279,7 +385,6 @@
         });
     </script>
 
-{% block extra_js %}{% endblock %}
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
- 

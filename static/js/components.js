@@ -14,6 +14,20 @@ document.addEventListener("DOMContentLoaded", function () {
     
     // 3. Register robust duplicate submission guards
     initDuplicateSubmissionGuard();
+
+    // 4. Initialize premium SaaS SVG charts & sparklines
+    initSaaSSparklines();
+    initSaaSCharts();
+
+    // Redraw charts on window resize to ensure responsiveness
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            initSaaSSparklines();
+            initSaaSCharts();
+        }, 150);
+    });
 });
 
 /* ==========================================================================
@@ -525,6 +539,187 @@ function initDuplicateSubmissionGuard() {
             if (loader) {
                 loader.classList.add('active');
             }
+        });
+    });
+}
+
+/* ==========================================================================
+   4. PREMIUM SAAS SVG CHARTS & SPARKLINES
+   ========================================================================== */
+function initSaaSSparklines() {
+    const sparklines = document.querySelectorAll(".saas-sparkline");
+    sparklines.forEach(el => {
+        const valueAttr = el.getAttribute("data-values");
+        if (!valueAttr) return;
+        const values = JSON.parse(valueAttr);
+        if (!values || values.length === 0) return;
+        
+        const width = el.clientWidth || 120;
+        const height = el.clientHeight || 45;
+        
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = max - min === 0 ? 1 : max - min;
+        
+        const points = values.map((val, idx) => {
+            const x = (idx / (values.length - 1)) * width;
+            const y = height - ((val - min) / range) * (height - 8) - 4;
+            return {x, y};
+        });
+        
+        let pathD = `M ${points[0].x} ${points[0].y} `;
+        for (let i = 1; i < points.length; i++) {
+            const cpX1 = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+            const cpY1 = points[i-1].y;
+            const cpX2 = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+            const cpY2 = points[i].y;
+            pathD += `C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${points[i].x} ${points[i].y} `;
+        }
+        
+        let areaD = pathD + `L ${points[points.length-1].x} ${height} L ${points[0].x} ${height} Z`;
+        
+        const isUp = values[values.length - 1] >= values[0];
+        const strokeColor = isUp ? "var(--success-text)" : "var(--danger-text)";
+        const gradientId = `spark-grad-${Math.random().toString(36).substr(2, 9)}`;
+        const gradStop = isUp ? "var(--success-text)" : "var(--danger-text)";
+        
+        el.innerHTML = `
+            <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" style="overflow: visible;">
+                <defs>
+                    <linearGradient id="${gradientId}" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="${gradStop}" stop-opacity="0.15"/>
+                        <stop offset="100%" stop-color="${gradStop}" stop-opacity="0.0"/>
+                    </linearGradient>
+                </defs>
+                <path d="${areaD}" fill="url(#${gradientId})" />
+                <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        `;
+    });
+}
+
+function initSaaSCharts() {
+    const charts = document.querySelectorAll(".saas-chart");
+    charts.forEach(el => {
+        const labelsAttr = el.getAttribute("data-labels");
+        const valuesAttr = el.getAttribute("data-values");
+        if (!labelsAttr || !valuesAttr) return;
+        const labels = JSON.parse(labelsAttr);
+        const values = JSON.parse(valuesAttr);
+        if (!labels || !values || values.length === 0) return;
+        
+        const width = el.clientWidth || 600;
+        const height = el.clientHeight || 280;
+        const padding = { top: 30, right: 30, bottom: 40, left: 50 };
+        
+        const minVal = 0;
+        const maxVal = Math.ceil(Math.max(...values) * 1.15) || 10;
+        const range = maxVal - minVal;
+        
+        const chartWidth = width - padding.left - padding.right;
+        const chartHeight = height - padding.top - padding.bottom;
+        
+        const points = values.map((val, idx) => {
+            const x = padding.left + (idx / (values.length - 1)) * chartWidth;
+            const y = padding.top + chartHeight - ((val - minVal) / range) * chartHeight;
+            return {x, y, value: val, label: labels[idx]};
+        });
+        
+        let pathD = `M ${points[0].x} ${points[0].y} `;
+        for (let i = 1; i < points.length; i++) {
+            const cpX1 = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+            const cpY1 = points[i-1].y;
+            const cpX2 = points[i-1].x + (points[i].x - points[i-1].x) / 2;
+            const cpY2 = points[i].y;
+            pathD += `C ${cpX1} ${cpY1}, ${cpX2} ${cpY2}, ${points[i].x} ${points[i].y} `;
+        }
+        
+        const areaD = pathD + `L ${points[points.length-1].x} ${padding.top + chartHeight} L ${points[0].x} ${padding.top + chartHeight} Z`;
+        
+        const gradId = `chart-grad-${Math.random().toString(36).substr(2, 9)}`;
+        
+        // Draw grid lines
+        let gridLinesHtml = "";
+        const gridSteps = 4;
+        for (let i = 0; i <= gridSteps; i++) {
+            const y = padding.top + (i / gridSteps) * chartHeight;
+            const gridVal = Math.round(maxVal - (i / gridSteps) * range);
+            gridLinesHtml += `
+                <line x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,4" />
+                <text x="${padding.left - 12}" y="${y + 4}" fill="var(--text-desc)" font-size="11" font-weight="600" text-anchor="end">${gridVal}</text>
+            `;
+        }
+        
+        // Draw X Axis labels
+        let xLabelsHtml = "";
+        points.forEach((p, idx) => {
+            if (idx % Math.ceil(points.length / 6) === 0 || idx === points.length - 1) {
+                xLabelsHtml += `
+                    <text x="${p.x}" y="${height - padding.bottom + 20}" fill="var(--text-desc)" font-size="11" font-weight="600" text-anchor="middle">${p.label}</text>
+                `;
+            }
+        });
+        
+        // Draw interaction circles
+        let interactivePointsHtml = "";
+        points.forEach((p, idx) => {
+            interactivePointsHtml += `
+                <circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent-primary)" stroke="var(--bg-sidebar)" stroke-width="2" class="chart-point" data-value="${p.value}" data-label="${p.label}" style="cursor: pointer; transition: r 0.2s;" />
+                <circle cx="${p.x}" cy="${p.y}" r="14" fill="transparent" class="chart-hover-trigger" data-idx="${idx}" />
+            `;
+        });
+        
+        el.style.position = "relative";
+        el.innerHTML = `
+            <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}" style="overflow: visible;">
+                <defs>
+                    <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="var(--accent-primary)" stop-opacity="0.2"/>
+                        <stop offset="100%" stop-color="var(--accent-primary)" stop-opacity="0.0"/>
+                    </linearGradient>
+                </defs>
+                <g class="grid-lines">${gridLinesHtml}</g>
+                <g class="x-labels">${xLabelsHtml}</g>
+                <path d="${areaD}" fill="url(#${gradId})" />
+                <path d="${pathD}" fill="none" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                <g class="interactive-points">${interactivePointsHtml}</g>
+            </svg>
+            <div class="chart-tooltip" style="position: absolute; display: none; background: var(--bg-sidebar); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 10px; box-shadow: var(--card-shadow); font-size: 12px; font-weight: bold; pointer-events: none; z-index: 10; color: var(--text-title); white-space: nowrap;"></div>
+        `;
+        
+        // Setup tooltip interaction
+        const tooltip = el.querySelector(".chart-tooltip");
+        const triggers = el.querySelectorAll(".chart-hover-trigger");
+        const pointsElements = el.querySelectorAll(".chart-point");
+        
+        triggers.forEach(trigger => {
+            trigger.addEventListener("mouseenter", (e) => {
+                const idx = trigger.getAttribute("data-idx");
+                const pt = points[idx];
+                const ptEl = pointsElements[idx];
+                ptEl.setAttribute("r", "7");
+                
+                tooltip.style.display = "block";
+                tooltip.innerHTML = `
+                    <div style="font-size: 10px; color: var(--text-desc); text-transform: uppercase; margin-bottom: 2px;">${pt.label}</div>
+                    <div style="font-size: 14px; color: var(--accent-primary); font-weight: 800;">${pt.value}</div>
+                `;
+                
+                // Position tooltip
+                const tooltipWidth = tooltip.clientWidth || 80;
+                const tooltipHeight = tooltip.clientHeight || 40;
+                const xPos = pt.x - tooltipWidth / 2;
+                const yPos = pt.y - tooltipHeight - 12;
+                tooltip.style.left = `${xPos}px`;
+                tooltip.style.top = `${yPos}px`;
+            });
+            
+            trigger.addEventListener("mouseleave", (e) => {
+                const idx = trigger.getAttribute("data-idx");
+                const ptEl = pointsElements[idx];
+                ptEl.setAttribute("r", "4");
+                tooltip.style.display = "none";
+            });
         });
     });
 }
