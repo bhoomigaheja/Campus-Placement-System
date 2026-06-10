@@ -4,10 +4,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="fw-bold ">My Job Applications</h3>
 </div>
-<div class="card shadow-sm border-0">
+<div class="premium-card overflow-hidden">
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table premium-table align-middle mb-0">
+            <thead>
                 <tr>
                     <th class="ps-4">Company</th>
                     <th>Role</th>
@@ -19,13 +19,13 @@
             <tbody>
                 {% for app in applications %}
                 <tr>
-                    <td class="ps-4 fw-bold "><i class="bi bi-building text-primary me-2"></i>{{ app.job.company.company_name }}</td>
-                    <td class="opacity-75 fw-medium">{{ app.job.title }}</td>
-                    <td><i class="bi bi-calendar opacity-75 me-1"></i>{{ app.applied_at|date:"d M, Y" }}</td>
+                    <td class="ps-4 fw-bold text-title"><i class="bi bi-building text-primary me-2"></i>{{ app.job.company.company_name }}</td>
+                    <td class="text-desc fw-medium">{{ app.job.title }}</td>
+                    <td class="text-desc"><i class="bi bi-calendar me-1"></i>{{ app.applied_at|date:"d M, Y" }}</td>
                     <td style="min-width: 150px;">
                         <div class="d-flex align-items-center gap-2">
                             <div class="progress flex-grow-1" style="height: 6px;"><div class="progress-bar bg-success" style="width: {{ app.match_score }}%"></div></div>
-                            <small class="opacity-75 fw-bold">{{ app.match_score|floatformat:0 }}%</small>
+                            <small class="text-desc fw-bold">{{ app.match_score|floatformat:0 }}%</small>
                         </div>
                     </td>
                     <td>
@@ -36,22 +36,22 @@
                         {% elif app.status == 'SHORTLISTED' %}
                             <span class="badge bg-primary px-3">Shortlisted</span>
                             {% if app.interview %}
-                                <div class="mt-2 text-start p-2 bg-light border border-primary border-opacity-25 rounded" style="min-width: 210px;">
+                                <div class="mt-2 text-start p-2 border border-primary border-opacity-25 rounded" style="background: var(--bg-surface); min-width: 210px;">
                                     <small class="d-block fw-bold text-success"><i class="bi bi-calendar-check me-1"></i> {{ app.interview.scheduled_at|date:"d M, Y - h:i A" }}</small>
-                                    <span class="badge bg-secondary mb-1" style="font-size: 0.65rem; padding: 3px 6px;">{{ app.interview.get_interview_mode_display }}</span>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary mb-1 border border-primary border-opacity-25" style="font-size: 0.65rem; padding: 3px 6px;">{{ app.interview.get_interview_mode_display }}</span>
                                     {% if app.interview.meeting_link %}
                                         {% if app.interview.interview_mode == 'ONLINE' %}
-                                            <a href="{{ app.interview.meeting_link }}" target="_blank" class="btn btn-xs btn-success fw-bold py-1 px-2 mt-1 d-inline-block" style="font-size: 0.7rem;"><i class="bi bi-camera-video me-1"></i> Join Interview</a>
+                                            <a href="{{ app.interview.meeting_link }}" target="_blank" class="btn btn-xs btn-premium btn-premium-primary py-1 px-2 mt-1 d-inline-block" style="font-size: 0.7rem;"><i class="bi bi-camera-video me-1"></i> Join Interview</a>
                                         {% else %}
-                                            <div class="mt-1 small " style="font-size: 0.72rem;"><i class="bi bi-geo-alt-fill text-danger me-1"></i> <strong>Venue/Location:</strong> {{ app.interview.meeting_link }}</div>
+                                            <div class="mt-1 small text-desc" style="font-size: 0.72rem;"><i class="bi bi-geo-alt-fill text-danger me-1"></i> <strong>Venue/Location:</strong> {{ app.interview.meeting_link }}</div>
                                         {% endif %}
                                     {% endif %}
                                     {% if app.interview.notes %}
-                                        <small class="d-block opacity-75 mt-1" style="font-size: 0.7rem;"><strong>Notes:</strong> {{ app.interview.notes }}</small>
+                                        <small class="d-block text-desc mt-1" style="font-size: 0.7rem;"><strong>Notes:</strong> {{ app.interview.notes }}</small>
                                     {% endif %}
                                 </div>
                             {% else %}
-                                <div class="mt-1"><small class="opacity-75" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i> Waiting for schedule</small></div>
+                                <div class="mt-1"><small class="text-desc" style="font-size: 0.75rem;"><i class="bi bi-clock me-1"></i> Waiting for schedule</small></div>
                             {% endif %}
                         {% else %}
                             <span class="badge bg-info  px-3">{{ app.get_status_display }}</span>
@@ -60,7 +60,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5" class="py-5 text-center opacity-75"><i class="bi bi-journal-x fs-1 d-block mb-3"></i>You haven't applied to any jobs yet.</td>
+                    <td colspan="5" class="py-5 text-center text-desc"><i class="bi bi-journal-x fs-1 d-block mb-3"></i>You haven't applied to any jobs yet.</td>
                 </tr>
                 {% endfor %}
             </tbody>

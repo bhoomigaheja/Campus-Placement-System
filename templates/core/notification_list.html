@@ -10,20 +10,20 @@
 
 <div class="row g-4">
     <div class="col-12">
-        <div class="card shadow-sm border-0">
+        <div class="premium-card">
             <div class="list-group list-group-flush rounded-3">
                 {% for notif in notifications %}
-                <div class="list-group-item p-4 d-flex justify-content-between align-items-center {% if not notif.is_read %}bg-primary bg-opacity-10{% endif %}">
+                <div class="list-group-item bg-transparent text-title p-4 d-flex justify-content-between align-items-center {% if not notif.is_read %}bg-primary bg-opacity-10{% endif %}">
                     <div>
-                        <p class="mb-1 fw-medium ">{{ notif.message }}</p>
-                        <small class="opacity-75"><i class="bi bi-clock me-1"></i>{{ notif.created_at|timesince }} ago</small>
+                        <p class="mb-1 fw-medium">{{ notif.message }}</p>
+                        <small class="text-desc"><i class="bi bi-clock me-1"></i>{{ notif.created_at|timesince }} ago</small>
                     </div>
                     {% if not notif.is_read %}
                     <a href="{% url 'notification_read' notif.pk %}" class="btn btn-sm btn-primary px-3 rounded-pill">Mark Read</a>
                     {% endif %}
                 </div>
                 {% empty %}
-                <div class="text-center py-5 opacity-75">
+                <div class="text-center py-5 text-desc">
                     <i class="bi bi-bell-slash fs-1 d-block mb-3"></i>
                     <p class="fw-medium">No active notifications</p>
                 </div>
