@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from placements.models import Application
-from core.models import Notification
+from core.services import NotificationService
 
 class ApplicationService:
     @staticmethod
@@ -34,9 +34,13 @@ class ApplicationService:
             application = Application.objects.create(student=student_profile, job=job)
             
             # Notify company
-            Notification.objects.create(
+            msg = f"New candidate '{student_profile.user.first_name}' has applied securely for position '{job.title}'"
+            NotificationService.create_and_send(
                 user=job.company.user,
-                message=f"New candidate '{student_profile.user.first_name}' has applied securely for position '{job.title}'"
+                message=msg,
+                email_subject=f"New Applicant for {job.title}",
+                email_template='emails/base_notification.html',
+                context={'title': 'New Application Received', 'message': msg, 'action_url': '#'}
             )
             return application
         except IntegrityError:
@@ -49,8 +53,12 @@ class ApplicationService:
             application.remarks = remarks
         application.save()
 
-        Notification.objects.create(
+        msg = f"{updated_by_role} updated your status for '{application.job.title}' to '{application.get_status_display()}'."
+        NotificationService.create_and_send(
             user=application.student.user,
-            message=f"{updated_by_role} updated your status for '{application.job.title}' to '{application.get_status_display()}'."
+            message=msg,
+            email_subject=f"Application Status Updated: {application.job.title}",
+            email_template='emails/base_notification.html',
+            context={'title': 'Status Update', 'message': msg, 'action_url': '#'}
         )
         return application

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            color: #334155;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .header {
+            background-color: #4f46e5;
+            padding: 24px 32px;
+            color: #ffffff;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .content {
+            padding: 40px 32px;
+            line-height: 1.6;
+        }
+        .content h2 {
+            color: #1e293b;
+            font-size: 20px;
+            margin-top: 0;
+        }
+        .action-button {
+            display: inline-block;
+            background-color: #4f46e5;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 24px;
+            font-size: 15px;
+        }
+        .footer {
+            background-color: #f1f5f9;
+            padding: 24px;
+            text-align: center;
+            font-size: 13px;
+            color: #64748b;
+        }
+        .credentials {
+            background-color: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 14px;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CampusConnect</h1>
+        </div>
+        <div class="content">
+            {% block content %}
+            <h2>{{ title }}</h2>
+            <p>{{ message }}</p>
+            
+            {% if credentials %}
+            <div class="credentials">
+                <strong>Email:</strong> {{ credentials.email }}<br>
+                <strong>Temporary Password:</strong> {{ credentials.password }}
+            </div>
+            <p><em>Please log in and change your password immediately.</em></p>
+            {% endif %}
+
+            {% if action_url %}
+            <a href="{{ action_url }}" class="action-button">{{ action_text|default:"View Details" }}</a>
+            {% endif %}
+            {% endblock %}
+        </div>
+        <div class="footer">
+            <p>&copy; {% now "Y" %} CampusConnect System. All rights reserved.</p>
+            <p>This is an automated notification, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>

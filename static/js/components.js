@@ -83,14 +83,10 @@ const NotificationManager = {
             gravity: "top", 
             position: "right",
             escapeMarkup: false, // allow bootstrap icons in toasts
-            text: `<div class="d-flex align-items-center">${icon}<span>${message}</span></div>`,
+            text: `<div class="toast-content-wrapper">${icon}<span class="toast-message-text">${message}</span></div>`,
+            className: "premium-toastify",
             style: {
                 background: bgColor,
-                borderRadius: "10px",
-                boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)",
-                padding: "12px 24px",
-                fontWeight: "550",
-                fontSize: "0.95rem"
             }
         }).showToast();
     },

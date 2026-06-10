@@ -11,7 +11,7 @@ from accounts.models import StudentProfile, CompanyProfile
 from accounts.models import StudentProfile, CompanyProfile
 from .models import Job, Application, Interview
 from .forms import CompanyForm, JobForm, CompanyJobForm, ApplicationStatusForm, InterviewForm, CompanyApplicationUpdateForm
-from core.models import Notification
+from core.services import NotificationService
 from placements.services.company_services import CompanyService
 from placements.services.application_services import ApplicationService
 from placements.services.analytics_services import AnalyticsService
@@ -49,6 +49,16 @@ class CompanyCreateView(LoginRequiredMixin, TPORequiredMixin, CreateView):
         try:
             company = CompanyService.create_company(email, password, company_name, website, industry)
             form.instance = company
+            
+            # Send notification for Company Registration
+            msg = f"Your company '{company_name}' has been successfully registered on CampusConnect. You can now log in and post job drives."
+            NotificationService.create_and_send(
+                user=company.user,
+                message=msg,
+                email_subject="Company Registered Successfully",
+                email_template="emails/base_notification.html",
+                context={'title': 'Welcome to CampusConnect', 'message': msg, 'action_url': '#'}
+            )
         except ValueError as e:
             form.add_error('email', str(e))
             return self.form_invalid(form)
@@ -70,8 +80,24 @@ class DriveCreateView(LoginRequiredMixin, TPORequiredMixin, CreateView):
         company_name = form.cleaned_data['company_name']
         company = CompanyProfile.objects.get(company_name=company_name)
         form.instance.company = company
-        messages.success(self.request, f"Placement drive for '{form.cleaned_data.get('title')}' created successfully!")
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        
+        job = self.object
+        messages.success(self.request, f"Placement drive for '{job.title}' created successfully!")
+        
+        # Notify all students
+        students = StudentProfile.objects.select_related('user').all()
+        for student in students:
+            msg = f"New placement drive for {job.title} at {company.company_name} has been posted."
+            NotificationService.create_and_send(
+                user=student.user,
+                message=msg,
+                email_subject=f"New Placement Drive: {job.title}",
+                email_template="emails/base_notification.html",
+                context={'title': 'New Placement Drive Posted', 'message': msg, 'action_url': '#'}
+            )
+        
+        return response
 
 class DriveUpdateView(LoginRequiredMixin, TPORequiredMixin, UpdateView):
     model = Job
@@ -143,9 +169,13 @@ class InterviewScheduleCreateView(LoginRequiredMixin, TPORequiredMixin, CreateVi
     def form_valid(self, form):
         form.instance.application = get_object_or_404(Application, pk=self.kwargs['app_pk'])
         response = super().form_valid(form)
-        Notification.objects.create(
+        msg = f"Interview formally scheduled for {self.object.application.job.title} on {self.object.scheduled_at.strftime('%Y-%m-%d %H:%M')}."
+        NotificationService.create_and_send(
             user=self.object.application.student.user,
-            message=f"Interview formally scheduled for {self.object.application.job.title} on {self.object.scheduled_at.strftime('%Y-%m-%d %H:%M')}."
+            message=msg,
+            email_subject="Interview Scheduled",
+            email_template="emails/base_notification.html",
+            context={'title': 'Interview Scheduled', 'message': msg, 'action_url': '#'}
         )
         return response
         
@@ -286,9 +316,13 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
             interview.save()
             
             mode_display = "Online" if mode == 'ONLINE' else "In-Person"
-            Notification.objects.create(
+            msg = f"{mode_display} Interview scheduled for {self.object.job.title} on {scheduled_at.strftime('%d %b, %Y - %I:%M %p')}."
+            NotificationService.create_and_send(
                 user=self.object.student.user,
-                message=f"{mode_display} Interview scheduled for {self.object.job.title} on {scheduled_at.strftime('%d %b, %Y - %I:%M %p')}."
+                message=msg,
+                email_subject="Interview Update",
+                email_template="emails/base_notification.html",
+                context={'title': 'Interview Details Updated', 'message': msg, 'action_url': '#'}
             )
             
         ApplicationService.update_application_status(
@@ -300,3 +334,84 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
         
         messages.success(self.request, f"Application for {self.object.student.user.first_name} updated successfully.")
         return redirect(self.get_success_url())
+
+from django.http import HttpResponse
+from accounts.services.excel_import import BulkImportService
+
+class BulkImportStudentsView(LoginRequiredMixin, TPORequiredMixin, TemplateView):
+    template_name = 'placements/tpo_bulk_import.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Bulk Import Students'
+        context['template_url'] = reverse('tpo_download_student_template')
+        context['import_type'] = 'Students'
+        return context
+        
+    def post(self, request, *args, **kwargs):
+        if 'excel_file' not in request.FILES:
+            messages.error(request, "Please upload an Excel file.")
+            return redirect('tpo_bulk_import_students')
+            
+        file_obj = request.FILES['excel_file']
+        if not file_obj.name.endswith('.xlsx'):
+            messages.error(request, "Only .xlsx files are supported.")
+            return redirect('tpo_bulk_import_students')
+            
+        try:
+            results = BulkImportService.process_student_excel(file_obj)
+            context = self.get_context_data()
+            context['results'] = results
+            return self.render_to_response(context)
+        except Exception as e:
+            messages.error(request, f"Error processing file: {str(e)}")
+            return redirect('tpo_bulk_import_students')
+
+class BulkImportCompaniesView(LoginRequiredMixin, TPORequiredMixin, TemplateView):
+    template_name = 'placements/tpo_bulk_import.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Bulk Import Companies'
+        context['template_url'] = reverse('tpo_download_company_template')
+        context['import_type'] = 'Companies'
+        return context
+        
+    def post(self, request, *args, **kwargs):
+        if 'excel_file' not in request.FILES:
+            messages.error(request, "Please upload an Excel file.")
+            return redirect('tpo_bulk_import_companies')
+            
+        file_obj = request.FILES['excel_file']
+        if not file_obj.name.endswith('.xlsx'):
+            messages.error(request, "Only .xlsx files are supported.")
+            return redirect('tpo_bulk_import_companies')
+            
+        try:
+            results = BulkImportService.process_company_excel(file_obj)
+            context = self.get_context_data()
+            context['results'] = results
+            return self.render_to_response(context)
+        except Exception as e:
+            messages.error(request, f"Error processing file: {str(e)}")
+            return redirect('tpo_bulk_import_companies')
+
+class DownloadStudentTemplateView(LoginRequiredMixin, TPORequiredMixin, View):
+    def get(self, request):
+        output = BulkImportService.generate_sample_student_excel()
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename="student_import_template.xlsx"'
+        return response
+
+class DownloadCompanyTemplateView(LoginRequiredMixin, TPORequiredMixin, View):
+    def get(self, request):
+        output = BulkImportService.generate_sample_company_excel()
+        response = HttpResponse(
+            output,
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename="company_import_template.xlsx"'
+        return response

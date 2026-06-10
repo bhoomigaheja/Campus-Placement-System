@@ -110,6 +110,12 @@
                         <li class="{% if request.resolver_match.url_name == 'tpo_drive_list' %}active{% endif %}">
                             <a href="{% url 'tpo_drive_list' %}"><i class="bi bi-briefcase-fill"></i> <span>Job Drives</span></a>
                         </li>
+                        <li class="{% if request.resolver_match.url_name == 'tpo_bulk_import_students' %}active{% endif %}">
+                            <a href="{% url 'tpo_bulk_import_students' %}"><i class="bi bi-file-earmark-spreadsheet-fill"></i> <span>Import Students</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'tpo_bulk_import_companies' %}active{% endif %}">
+                            <a href="{% url 'tpo_bulk_import_companies' %}"><i class="bi bi-building-up"></i> <span>Import Companies</span></a>
+                        </li>
                     {% elif user.is_student %}
                         <li class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
                             <a href="{% url 'student_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span></a>

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} | CampusConnect{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0 text-title">{{ title }}</h2>
+        <p class="text-desc mb-0">Upload an Excel file to mass-create {{ import_type|lower }} accounts.</p>
+    </div>
+    <a href="{{ template_url }}" class="btn btn-outline-primary fw-semibold"><i class="bi bi-download me-2"></i>Download Sample Template</a>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="premium-card h-100 p-4">
+            <h5 class="fw-bold mb-3 text-title">Upload Excel File</h5>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-title">Select .xlsx File</label>
+                    <input type="file" name="excel_file" class="form-control" accept=".xlsx" required>
+                    <small class="text-desc d-block mt-2">Passwords will be automatically securely generated and emailed to the user.</small>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Start Import Process</button>
+            </form>
+        </div>
+    </div>
+
+    {% if results %}
+    <div class="col-md-7">
+        <div class="premium-card p-4 h-100">
+            <h5 class="fw-bold mb-4 text-title">Import Results</h5>
+            
+            <div class="d-flex gap-3 mb-4">
+                <div class="flex-fill bg-transparent border border-primary border-opacity-10 rounded-3 p-3 text-center">
+                    <h3 class="fw-bold text-primary mb-0">{{ results.total }}</h3>
+                    <small class="text-desc fw-semibold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.7rem;">Total Processed</small>
+                </div>
+                <div class="flex-fill bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3 p-3 text-center">
+                    <h3 class="fw-bold text-success mb-0">{{ results.success }}</h3>
+                    <small class="text-success fw-semibold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.7rem;">Created</small>
+                </div>
+                <div class="flex-fill bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 p-3 text-center">
+                    <h3 class="fw-bold text-danger mb-0">{{ results.failed }}</h3>
+                    <small class="text-danger fw-semibold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.7rem;">Failed</small>
+                </div>
+                <div class="flex-fill bg-warning bg-opacity-10 border border-warning border-opacity-25 rounded-3 p-3 text-center">
+                    <h3 class="fw-bold text-warning mb-0">{{ results.duplicates }}</h3>
+                    <small class="text-warning fw-semibold text-uppercase" style="letter-spacing: 0.5px; font-size: 0.7rem;">Duplicates</small>
+                </div>
+            </div>
+
+            {% if results.errors %}
+            <h6 class="fw-bold text-danger mb-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error Report</h6>
+            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light sticky-top">
+                        <tr>
+                            <th class="text-desc">Row</th>
+                            <th class="text-desc">Failure Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for error in results.errors %}
+                        <tr>
+                            <td class="fw-semibold text-title" style="width: 80px;">Row {{ error.row }}</td>
+                            <td class="text-danger small">{{ error.reason }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4 text-desc">
+                <i class="bi bi-check-circle-fill text-success fs-1 mb-2 d-block"></i>
+                <p class="mb-0 fw-semibold">All records imported successfully! No errors found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

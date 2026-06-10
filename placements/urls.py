@@ -24,6 +24,12 @@ urlpatterns = [
     path('application/<int:pk>/status/', views.ApplicationStatusUpdateView.as_view(), name='tpo_application_update'),
     path('application/<int:app_pk>/interview/add/', views.InterviewScheduleCreateView.as_view(), name='tpo_interview_form'),
     
+    # Bulk Imports
+    path('students/import/', views.BulkImportStudentsView.as_view(), name='tpo_bulk_import_students'),
+    path('students/import/template/', views.DownloadStudentTemplateView.as_view(), name='tpo_download_student_template'),
+    path('companies/import/', views.BulkImportCompaniesView.as_view(), name='tpo_bulk_import_companies'),
+    path('companies/import/template/', views.DownloadCompanyTemplateView.as_view(), name='tpo_download_company_template'),
+    
     # Student Routes 
     path('student/drives/', views.StudentDriveListView.as_view(), name='student_drive_list'),
     path('student/drives/<int:pk>/', views.StudentDriveDetailView.as_view(), name='student_drive_detail'),

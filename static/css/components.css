@@ -364,23 +364,50 @@ main {
     border-bottom: 1px solid var(--border-color) !important;
 }
 
-/* Fix Toastify Close Icon positioning */
-.toastify-close {
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    transform: translateY(-50%);
+/* Fix Toastify Container and Close Icon positioning using solid flexbox */
+.premium-toastify {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 16px !important;
+    padding: 14px 20px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
     color: #fff !important;
-    opacity: 0.8;
-    background: transparent;
-    border: none;
-    font-size: 1.2rem;
-    padding: 0;
-    line-height: 1;
-    cursor: pointer;
+    min-width: 300px;
+    max-width: 450px;
+}
+.toast-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+}
+.toast-message-text {
+    line-height: 1.4;
+    word-break: break-word;
+}
+.toastify-close {
+    position: static !important;
+    transform: none !important;
+    color: #ffffff !important;
+    opacity: 0.6 !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 1.25rem !important;
+    padding: 4px !important;
+    line-height: 1 !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: opacity 0.2s ease !important;
 }
 .toastify-close:hover {
-    opacity: 1;
+    opacity: 1 !important;
 }
 
     backdrop-filter: var(--glass-blur);
