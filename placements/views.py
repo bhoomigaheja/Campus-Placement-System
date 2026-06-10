@@ -203,6 +203,9 @@ class StudentDriveDetailView(LoginRequiredMixin, StudentRequiredMixin, DetailVie
         return context
 
 class ApplyDriveView(LoginRequiredMixin, StudentRequiredMixin, View):
+    def get(self, request, pk):
+        return redirect('student_drive_detail', pk=pk)
+
     def post(self, request, pk):
         job = get_object_or_404(Job, pk=pk)
         
