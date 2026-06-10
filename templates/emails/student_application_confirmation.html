@@ -1,0 +1,10 @@
+{% extends "emails/base_notification.html" %}
+
+{% block content %}
+<h2>Application Confirmed! 🎉</h2>
+<p>Hi {{ student_name }},</p>
+<p>Your application for the position of <strong>{{ job_title }}</strong> at <strong>{{ company_name }}</strong> has been successfully submitted to the recruitment team!</p>
+<p>Our intelligent system has automatically forwarded your resume, verified your skills, and matched your CGPA. The recruiters will notify you if you are shortlisted for the next rounds.</p>
+<br>
+<a href="https://campus-placement-system-1.onrender.com/tpo/student/dashboard/" class="action-button">View Application Status</a>
+{% endblock %}
