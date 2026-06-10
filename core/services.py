@@ -29,22 +29,16 @@ class NotificationService:
                     html_message = None
                     plain_message = message
 
-                def _send_email_async():
-                    try:
-                        send_mail(
-                            subject=f"CampusConnect: {email_subject}",
-                            message=plain_message,
-                            from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusconnect.com'),
-                            recipient_list=[user.email],
-                            html_message=html_message,
-                            fail_silently=True
-                        )
-                        logger.info(f"Email sent successfully to {user.email} for: {email_subject}")
-                    except Exception as e:
-                        logger.error(f"Failed to send email to {user.email}: {e}")
-                
-                threading.Thread(target=_send_email_async, daemon=True).start()
+                send_mail(
+                    subject=f"CampusConnect: {email_subject}",
+                    message=plain_message,
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusconnect.com'),
+                    recipient_list=[user.email],
+                    html_message=html_message,
+                    fail_silently=True
+                )
+                logger.info(f"Email sent successfully to {user.email} for: {email_subject}")
             except Exception as e:
-                logger.error(f"Failed to initiate email thread for {user.email}: {e}")
+                logger.error(f"Failed to send email to {user.email}: {e}")
 
         return notification
