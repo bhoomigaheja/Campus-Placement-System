@@ -5,13 +5,16 @@ from .ml_services import calculate_resume_match
 
 import threading
 
+from django.conf import settings
+
 @shared_task
 def send_email_task(subject, message, recipient_list):
     def _send_async():
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusplacement.com')
         send_mail(
             subject,
             message,
-            'noreply@campusplacement.com',
+            from_email,
             recipient_list,
             fail_silently=True,
         )
