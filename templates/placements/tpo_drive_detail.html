@@ -28,7 +28,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold  mb-1">{{ drive.title }}</h3>
-                    <h5 class="opacity-75 mb-0">
+                    <h5 class="text-desc mb-0">
                         <i class="bi bi-building me-1"></i> {{ drive.company.company_name }}
                         {% if drive.company.website %}
                         <a href="{{ drive.company.website }}" target="_blank" class="ms-2 text-decoration-none text-primary fs-6" title="Visit website">
@@ -40,14 +40,14 @@
             </div>
 
             <div class="d-flex flex-wrap gap-2 mb-4 pb-4 border-bottom">
-                <span class="badge bg-light  border px-3 py-2 rounded-pill"><i class="bi bi-briefcase me-1 text-primary"></i> {{ drive.employment_type|default:"Full-time" }}</span>
-                <span class="badge bg-light  border px-3 py-2 rounded-pill"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ drive.location|default:"On-site" }}</span>
-                <span class="badge bg-light  border px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1 text-success"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
+                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-briefcase me-1 text-primary"></i> {{ drive.employment_type|default:"Full-time" }}</span>
+                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ drive.location|default:"On-site" }}</span>
+                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1 text-success"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
             </div>
 
             <!-- Job Description Section -->
             <h5 class="fw-bold  mt-2 mb-3">Job Description</h5>
-            <div class="opacity-75 lh-base mb-4" style="white-space: pre-line;">{{ drive.description }}</div>
+            <div class="text-desc lh-base mb-4" style="white-space: pre-line;">{{ drive.description }}</div>
 
             <!-- Skills Required Section -->
             <h5 class="fw-bold  mt-4 mb-3">Required Skillsets</h5>
@@ -55,7 +55,7 @@
                 {% for skill in drive.required_skills.all %}
                     <span class="badge-tag-premium me-2 mb-2">{{ skill.name }}</span>
                 {% empty %}
-                    <span class="opacity-75 small">No specific skills listed.</span>
+                    <span class="text-desc small">No specific skills listed.</span>
                 {% endfor %}
             </div>
 
@@ -83,7 +83,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-success bg-opacity-10 text-success rounded p-2 me-3"><i class="bi bi-currency-rupee fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Salary Package</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Salary Package</small>
                             <span class="fw-bold ">{{ drive.salary_package|default:"Not disclosed" }}</span>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3"><i class="bi bi-calendar-event fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Application Deadline</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Application Deadline</small>
                             <span class="fw-bold ">{{ drive.deadline_to_apply|date:"d M, Y - h:i A" }}</span>
                         </div>
                     </div>
@@ -103,7 +103,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3"><i class="bi bi-shield-check fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Eligibility Limit</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Eligibility Limit</small>
                             <span class="fw-bold ">Min CGPA of {{ drive.min_cgpa }}</span>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-info bg-opacity-10 text-info rounded p-2 me-3"><i class="bi bi-clock-history fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Job Created On</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Job Created On</small>
                             <span class="fw-bold ">{{ drive.created_at|date:"d M, Y" }}</span>
                         </div>
                     </div>
@@ -125,12 +125,12 @@
         <div class="card premium-card p-4">
             <h5 class="fw-bold  border-bottom pb-3 mb-3">Recruiter Profile</h5>
             <div class="mb-3">
-                <small class="opacity-75 d-block">Industry Sector</small>
+                <small class="text-desc d-block">Industry Sector</small>
                 <span class="fw-bold ">{{ drive.company.industry|default:"SaaS / Engineering" }}</span>
             </div>
             {% if drive.company.tier %}
             <div class="mb-3">
-                <small class="opacity-75 d-block">Company Tier</small>
+                <small class="text-desc d-block">Company Tier</small>
                 <span class="badge bg-dark text-white px-2 py-1 rounded">{{ drive.company.tier }}</span>
             </div>
             {% endif %}
@@ -151,7 +151,7 @@
         <div class="card-header bg-transparent py-4 border-bottom d-flex align-items-center justify-content-between">
             <div>
                 <h4 class="mb-0 fw-bold "><i class="bi bi-people-fill text-primary me-2"></i>Applicant Tracking System (ATS)</h4>
-                <p class="opacity-75 mb-0 small mt-1">Review candidates, CGPA eligibility checks, and matching scores generated by the platform.</p>
+                <p class="text-desc mb-0 small mt-1">Review candidates, CGPA eligibility checks, and matching scores generated by the platform.</p>
             </div>
             <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">{{ applications.count }} Applied</span>
         </div>
@@ -178,7 +178,7 @@
                                 </div>
                                 <div>
                                     <span class="d-block fw-semibold">{{ app.student.user.first_name }} {{ app.student.user.last_name }}</span>
-                                    <span class="opacity-75 small" style="font-size: 0.75rem;">{{ app.student.user.email }}</span>
+                                    <span class="text-desc small" style="font-size: 0.75rem;">{{ app.student.user.email }}</span>
                                 </div>
                             </div>
                         </td>
@@ -208,14 +208,14 @@
                                         {% if app.interview.interview_mode == 'ONLINE' %}
                                             <div><a href="{{ app.interview.meeting_link }}" target="_blank" class="badge bg-success text-white border-0 mt-1" style="font-size: 0.65rem; text-decoration: none;"><i class="bi bi-camera-video me-1"></i>Join Meet</a></div>
                                         {% else %}
-                                            <div class="mt-1 opacity-75" style="font-size: 0.65rem; line-height: 1.1;"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ app.interview.meeting_link }}</div>
+                                            <div class="mt-1 text-desc" style="font-size: 0.65rem; line-height: 1.1;"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ app.interview.meeting_link }}</div>
                                         {% endif %}
                                     {% endif %}
                                 {% else %}
-                                    <div class="mt-1"><small class="opacity-75" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>No Schedule</small></div>
+                                    <div class="mt-1"><small class="text-desc" style="font-size: 0.7rem;"><i class="bi bi-clock me-1"></i>No Schedule</small></div>
                                 {% endif %}
                             {% else %}
-                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-clock-fill me-1"></i>{{ app.get_status_display }}</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-desc border border-secondary border-opacity-25 px-2 py-1 rounded-pill"><i class="bi bi-clock-fill me-1"></i>{{ app.get_status_display }}</span>
                             {% endif %}
                         </td>
                         <td class="text-end pe-4">
@@ -228,8 +228,8 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" class="text-center py-5 opacity-75">
-                            <i class="bi bi-people fs-1 d-block mb-2 opacity-75 text-opacity-50"></i>
+                        <td colspan="6" class="text-center py-5 text-desc">
+                            <i class="bi bi-people fs-1 d-block mb-2 text-desc text-text-desc"></i>
                             No student applications received yet for this placement drive initiative.
                         </td>
                     </tr>

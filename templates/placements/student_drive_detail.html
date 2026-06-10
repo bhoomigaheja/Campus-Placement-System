@@ -12,7 +12,7 @@
                 </div>
                 <div>
                     <h3 class="fw-bold  mb-1">{{ drive.title }}</h3>
-                    <h5 class="opacity-75 mb-0">
+                    <h5 class="text-desc mb-0">
                         <i class="bi bi-building me-1"></i> {{ drive.company.company_name }}
                         {% if drive.company.website %}
                         <a href="{{ drive.company.website }}" target="_blank" class="ms-2 text-decoration-none text-primary fs-6" title="Visit website">
@@ -24,14 +24,14 @@
             </div>
 
             <div class="d-flex flex-wrap gap-2 mb-4 pb-4 border-bottom">
-                <span class="badge bg-light  border px-3 py-2 rounded-pill"><i class="bi bi-briefcase me-1 text-primary"></i> {{ drive.employment_type|default:"Full-time" }}</span>
-                <span class="badge bg-light  border px-3 py-2 rounded-pill"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ drive.location|default:"On-site" }}</span>
-                <span class="badge bg-light  border px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1 text-success"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
+                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-briefcase me-1 text-primary"></i> {{ drive.employment_type|default:"Full-time" }}</span>
+                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ drive.location|default:"On-site" }}</span>
+                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1 text-success"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
             </div>
 
             <!-- Job Description Section -->
             <h5 class="fw-bold  mt-2 mb-3">Job Description</h5>
-            <div class="opacity-75 lh-base mb-4" style="white-space: pre-line;">{{ drive.description }}</div>
+            <div class="text-desc lh-base mb-4" style="white-space: pre-line;">{{ drive.description }}</div>
 
             <!-- Skills Required Section -->
             <h5 class="fw-bold  mt-4 mb-3">Required Skillsets</h5>
@@ -39,7 +39,7 @@
                 {% for skill in drive.required_skills.all %}
                     <span class="badge-tag-premium me-2 mb-2">{{ skill.name }}</span>
                 {% empty %}
-                    <span class="opacity-75 small">No specific skills listed.</span>
+                    <span class="text-desc small">No specific skills listed.</span>
                 {% endfor %}
             </div>
 
@@ -56,7 +56,7 @@
             </div>
 
             <!-- Application Section -->
-            <div class="mt-5 p-4 bg-light rounded-xl text-center border">
+            <div class="mt-5 p-4 bg-transparent rounded-xl text-center border">
                 {% if profile_incomplete %}
                     <button class="btn btn-secondary btn-lg px-5 fw-bold shadow-sm" disabled><i class="bi bi-exclamation-triangle me-2"></i>Profile Incomplete</button>
                     <p class="text-danger fw-bold small mt-2 mb-2"><i class="bi bi-info-circle me-1"></i>{{ ineligibility_reason }}</p>
@@ -72,7 +72,7 @@
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm rounded-pill py-3">Apply to Opportunity</button>
                     </form>
-                    <p class="opacity-75 small mt-2 mb-0">By clicking Apply, your GPA, skills, resume, and credentials will be sent to the recruiters.</p>
+                    <p class="text-desc small mt-2 mb-0">By clicking Apply, your GPA, skills, resume, and credentials will be sent to the recruiters.</p>
                 {% endif %}
             </div>
         </div>
@@ -89,7 +89,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-success bg-opacity-10 text-success rounded p-2 me-3"><i class="bi bi-currency-rupee fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Salary Package</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Salary Package</small>
                             <span class="fw-bold ">{{ drive.salary_package|default:"Not disclosed" }}</span>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3"><i class="bi bi-calendar-event fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Application Deadline</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Application Deadline</small>
                             <span class="fw-bold ">{{ drive.deadline_to_apply|date:"d M, Y - h:i A" }}</span>
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3"><i class="bi bi-shield-check fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Eligibility Limit</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Eligibility Limit</small>
                             <span class="fw-bold ">Min CGPA of {{ drive.min_cgpa }}</span>
                         </div>
                     </div>
@@ -119,7 +119,7 @@
                     <div class="meta-info-card d-flex align-items-center">
                         <div class="bg-info bg-opacity-10 text-info rounded p-2 me-3"><i class="bi bi-clock-history fs-4"></i></div>
                         <div>
-                            <small class="opacity-75 d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Job Created On</small>
+                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Job Created On</small>
                             <span class="fw-bold ">{{ drive.created_at|date:"d M, Y" }}</span>
                         </div>
                     </div>
@@ -131,25 +131,25 @@
         <div class="card premium-card p-4 mb-4">
             <h5 class="fw-bold  border-bottom pb-3 mb-3">Recruitment Insights</h5>
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="opacity-75">Total Applicants</span>
+                <span class="text-desc">Total Applicants</span>
                 <span class="badge bg-primary rounded-pill fs-6 px-3">{{ drive.applications.count }}</span>
             </div>
             <div class="progress flex-grow-1" style="height:6px;">
                 <div class="progress-bar bg-success" style="width: 100%"></div>
             </div>
-            <small class="opacity-75 mt-2 d-block">Applying now places you in the initial pool of candidate reviews.</small>
+            <small class="text-desc mt-2 d-block">Applying now places you in the initial pool of candidate reviews.</small>
         </div>
 
         <!-- Company details card -->
         <div class="card premium-card p-4">
             <h5 class="fw-bold  border-bottom pb-3 mb-3">Employer Profile</h5>
             <div class="mb-3">
-                <small class="opacity-75 d-block">Industry Sector</small>
+                <small class="text-desc d-block">Industry Sector</small>
                 <span class="fw-bold ">{{ drive.company.industry|default:"SaaS / Engineering" }}</span>
             </div>
             {% if drive.company.tier %}
             <div class="mb-3">
-                <small class="opacity-75 d-block">Company Tier</small>
+                <small class="text-desc d-block">Company Tier</small>
                 <span class="badge bg-dark text-white px-2 py-1 rounded">{{ drive.company.tier }}</span>
             </div>
             {% endif %}

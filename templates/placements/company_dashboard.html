@@ -8,11 +8,11 @@
     <div class="col-lg-8">
         <div class="d-flex flex-column">
             <h2 class="fw-bold mb-1 text-title" style="font-size: 1.85rem; letter-spacing: -0.04em;">Employer Overview</h2>
-            <div class="opacity-75 small d-flex align-items-center gap-2">
+            <div class="text-desc small d-flex align-items-center gap-2">
                 <i class="bi bi-shield-check text-success"></i>
                 <span>Verified Recruiter Portal</span>
-                <span class="text-secondary">•</span>
-                <span id="currentDateContext" class="opacity-75">Wednesday, June 10, 2026</span>
+                <span class="text-desc">•</span>
+                <span id="currentDateContext" class="text-desc">Wednesday, June 10, 2026</span>
             </div>
         </div>
     </div>
@@ -35,7 +35,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ total_applications }}</div>
-            <div class="opacity-75 small mb-2">Total candidate submissions</div>
+            <div class="text-desc small mb-2">Total candidate submissions</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[14, 18, 22, 29, {{ total_applications }}]" style="height: 100%;"></div>
             </div>
@@ -52,7 +52,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ shortlisted_count }}</div>
-            <div class="opacity-75 small mb-2">Candidates approved for interviews</div>
+            <div class="text-desc small mb-2">Candidates approved for interviews</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[2, 6, 8, 12, {{ shortlisted_count }}]" style="height: 100%;"></div>
             </div>
@@ -69,7 +69,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ pending_count }}</div>
-            <div class="opacity-75 small mb-2">Applications awaiting evaluation</div>
+            <div class="text-desc small mb-2">Applications awaiting evaluation</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[12, 10, 14, 11, {{ pending_count }}]" style="height: 100%;"></div>
             </div>
@@ -84,7 +84,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h5 class="fw-bold mb-1" style="font-size: 1.1rem;">Candidate Funnel Trend</h5>
-                    <p class="opacity-75 small mb-0">Daily application submission volume (Weekly tracking)</p>
+                    <p class="text-desc small mb-0">Daily application submission volume (Weekly tracking)</p>
                 </div>
                 <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2.5">
                     H1 2026
@@ -102,7 +102,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h5 class="fw-bold mb-1" style="font-size: 1.1rem;">Recent Applicant Activity</h5>
-                    <p class="opacity-75 small mb-0">Real-time candidate submissions and status tracking</p>
+                    <p class="text-desc small mb-0">Real-time candidate submissions and status tracking</p>
                 </div>
                 <a href="{% url 'company_applications' %}" class="btn btn-premium btn-premium-secondary py-1.5 px-3" style="font-size: 0.85rem;">View All</a>
             </div>
@@ -128,7 +128,7 @@
                                     </div>
                                     <div>
                                         <div class="fw-bold text-title" style="font-size: 0.95rem;">{{ app.student.user.first_name }} {{ app.student.user.last_name }}</div>
-                                        <div class="opacity-75 small" style="font-size: 0.75rem;">{{ app.student.branch.code }}</div>
+                                        <div class="text-desc small" style="font-size: 0.75rem;">{{ app.student.branch.code }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -144,7 +144,7 @@
                                 {% elif app.status == 'INTERVIEW_SCHEDULED' %}<span class="badge-premium badge-premium-primary" style="background-color: var(--sidebar-active-bg); color: var(--accent-primary); border-color: var(--border-hover);">Interview</span>
                                 {% elif app.status == 'OFFERED' %}<span class="badge-premium badge-premium-success">Offered</span>
                                 {% elif app.status == 'REJECTED' %}<span class="badge-premium badge-premium-danger">Rejected</span>
-                                {% else %}<span class="badge bg-light  rounded-pill px-3">{{ app.get_status_display }}</span>{% endif %}
+                                {% else %}<span class="badge bg-transparent  rounded-pill px-3">{{ app.get_status_display }}</span>{% endif %}
                             </td>
                             <td class="text-end pe-4">
                                 <a href="{% url 'company_application_update' app.pk %}" class="btn btn-premium btn-premium-primary py-1 px-3" style="font-size: 0.8rem;">
@@ -154,7 +154,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-5 opacity-75">
+                            <td colspan="5" class="text-center py-5 text-desc">
                                 <div class="mb-3"><i class="bi bi-inbox display-4 text-light"></i></div>
                                 No applications received yet.
                             </td>

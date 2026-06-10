@@ -10,7 +10,7 @@
                     <h4 class="mb-0 fw-bold ">
                         <i class="bi bi-person-lines-fill text-primary me-2"></i>Student Resume Profile
                     </h4>
-                    <p class="opacity-75 mb-0 small mt-1">Provide accurate records of your CGPA, projects, and skills to maximize your ATS compatibility matching.</p>
+                    <p class="text-desc mb-0 small mt-1">Provide accurate records of your CGPA, projects, and skills to maximize your ATS compatibility matching.</p>
                 </div>
                 <a href="{% url 'student_dashboard' %}" class="btn btn-sm btn-premium btn-premium-secondary border rounded-pill px-3 fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i> Dashboard
@@ -43,7 +43,7 @@
                                     <label for="{{ field.id_for_label }}" class="form-label-premium">{{ field.label }}</label>
                                     
                                     {% if form.instance.resume %}
-                                        <div class="current-resume-card d-flex align-items-center justify-content-between p-3 border rounded-xl bg-light mb-3 shadow-sm">
+                                        <div class="current-resume-card d-flex align-items-center justify-content-between p-3 border rounded-xl bg-transparent mb-3 shadow-sm">
                                             <div class="d-flex align-items-center gap-3">
                                                 <div class="bg-primary text-white rounded p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                                                     <i class="bi bi-file-earmark-pdf-fill fs-4"></i>
@@ -60,14 +60,14 @@
                                             <span class="badge bg-success text-white fw-semibold rounded-pill px-3 py-1">Active File</span>
                                         </div>
                                     {% else %}
-                                        <div class="current-resume-card d-flex align-items-center justify-content-between p-3 border rounded-xl bg-light mb-3 shadow-sm">
+                                        <div class="current-resume-card d-flex align-items-center justify-content-between p-3 border rounded-xl bg-transparent mb-3 shadow-sm">
                                             <div class="d-flex align-items-center gap-3">
                                                 <div class="bg-secondary text-white rounded p-2 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
                                                     <i class="bi bi-file-earmark-x-fill fs-4"></i>
                                                 </div>
                                                 <div>
-                                                    <span class="d-block fw-semibold opacity-75">No resume uploaded yet</span>
-                                                    <span class="opacity-75 small">Please upload a professional PDF resume to apply for placement drives.</span>
+                                                    <span class="d-block fw-semibold text-desc">No resume uploaded yet</span>
+                                                    <span class="text-desc small">Please upload a professional PDF resume to apply for placement drives.</span>
                                                 </div>
                                             </div>
                                             <span class="badge bg-warning  fw-semibold rounded-pill px-3 py-1">Missing</span>

@@ -325,10 +325,10 @@ main {
 .bg-white, .bg-light, .bg-transparent {
     background-color: var(--bg-card) !important;
 }
-.text-dark {
+.text-dark, .text-title {
     color: var(--text-title) !important;
 }
-.text-secondary, .text-muted, .text-black, .text-light {
+.text-secondary, .text-muted, .text-black, .text-light, .text-desc {
     color: var(--text-desc) !important;
 }
 

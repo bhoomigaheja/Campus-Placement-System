@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h2 class="fw-bold mb-0">Active Job Listings</h2>
-        <p class="opacity-75 mb-0">Note: Jobs are created natively by TPO Administrators.</p>
+        <p class="mb-0">Note: Jobs are created natively by TPO Administrators.</p>
     </div>
 </div>
 <div class="row g-4">
@@ -13,20 +13,20 @@
         <div class="card h-100 shadow-sm border-0">
             <div class="card-body">
                 <h5 class="fw-bold mb-1">{{ job.title }}</h5>
-                <p class="opacity-75 small mb-3">Min CGPA: {{ job.min_cgpa }} | Pkg: {{ job.salary_package }}</p>
+                <p class="small mb-3">Min CGPA: {{ job.min_cgpa }} | Pkg: {{ job.salary_package }}</p>
                 <div class="d-flex justify-content-between mb-2">
                     <span class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill fw-semibold border border-primary border-opacity-25">Applications: {{ job.applications.count }}</span>
                 </div>
             </div>
-            <div class="card-footer bg-light border-0 py-3">
+            <div class="card-footer border-0 py-3">
                 <a href="{% url 'company_applications' %}?job={{ job.id }}" class="btn btn-primary w-100 btn-sm fw-semibold">Filter Applicants</a>
             </div>
         </div>
     </div>
     {% empty %}
-    <div class="col-12 text-center py-5 bg-transparent shadow-sm rounded-4">
-        <h4 class="opacity-75 mt-3">No active placements registered for your domain!</h4>
-        <p class="opacity-75">Contact the TPO Administrator to have job drives actively added on behalf of your platform.</p>
+    <div class="col-12 text-center py-5 shadow-sm rounded-4">
+        <h4 class="mt-3">No active placements registered for your domain!</h4>
+        <p>Contact the TPO Administrator to have job drives actively added on behalf of your platform.</p>
     </div>
     {% endfor %}
 </div>

@@ -88,18 +88,18 @@
                 </div>
                 <div class="d-flex flex-column text-start">
                     <span class="fw-bold text-title" style="font-size: 0.85rem;">Placement Cell</span>
-                    <span class="opacity-75" style="font-size: 0.7rem;">
+                    <span class="text-desc" style="font-size: 0.7rem;">
                         {% if user.is_authenticated %}
                             {% if user.is_admin %}TPO Admin{% elif user.is_student %}Student Portal{% else %}Employer Console{% endif %}
                         {% else %}Guest{% endif %}
                     </span>
                 </div>
-                <i class="bi bi-chevron-expand ms-auto opacity-75" style="font-size: 0.8rem;"></i>
+                <i class="bi bi-chevron-expand ms-auto text-desc" style="font-size: 0.8rem;"></i>
             </div>
             
             <ul class="list-unstyled components">
                 {% if user.is_authenticated %}
-                    <li class="px-3 mb-2 mt-1 text-uppercase opacity-75 fw-bold menu-category-label" style="font-size: 0.65rem; letter-spacing: 0.08em;">Main Menu</li>
+                    <li class="px-3 mb-2 mt-1 text-uppercase text-desc fw-bold menu-category-label" style="font-size: 0.65rem; letter-spacing: 0.08em;">Main Menu</li>
                     {% if user.is_admin %}
                         <li class="{% if request.resolver_match.url_name == 'tpo_dashboard' %}active{% endif %}">
                             <a href="{% url 'tpo_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span></a>
@@ -162,7 +162,7 @@
                     {% if user.is_authenticated %}
                         <!-- Notification Dropdown -->
                         <div class="dropdown">
-                            <a class="text-secondary position-relative text-decoration-none px-2" href="#" id="notifDropdown" data-bs-toggle="dropdown">
+                            <a class="text-desc position-relative text-decoration-none px-2" href="#" id="notifDropdown" data-bs-toggle="dropdown">
                                 <i class="bi bi-bell fs-5" style="color: var(--text-desc);"></i>
                                 {% if unread_notif_count > 0 %}
                                 <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
@@ -174,16 +174,16 @@
                                 <li>
                                     <a class="dropdown-item py-2 text-wrap rounded" href="{% url 'notification_read' n.pk %}">
                                         <div class="d-flex gap-2">
-                                            <div class="mt-1"><i class="bi bi-circle-fill {% if not n.is_read %}text-primary{% else %}opacity-75{% endif %}" style="font-size: 8px;"></i></div>
+                                            <div class="mt-1"><i class="bi bi-circle-fill {% if not n.is_read %}text-primary{% else %}text-desc{% endif %}" style="font-size: 8px;"></i></div>
                                             <div>
                                                 <small class="d-block text-title lh-sm">{{ n.message }}</small>
-                                                <small class="opacity-75" style="font-size: 0.7rem;">{{ n.created_at|timesince }} ago</small>
+                                                <small class="text-desc" style="font-size: 0.7rem;">{{ n.created_at|timesince }} ago</small>
                                             </div>
                                         </div>
                                     </a>
                                 </li>
                                 {% empty %}
-                                <li><span class="dropdown-item opacity-75 small text-center py-3">You're all caught up!</span></li>
+                                <li><span class="dropdown-item text-desc small text-center py-3">You're all caught up!</span></li>
                                 {% endfor %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-center text-primary fw-semibold small rounded" href="{% url 'notification_list' %}">View All</a></li>
@@ -299,7 +299,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: var(--theme-close-btn);"></button>
                 </div>
                 <div class="modal-body px-4 py-3">
-                    <p class="opacity-75 mb-0" id="globalDeleteModalBody" style="color: var(--text-desc) !important;">Are you sure you want to permanently delete this item? This action is irreversible.</p>
+                    <p class="text-desc mb-0" id="globalDeleteModalBody" style="color: var(--text-desc) !important;">Are you sure you want to permanently delete this item? This action is irreversible.</p>
                 </div>
                 <div class="modal-footer border-0 pb-4 px-4 pt-0">
                     <button type="button" class="btn btn-premium btn-premium-secondary px-3 py-2" data-bs-dismiss="modal">Cancel</button>

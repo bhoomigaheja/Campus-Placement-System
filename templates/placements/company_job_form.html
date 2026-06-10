@@ -17,7 +17,7 @@
                                 <div class="col-{% if field.name == 'description' or field.name == 'skills_required' %}12{% else %}6{% endif %}">
                                     <label for="{{ field.id_for_label }}" class="form-label fw-medium">{{ field.label }}</label>
                                     {{ field }}
-                                    {% if field.help_text %}<small class="form-text opacity-75">{{ field.help_text|safe }}</small>{% endif %}
+                                    {% if field.help_text %}<small class="form-text text-desc">{{ field.help_text|safe }}</small>{% endif %}
                                     {% if field.errors %}<div class="text-danger small fw-medium mt-1">{{ field.errors.0 }}</div>{% endif %}
                                 </div>
                             {% endif %}
