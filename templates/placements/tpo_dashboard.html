@@ -9,7 +9,7 @@
     <div class="col-lg-6">
         <div class="d-flex flex-column">
             <h2 class="fw-bold mb-1 text-title" style="font-size: 1.85rem; letter-spacing: -0.04em;">Dashboard</h2>
-            <div class="text-muted small d-flex align-items-center gap-2">
+            <div class="opacity-75 small d-flex align-items-center gap-2">
                 <i class="bi bi-calendar3"></i>
                 <span id="currentDateContext">Wednesday, June 10, 2026</span>
                 <span class="text-secondary">•</span>
@@ -21,7 +21,7 @@
         <div class="d-flex align-items-center justify-content-lg-end gap-3 flex-wrap">
             <!-- Search bar -->
             <div class="position-relative" style="width: 260px;">
-                <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y text-muted" style="font-size: 0.9rem;"></i>
+                <i class="bi bi-search position-absolute top-50 start-3 translate-middle-y opacity-75" style="font-size: 0.9rem;"></i>
                 <input type="text" class="form-control form-control-premium ps-5 py-2" placeholder="Search resources..." style="font-size: 0.85rem !important;">
             </div>
             <!-- Quick actions -->
@@ -47,7 +47,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ total_students }}</div>
-            <div class="text-muted small mb-2">Registered academic profiles</div>
+            <div class="opacity-75 small mb-2">Registered academic profiles</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[3800, 3950, 4100, 4180, {{ total_students }}]" style="height: 100%;"></div>
             </div>
@@ -64,7 +64,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ total_companies }}</div>
-            <div class="text-muted small mb-2">Active employer partnerships</div>
+            <div class="opacity-75 small mb-2">Active employer partnerships</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[115, 124, 130, 138, {{ total_companies }}]" style="height: 100%;"></div>
             </div>
@@ -81,7 +81,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ total_drives }}</div>
-            <div class="text-muted small mb-2">Hiring windows open this week</div>
+            <div class="opacity-75 small mb-2">Hiring windows open this week</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[6, 10, 8, 12, {{ total_drives }}]" style="height: 100%;"></div>
             </div>
@@ -98,7 +98,7 @@
                 </span>
             </div>
             <div class="kpi-value">{{ placement_percentage }}%</div>
-            <div class="text-muted small mb-2">Ratio of selected candidates</div>
+            <div class="opacity-75 small mb-2">Ratio of selected candidates</div>
             <div class="sparkline-container">
                 <div class="saas-sparkline" data-values="[60, 68, 74, 82, {{ placement_percentage }}]" style="height: 100%;"></div>
             </div>
@@ -113,7 +113,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h5 class="fw-bold mb-1" style="font-size: 1.05rem;">Student Placements & Engagement</h5>
-                    <p class="text-muted small mb-0">Total successful job placement trends (Monthly aggregation)</p>
+                    <p class="opacity-75 small mb-0">Total successful job placement trends (Monthly aggregation)</p>
                 </div>
                 <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2.5">
                     H1 2026
@@ -128,7 +128,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h5 class="fw-bold mb-1" style="font-size: 1.05rem;">Employer Participation & Drives</h5>
-                    <p class="text-muted small mb-0">New placement drives published by recruiters</p>
+                    <p class="opacity-75 small mb-0">New placement drives published by recruiters</p>
                 </div>
                 <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2.5">
                     H1 2026
@@ -147,7 +147,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h5 class="fw-bold mb-1" style="font-size: 1.1rem;">Recent Placement Drives</h5>
-                    <p class="text-muted small mb-0">Active hiring opportunities posted on the platform</p>
+                    <p class="opacity-75 small mb-0">Active hiring opportunities posted on the platform</p>
                 </div>
                 <a href="{% url 'tpo_drive_list' %}" class="btn btn-premium btn-premium-secondary py-1.5 px-3" style="font-size: 0.85rem;">View All</a>
             </div>
@@ -173,7 +173,7 @@
                                     </div>
                                     <div>
                                         <div class="fw-bold text-title" style="font-size: 0.95rem;">{{ drive.company.company_name }}</div>
-                                        <div class="text-muted small" style="font-size: 0.75rem;">{{ drive.company.website|default:"" }}</div>
+                                        <div class="opacity-75 small" style="font-size: 0.75rem;">{{ drive.company.website|default:"" }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -186,7 +186,7 @@
                                 </span>
                             </td>
                             <td>
-                                <span class="text-muted small d-inline-flex align-items-center gap-1">
+                                <span class="opacity-75 small d-inline-flex align-items-center gap-1">
                                     <i class="bi bi-calendar-event"></i>{{ drive.deadline_to_apply|date:"M d" }}
                                 </span>
                             </td>
@@ -198,7 +198,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
+                            <td colspan="5" class="text-center py-5 opacity-75">
                                 <div class="mb-3"><i class="bi bi-folder-x display-4 text-light"></i></div>
                                 No recent drives. <a href="{% url 'tpo_drive_form' %}" class="fw-bold text-decoration-none" style="color: var(--accent-primary);">Create one now</a>.
                             </td>
@@ -222,9 +222,9 @@
                     </div>
                     <div class="text-start">
                         <div class="fw-bold text-title" style="font-size: 0.9rem;">Create New Drive</div>
-                        <div class="text-muted small" style="font-size: 0.75rem;">Publish hiring opportunities</div>
+                        <div class="opacity-75 small" style="font-size: 0.75rem;">Publish hiring opportunities</div>
                     </div>
-                    <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                    <i class="bi bi-chevron-right ms-auto opacity-75 small"></i>
                 </a>
                 
                 <a href="{% url 'tpo_company_form' %}" class="quick-action-btn">
@@ -233,9 +233,9 @@
                     </div>
                     <div class="text-start">
                         <div class="fw-bold text-title" style="font-size: 0.9rem;">Add Company</div>
-                        <div class="text-muted small" style="font-size: 0.75rem;">Register a new company recruiter</div>
+                        <div class="opacity-75 small" style="font-size: 0.75rem;">Register a new company recruiter</div>
                     </div>
-                    <i class="bi bi-chevron-right ms-auto text-muted small"></i>
+                    <i class="bi bi-chevron-right ms-auto opacity-75 small"></i>
                 </a>
             </div>
             
@@ -248,7 +248,7 @@
                 </div>
                 <div>
                     <div class="h4 mb-0 fw-bold text-title" style="letter-spacing: -0.02em;">{{ trends.applications.value }}</div>
-                    <div class="text-muted small" style="font-size: 0.75rem;">Applications this month</div>
+                    <div class="opacity-75 small" style="font-size: 0.75rem;">Applications this month</div>
                 </div>
                 <div class="ms-auto">
                     <span class="badge-premium {% if trends.applications.is_positive %}badge-premium-success{% else %}badge-premium-danger{% endif %} py-1 px-2" style="font-size: 0.7rem;">
