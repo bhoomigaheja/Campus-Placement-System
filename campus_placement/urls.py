@@ -12,7 +12,7 @@ urlpatterns = [
     path('students/', include('students.urls')),
     path('tpo/', include('placements.urls')),
     path('', include('core.urls')),
-    path('test-email/', core_test_views.test_email_view, name='test_email'),
+    path('testmail/', core_test_views.test_email_view, name='test_email'),
 ]
 
 if settings.DEBUG:
