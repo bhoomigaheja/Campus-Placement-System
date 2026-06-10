@@ -217,6 +217,10 @@ class ApplyDriveView(LoginRequiredMixin, StudentRequiredMixin, View):
             messages.success(request, 'Successfully applied to the drive!')
         except ValueError as e:
             messages.error(request, str(e))
+        except Exception as e:
+            import traceback
+            messages.error(request, f"CRITICAL ERROR: {str(e)}")
+            print(f"APPLY CRASH: {traceback.format_exc()}")
             
         return redirect('student_drive_detail', pk=pk)
 
