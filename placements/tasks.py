@@ -11,13 +11,16 @@ from django.conf import settings
 def send_email_task(subject, message, recipient_list):
     def _send_async():
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusplacement.com')
-        send_mail(
-            subject,
-            message,
-            from_email,
-            recipient_list,
-            fail_silently=True,
-        )
+        try:
+            send_mail(
+                subject,
+                message,
+                from_email,
+                recipient_list,
+                fail_silently=False,
+            )
+        except Exception as e:
+            raise e
     threading.Thread(target=_send_async, daemon=True).start()
     return f"Email dispatch initiated for {recipient_list}"
 

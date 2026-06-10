@@ -38,11 +38,12 @@ class NotificationService:
                         from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusconnect.com'),
                         recipient_list=[user.email],
                         html_message=html_message,
-                        fail_silently=True
+                        fail_silently=False
                     )
                     logger.info(f"Email sent successfully to {user.email} for: {email_subject}")
                 except Exception as e:
                     logger.error(f"Failed to send email to {user.email}: {e}")
+                    raise e
             
             import threading
             threading.Thread(target=_send_company_email, daemon=True).start()
