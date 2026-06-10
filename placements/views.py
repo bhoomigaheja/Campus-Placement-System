@@ -415,4 +415,10 @@ class DownloadCompanyTemplateView(LoginRequiredMixin, TPORequiredMixin, View):
 from django.http import HttpResponse
 def email_debug(request):
     from django.conf import settings
-    return HttpResponse(f'EMAIL_HOST: {settings.EMAIL_HOST} <br> EMAIL_USER: {settings.EMAIL_HOST_USER} <br> DEFAULT_FROM: {settings.DEFAULT_FROM_EMAIL}')
+    try:
+        from django.core.mail import send_mail
+        send_mail('Test Render Email', 'Testing from Render server', settings.DEFAULT_FROM_EMAIL, [settings.EMAIL_HOST_USER], fail_silently=False)
+        return HttpResponse('SEND SUCCESS')
+    except Exception as e:
+        import traceback
+        return HttpResponse(f'ERROR: {str(e)} <br> {traceback.format_exc()}')
