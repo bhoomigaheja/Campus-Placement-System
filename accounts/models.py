@@ -55,6 +55,11 @@ class StudentProfile(models.Model):
     projects = models.TextField(blank=True)
     internships = models.TextField(blank=True)
 
+    def save(self, *args, **kwargs):
+        if not self.enrollment_number:
+            self.enrollment_number = None
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.user.email} - Profile"
 
