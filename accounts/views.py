@@ -24,19 +24,32 @@ class StudentSignUpView(CreateView):
         
         # Notify student of successful signup
         NotificationService.create_and_send(
-            user=admin_user,
-            message=msg,
-            email_subject="New Student Registration",
-            email_template='emails/tpo_notification.html',
+            user=user,
+            message="Welcome to CampusConnect! Your student account has been created successfully.",
+            email_subject="Welcome to CampusConnect",
+            email_template="emails/base_notification.html",
             context={
-                'alert_title': 'New Student Registered',
-                'alert_message': 'A new student has registered and is pending approval.',
-                'details': {
-                    'Name': f"{user.first_name} {user.last_name}",
-                    'Email': user.email
-                }
+                'title': 'Account Created',
+                'message': 'Welcome to CampusConnect! Your student account has been created successfully.',
+                'action_url': 'https://campus-placement-system-1.onrender.com/students/dashboard/'
             }
         )
+        
+        if admin_user:
+            NotificationService.create_and_send(
+                user=admin_user,
+                message=msg,
+                email_subject="New Student Registration",
+                email_template='emails/tpo_notification.html',
+                context={
+                    'alert_title': 'New Student Registered',
+                    'alert_message': 'A new student has registered and is pending approval.',
+                    'details': {
+                        'Name': f"{user.first_name} {user.last_name}",
+                        'Email': user.email
+                    }
+                }
+            )
         
         return redirect('dashboard_redirect')
 
