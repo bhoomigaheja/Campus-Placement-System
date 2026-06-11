@@ -167,3 +167,145 @@ def init_tpo_admin(request):
         last_name="TPO"
     )
     return HttpResponse(f"<h3>TPO Admin Account successfully initialized!</h3><p>Email: <strong>{email}</strong><br>Password: <strong>{password}</strong></p><p>Standard academic branches (CSE, IT, ECE, ME, CE, EE) and core engineering skills have been automatically seeded into the database!</p><p><a href='/login/'>Click here to Login</a></p>")
+
+def init_tpo(request):
+    """
+    Utility view to create initial TPO admin if none exists.
+    Must be accessed manually (e.g., /accounts/init-tpo/).
+    """
+    if not User.objects.filter(is_admin=True).exists():
+        admin = User.objects.create_superuser(
+            email='admin@campusconnect.com',
+            password='admin',
+            first_name='TPO',
+            last_name='Admin'
+        )
+        return render(request, 'accounts/init_tpo_success.html', {'admin': admin})
+    return redirect('login')
+
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.cache import cache
+from .models import AuditLog
+from .forms import ForgotPasswordForm, SetNewPasswordForm
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+class ForgotPasswordView(View):
+    def get(self, request):
+        form = ForgotPasswordForm()
+        return render(request, 'accounts/forgot_password.html', {'form': form})
+
+    def post(self, request):
+        form = ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            ip = get_client_ip(request)
+            
+            ip_key = f"forgot_pwd_ip_{ip}"
+            email_key = f"forgot_pwd_email_{email}"
+            
+            ip_count = cache.get(ip_key, 0)
+            email_count = cache.get(email_key, 0)
+            
+            if ip_count >= 20 or email_count >= 5:
+                messages.error(request, "Too many requests. Please try again later.")
+                return render(request, 'accounts/forgot_password.html', {'form': form})
+                
+            cache.set(ip_key, ip_count + 1, timeout=3600)
+            cache.set(email_key, email_count + 1, timeout=3600)
+            
+            AuditLog.objects.create(email=email, action="Password reset requested", ip_address=ip)
+            
+            user = User.objects.filter(email=email).first()
+            if user:
+                token_generator = PasswordResetTokenGenerator()
+                token = token_generator.make_token(user)
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                reset_url = request.build_absolute_uri(reverse_lazy('reset_password', kwargs={'uidb64': uidb64, 'token': token}))
+                
+                NotificationService.create_and_send(
+                    user=user,
+                    message="Password reset requested.",
+                    email_subject="Reset Your CampusSaaS Password",
+                    email_template="emails/reset_password_email.html",
+                    context={
+                        'user_name': getattr(user, 'first_name', '') or user.email,
+                        'reset_url': reset_url,
+                    }
+                )
+                
+            messages.success(request, "If an account exists for this email, a password reset link has been sent.")
+            return render(request, 'accounts/forgot_password.html', {'form': ForgotPasswordForm()})
+            
+        return render(request, 'accounts/forgot_password.html', {'form': form})
+
+class ResetPasswordView(View):
+    def get_user(self, uidb64):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+        return user
+
+    def get(self, request, uidb64, token):
+        user = self.get_user(uidb64)
+        token_generator = PasswordResetTokenGenerator()
+        
+        if user is not None and token_generator.check_token(user, token):
+            form = SetNewPasswordForm()
+            return render(request, 'accounts/reset_password.html', {'form': form})
+        else:
+            AuditLog.objects.create(action="Invalid token access attempt", ip_address=get_client_ip(request))
+            return render(request, 'accounts/reset_password_invalid.html')
+
+    def post(self, request, uidb64, token):
+        user = self.get_user(uidb64)
+        token_generator = PasswordResetTokenGenerator()
+        
+        if user is not None and token_generator.check_token(user, token):
+            form = SetNewPasswordForm(request.POST)
+            if form.is_valid():
+                user.set_password(form.cleaned_data['password'])
+                user.force_password_change = False
+                user.save()
+                AuditLog.objects.create(user=user, email=user.email, action="Password reset completed", ip_address=get_client_ip(request))
+                return redirect('reset_password_success')
+            return render(request, 'accounts/reset_password.html', {'form': form})
+        else:
+            AuditLog.objects.create(action="Invalid token access attempt (POST)", ip_address=get_client_ip(request))
+            return render(request, 'accounts/reset_password_invalid.html')
+
+class ResetPasswordSuccessView(View):
+    def get(self, request):
+        return render(request, 'accounts/reset_password_done.html')
+
+class ForceChangePasswordView(View):
+    def get(self, request):
+        if not request.user.is_authenticated or not request.user.force_password_change:
+            return redirect('dashboard_redirect')
+        form = SetNewPasswordForm()
+        return render(request, 'accounts/reset_password.html', {'form': form, 'force_change': True})
+
+    def post(self, request):
+        if not request.user.is_authenticated or not request.user.force_password_change:
+            return redirect('dashboard_redirect')
+        form = SetNewPasswordForm(request.POST)
+        if form.is_valid():
+            request.user.set_password(form.cleaned_data['password'])
+            request.user.force_password_change = False
+            request.user.save()
+            AuditLog.objects.create(user=request.user, email=request.user.email, action="Forced password change completed", ip_address=get_client_ip(request))
+            login(request, request.user) # Re-authenticate
+            messages.success(request, "Your password has been updated successfully.")
+            return redirect('dashboard_redirect')
+        return render(request, 'accounts/reset_password.html', {'form': form, 'force_change': True})

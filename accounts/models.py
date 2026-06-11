@@ -23,12 +23,23 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_admin', True)
         return self.create_user(email, password, **extra_fields)
 
+class AuditLog(models.Model):
+    user = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    action = models.CharField(max_length=255)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.action} by {self.email or self.user} at {self.timestamp}"
+
 class User(AbstractUser):
     username = models.CharField(max_length=150, unique=False, blank=True, null=True)
     email = models.EmailField(_('email address'), unique=True)
     is_student = models.BooleanField(default=False)
     is_company = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    force_password_change = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

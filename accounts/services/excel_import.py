@@ -69,12 +69,15 @@ class BulkImportService:
                     first_name = name.split()[0]
                     last_name = " ".join(name.split()[1:]) if len(name.split()) > 1 else ""
                     
+                    temp_password = get_random_string(10, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()')
+                    
                     user = User.objects.create_user(
                         email=email,
-                        password=password,
+                        password=temp_password,
                         first_name=first_name,
                         last_name=last_name,
-                        is_student=True
+                        is_student=True,
+                        force_password_change=True
                     )
                     
                     branch = None
@@ -94,6 +97,19 @@ class BulkImportService:
                         for s_name in skill_names:
                             skill_obj, _ = Skill.objects.get_or_create(name=s_name)
                             profile.skills.add(skill_obj)
+                            
+                    NotificationService.create_and_send(
+                        user=user,
+                        message=f"Welcome to CampusSaaS! Your temporary password is {temp_password}. Please login and change it immediately.",
+                        email_subject="Welcome to CampusSaaS - Login Instructions",
+                        email_template="emails/bulk_import_welcome.html",
+                        context={
+                            'user_email': email,
+                            'temp_password': temp_password,
+                            'login_url': 'https://campus-placement-system-1.onrender.com/login/',
+                            'name': name
+                        }
+                    )
                             
                     results['success'] += 1
             except Exception as e:
@@ -151,12 +167,15 @@ class BulkImportService:
                     first_name = contact_person.split()[0] if contact_person else company_name
                     last_name = " ".join(contact_person.split()[1:]) if contact_person and len(contact_person.split()) > 1 else ""
                     
+                    temp_password = get_random_string(10, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()')
+                    
                     user = User.objects.create_user(
                         email=email,
-                        password=password,
+                        password=temp_password,
                         first_name=first_name,
                         last_name=last_name,
-                        is_company=True
+                        is_company=True,
+                        force_password_change=True
                     )
                     
                     CompanyProfile.objects.create(
@@ -164,6 +183,19 @@ class BulkImportService:
                         company_name=company_name,
                         website=website,
                         industry=industry
+                    )
+                    
+                    NotificationService.create_and_send(
+                        user=user,
+                        message=f"Welcome to CampusSaaS! Your temporary password is {temp_password}. Please login and change it immediately.",
+                        email_subject="Welcome to CampusSaaS - Login Instructions",
+                        email_template="emails/bulk_import_welcome.html",
+                        context={
+                            'user_email': email,
+                            'temp_password': temp_password,
+                            'login_url': 'https://campus-placement-system-1.onrender.com/login/',
+                            'name': company_name
+                        }
                     )
                     
                     results['success'] += 1

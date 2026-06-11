@@ -1,0 +1,181 @@
+
+
+
+    
+    
+    CampusSaaS Notification
+    
+    
+        /* Client-specific resets */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        
+        /* Base styles */
+        body {
+            background-color: #F8FAFC;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            color: #0F172A;
+        }
+
+        /* Mobile Responsive */
+        @media screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+                margin: auto !important;
+            }
+            .content-padding {
+                padding: 24px !important;
+            }
+            .button-wrapper {
+                width: 100% !important;
+            }
+            .button {
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+            .badge {
+                display: block !important;
+                margin-top: 10px;
+                text-align: center;
+            }
+        }
+    
+
+
+    
+    
+        Your application for SWE at Google has been successfully submitted.
+    
+
+    
+        
+            
+                
+                
+                    
+                    
+                    
+                        
+                            
+                                
+                                    
+                                        CampusSaaS
+                                        Campus Placement Management System
+                                    
+                                
+                            
+                        
+                    
+
+                    
+                    
+                        
+                            
+
+    
+        
+            
+                
+                    
+                        Application Submitted
+                    
+                
+            
+        
+    
+    
+        
+            Great job, Test!
+        
+    
+    
+        
+            
+                Your career journey is moving forward. Your application for the SWE role at Google has been securely delivered to their recruitment team.
+            
+        
+    
+    
+    
+    
+        
+            
+                
+                    
+                        
+                            
+                                
+                                    🚀
+                                
+                                
+                                    AI Smart Match Activated
+                                    
+                                        Our intelligent system has analyzed your resume, verified your technical skills, and calculated your match score for the recruiters.
+                                    
+                                
+                            
+                        
+                    
+                
+            
+        
+    
+
+    
+        
+            
+                Keep an eye on your inbox. The recruitment team will notify you directly if your profile is shortlisted for the upcoming interview rounds.
+            
+        
+    
+
+    
+    
+        
+            
+                
+                    
+                        
+                            Track Application Status
+                        
+                    
+                
+            
+        
+    
+
+
+                        
+                    
+
+                    
+                    
+                        
+                            
+                                
+                                    
+                                        CampusSaaS &bull; Empowering the next generation.
+                                        You are receiving this email because you have an account on our platform.
+                                        &copy; 2026 CampusSaaS. All rights reserved.
+                                    
+                                
+                            
+                        
+                    
+                
+                
+                
+                
+                    
+                        &nbsp;
+                    
+                
+            
+        
+    
+
+
