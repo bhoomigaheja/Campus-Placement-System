@@ -17,9 +17,21 @@
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
-                    <div class="alert alert-danger py-2 px-3 small">
-                        {{ form.non_field_errors.0 }}
-                    </div>
+                        {% if '|UNVERIFIED|' in form.non_field_errors.0 %}
+                            <div class="alert alert-warning py-3 px-3 small text-center mb-4">
+                                <strong>Verification Required</strong><br>
+                                Please verify your email address before logging in.
+                                <form method="post" action="{% url 'resend_verification' %}" class="mt-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="email" value="{{ request.POST.username }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-warning text-dark fw-bold w-100">Resend Verification Email</button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger py-2 px-3 small">
+                                {{ form.non_field_errors.0 }}
+                            </div>
+                        {% endif %}
                     {% endif %}
                     
                     <div class="mb-3">

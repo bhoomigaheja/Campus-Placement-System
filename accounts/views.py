@@ -19,19 +19,22 @@ class StudentSignUpView(CreateView):
         user = form.save()
         admin_user = User.objects.filter(is_superuser=True).first()
         msg = "A new student has registered."
-        login(self.request, user)
-        messages.success(self.request, "Account created successfully! Welcome to the Campus Placement Platform.")
         
-        # Notify student of successful signup
+        # Generate token
+        token_generator = PasswordResetTokenGenerator()
+        token = token_generator.make_token(user)
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        verify_url = self.request.build_absolute_uri(reverse_lazy('verify_email', kwargs={'uidb64': uidb64, 'token': token}))
+        
+        # Notify student to verify
         NotificationService.create_and_send(
             user=user,
-            message="Welcome to CampusConnect! Your student account has been created successfully.",
-            email_subject="Welcome to CampusConnect",
-            email_template="emails/base_notification.html",
+            message="Please verify your email address.",
+            email_subject="Verify Your CampusSaaS Account",
+            email_template="emails/verify_email.html",
             context={
-                'title': 'Account Created',
-                'message': 'Welcome to CampusConnect! Your student account has been created successfully.',
-                'action_url': 'https://campus-placement-system-1.onrender.com/students/dashboard/'
+                'user_name': user.first_name,
+                'verify_url': verify_url
             }
         )
         
@@ -51,7 +54,7 @@ class StudentSignUpView(CreateView):
                 }
             )
         
-        return redirect('dashboard_redirect')
+        return render(self.request, 'accounts/registration_pending.html', {'email': user.email})
 
 from .forms import CompanySignUpForm
 
@@ -63,19 +66,22 @@ class CompanySignUpView(CreateView):
     
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)
-        messages.success(self.request, "Recruiter profile created successfully! Welcome to the Campus Placement Platform.")
         
-        # Notify company of successful signup
+        # Generate token
+        token_generator = PasswordResetTokenGenerator()
+        token = token_generator.make_token(user)
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        verify_url = self.request.build_absolute_uri(reverse_lazy('verify_email', kwargs={'uidb64': uidb64, 'token': token}))
+        
+        # Notify company to verify
         NotificationService.create_and_send(
             user=user,
-            message="Welcome to CampusConnect! Your recruiter profile has been created successfully.",
-            email_subject="Welcome to CampusConnect",
-            email_template="emails/base_notification.html",
+            message="Please verify your email address.",
+            email_subject="Verify Your CampusSaaS Account",
+            email_template="emails/verify_email.html",
             context={
-                'title': 'Account Created',
-                'message': 'Welcome to CampusConnect! Your recruiter profile has been created successfully.',
-                'action_url': '#'
+                'user_name': user.first_name,
+                'verify_url': verify_url
             }
         )
 
@@ -96,11 +102,14 @@ class CompanySignUpView(CreateView):
                 }
             )
         
-        return redirect('dashboard_redirect')
+        return render(self.request, 'accounts/registration_pending.html', {'email': user.email})
+
+from .forms import CustomAuthenticationForm
 
 class CustomLoginView(LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
+    authentication_form = CustomAuthenticationForm
 
     def form_valid(self, form):
         messages.success(self.request, f"Welcome back, {form.get_user().first_name or 'User'}!")
@@ -309,3 +318,46 @@ class ForceChangePasswordView(View):
             messages.success(request, "Your password has been updated successfully.")
             return redirect('dashboard_redirect')
         return render(request, 'accounts/reset_password.html', {'form': form, 'force_change': True})
+
+class VerifyEmailView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        token_generator = PasswordResetTokenGenerator()
+        if user is not None and token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+            AuditLog.objects.create(user=user, email=user.email, action="Email verified", ip_address=get_client_ip(request))
+            messages.success(request, "Your email has been verified successfully! You can now log in.")
+            return redirect('login')
+        else:
+            messages.error(request, "The verification link is invalid or has expired.")
+            return redirect('login')
+
+class ResendVerificationEmailView(View):
+    def post(self, request):
+        email = request.POST.get('email')
+        if email:
+            user = User.objects.filter(email=email, is_active=False).first()
+            if user:
+                token_generator = PasswordResetTokenGenerator()
+                token = token_generator.make_token(user)
+                uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                verify_url = request.build_absolute_uri(reverse_lazy('verify_email', kwargs={'uidb64': uidb64, 'token': token}))
+                
+                NotificationService.create_and_send(
+                    user=user,
+                    message="Please verify your email address.",
+                    email_subject="Verify Your CampusSaaS Account",
+                    email_template="emails/verify_email.html",
+                    context={
+                        'user_name': getattr(user, 'first_name', '') or user.email,
+                        'verify_url': verify_url
+                    }
+                )
+        messages.success(request, "If an inactive account exists for this email, a verification link has been sent.")
+        return redirect('login')

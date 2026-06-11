@@ -19,6 +19,7 @@ class StudentSignUpForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_student = True
+        user.is_active = False # Require email verification
         user.username = self.cleaned_data.get('email') # Username is not used but kept for abstract user compat
         if commit:
             user.save()
@@ -42,6 +43,7 @@ class CompanySignUpForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_company = True
+        user.is_active = False # Require email verification
         user.username = self.cleaned_data.get('email')
         if commit:
             user.save()
@@ -74,3 +76,15 @@ class SetNewPasswordForm(forms.Form):
                 self.add_error('password', "Password must contain at least one number.")
 
         return cleaned_data
+
+from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ValidationError
+
+class CustomAuthenticationForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        if not user.is_active:
+            raise ValidationError(
+                "Please verify your email address before logging in. |UNVERIFIED|",
+                code='inactive',
+            )
+        super().confirm_login_allowed(user)

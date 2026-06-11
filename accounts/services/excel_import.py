@@ -6,8 +6,10 @@ from accounts.models import StudentProfile, CompanyProfile
 from students.models import Branch, Skill
 from core.services import NotificationService
 from io import BytesIO
-
-User = get_user_model()
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
 
 class BulkImportService:
     @staticmethod
@@ -77,6 +79,7 @@ class BulkImportService:
                         first_name=first_name,
                         last_name=last_name,
                         is_student=True,
+                        is_active=False,
                         force_password_change=True
                     )
                     
@@ -108,6 +111,22 @@ class BulkImportService:
                             'temp_password': temp_password,
                             'login_url': 'https://campus-placement-system-1.onrender.com/login/',
                             'name': name
+                        }
+                    )
+                    
+                    token_generator = PasswordResetTokenGenerator()
+                    token = token_generator.make_token(user)
+                    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                    verify_url = "https://campus-placement-system-1.onrender.com" + reverse('verify_email', kwargs={'uidb64': uidb64, 'token': token})
+                    
+                    NotificationService.create_and_send(
+                        user=user,
+                        message="Please verify your email address.",
+                        email_subject="Verify Your CampusSaaS Account",
+                        email_template="emails/verify_email.html",
+                        context={
+                            'user_name': getattr(user, 'first_name', '') or user.email,
+                            'verify_url': verify_url
                         }
                     )
                             
@@ -175,6 +194,7 @@ class BulkImportService:
                         first_name=first_name,
                         last_name=last_name,
                         is_company=True,
+                        is_active=False,
                         force_password_change=True
                     )
                     
@@ -195,6 +215,22 @@ class BulkImportService:
                             'temp_password': temp_password,
                             'login_url': 'https://campus-placement-system-1.onrender.com/login/',
                             'name': company_name
+                        }
+                    )
+                    
+                    token_generator = PasswordResetTokenGenerator()
+                    token = token_generator.make_token(user)
+                    uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+                    verify_url = "https://campus-placement-system-1.onrender.com" + reverse('verify_email', kwargs={'uidb64': uidb64, 'token': token})
+                    
+                    NotificationService.create_and_send(
+                        user=user,
+                        message="Please verify your email address.",
+                        email_subject="Verify Your CampusSaaS Account",
+                        email_template="emails/verify_email.html",
+                        context={
+                            'user_name': getattr(user, 'first_name', '') or user.email,
+                            'verify_url': verify_url
                         }
                     )
                     
