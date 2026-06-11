@@ -1,0 +1,79 @@
+{% extends "emails/base_email.html" %}
+
+{% block preheader %}Your application for {{ job_title }} at {{ company_name }} has been successfully submitted.{% endblock %}
+
+{% block content %}
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding-bottom: 24px;">
+            <table border="0" cellpadding="0" cellspacing="0" style="background-color: #EEF2FF; border-radius: 9999px;">
+                <tr>
+                    <td style="padding: 6px 16px; color: #4F46E5; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Application Submitted
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-bottom: 16px;">
+            <h2 style="margin: 0; color: #0F172A; font-size: 24px; font-weight: 700; line-height: 32px;">Great job, {{ student_name }}!</h2>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-bottom: 32px;">
+            <p style="margin: 0; color: #475569; font-size: 16px; line-height: 24px;">
+                Your career journey is moving forward. Your application for the <strong>{{ job_title }}</strong> role at <strong>{{ company_name }}</strong> has been securely delivered to their recruitment team.
+            </p>
+        </td>
+    </tr>
+    
+    <!-- AI Highlight Card -->
+    <tr>
+        <td style="padding-bottom: 32px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ECFDF5; border-radius: 12px; border: 1px solid #D1FAE5;">
+                <tr>
+                    <td style="padding: 20px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                            <tr>
+                                <td width="30" valign="top" style="font-size: 20px; line-height: 20px;">
+                                    🚀
+                                </td>
+                                <td>
+                                    <h3 style="margin: 0 0 4px 0; color: #065F46; font-size: 15px; font-weight: 600;">AI Smart Match Activated</h3>
+                                    <p style="margin: 0; color: #047857; font-size: 14px; line-height: 20px;">
+                                        Our intelligent system has analyzed your resume, verified your technical skills, and calculated your match score for the recruiters.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="padding-bottom: 32px;">
+            <p style="margin: 0; color: #475569; font-size: 15px; line-height: 24px;">
+                Keep an eye on your inbox. The recruitment team will notify you directly if your profile is shortlisted for the upcoming interview rounds.
+            </p>
+        </td>
+    </tr>
+
+    <!-- CTA Button -->
+    <tr>
+        <td align="left">
+            <table border="0" cellpadding="0" cellspacing="0" class="button-wrapper">
+                <tr>
+                    <td align="center" style="border-radius: 8px; background-color: #6366F1;">
+                        <a href="{{ action_url|default:'https://campus-placement-system-1.onrender.com/tpo/student/dashboard/' }}" class="button" target="_blank" style="display: inline-block; padding: 14px 28px; font-family: 'Inter', sans-serif; font-size: 15px; color: #FFFFFF; text-decoration: none; font-weight: 600; border-radius: 8px; border: 1px solid #6366F1;">
+                            Track Application Status
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}

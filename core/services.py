@@ -15,8 +15,11 @@ class NotificationService:
         Centralized notification service that creates a database Notification
         and synchronously sends an email. Designed to be future-ready for Celery/Redis.
         """
-        # 1. Create In-App Notification
-        notification = Notification.objects.create(user=user, message=message)
+        try:
+            notification = Notification.objects.create(user=user, message=message)
+        except Exception as e:
+            logger.error(f"Failed to create notification for {user}: {e}")
+            notification = None
 
         # 2. Send Email if subject is provided
         if email_subject and user.email:

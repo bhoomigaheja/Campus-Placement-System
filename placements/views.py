@@ -162,8 +162,16 @@ class InterviewScheduleCreateView(LoginRequiredMixin, TPORequiredMixin, CreateVi
             user=self.object.application.student.user,
             message=msg,
             email_subject="Interview Scheduled",
-            email_template="emails/base_notification.html",
-            context={'title': 'Interview Scheduled', 'message': msg, 'action_url': '#'}
+            email_template="emails/interview_scheduled.html",
+            context={
+                'student_name': self.object.application.student.user.first_name,
+                'job_title': self.object.application.job.title,
+                'company_name': self.object.application.job.company.company_name,
+                'scheduled_at': self.object.scheduled_at.strftime('%Y-%m-%d %H:%M'),
+                'mode': "Online" if self.object.mode == 'ONLINE' else "In-Person",
+                'link': self.object.location_link,
+                'notes': self.object.notes,
+            }
         )
         return response
         
@@ -316,9 +324,19 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
                 user=self.object.student.user,
                 message=msg,
                 email_subject="Interview Update",
-                email_template="emails/base_notification.html",
-                context={'title': 'Interview Details Updated', 'message': msg, 'action_url': '#'}
+                email_template="emails/interview_scheduled.html",
+                context={
+                    'student_name': self.object.student.user.first_name,
+                    'job_title': self.object.job.title,
+                    'company_name': self.object.job.company.company_name,
+                    'scheduled_at': scheduled_at.strftime('%d %b, %Y - %I:%M %p'),
+                    'mode': mode_display,
+                    'link': link,
+                    'notes': notes,
+                }
             )
+            
+            messages.success(self.request, "Interview details updated successfully and notification sent.")
             
         ApplicationService.update_application_status(
             self.object, 

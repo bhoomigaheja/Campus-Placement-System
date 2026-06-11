@@ -33,14 +33,34 @@ class ApplicationService:
         try:
             application = Application.objects.create(student=student_profile, job=job)
             
-            # Notify company
+            # 1. Notify company
             msg = f"New candidate '{student_profile.user.first_name}' has applied securely for position '{job.title}'"
             NotificationService.create_and_send(
                 user=job.company.user,
                 message=msg,
                 email_subject=f"New Applicant for {job.title}",
-                email_template='emails/base_notification.html',
-                context={'title': 'New Application Received', 'message': msg, 'action_url': '#'}
+                email_template='emails/new_application.html',
+                context={
+                    'job_title': job.title,
+                    'student_name': f"{student_profile.user.first_name} {student_profile.user.last_name}",
+                    'branch': student_profile.branch.name if student_profile.branch else 'N/A',
+                    'cgpa': student_profile.cgpa,
+                    'match_score': None, # Gets populated asynchronously later
+                }
+            )
+            
+            # 2. Notify student
+            student_msg = f"Your application for '{job.title}' at {job.company.company_name} was successful."
+            NotificationService.create_and_send(
+                user=student_profile.user,
+                message=student_msg,
+                email_subject=f"Application Submitted: {job.title}",
+                email_template='emails/application_submitted.html',
+                context={
+                    'student_name': student_profile.user.first_name,
+                    'job_title': job.title,
+                    'company_name': job.company.company_name,
+                }
             )
             return application
         except IntegrityError:
@@ -58,7 +78,13 @@ class ApplicationService:
             user=application.student.user,
             message=msg,
             email_subject=f"Application Status Updated: {application.job.title}",
-            email_template='emails/base_notification.html',
-            context={'title': 'Status Update', 'message': msg, 'action_url': '#'}
+            email_template='emails/status_update.html',
+            context={
+                'student_name': application.student.user.first_name,
+                'job_title': application.job.title,
+                'company_name': application.job.company.company_name,
+                'new_status': application.get_status_display(),
+                'remarks': remarks
+            }
         )
         return application

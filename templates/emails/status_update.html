@@ -1,0 +1,83 @@
+{% extends "emails/base_email.html" %}
+
+{% block preheader %}Your application status for {{ job_title }} has been updated to {{ new_status }}.{% endblock %}
+
+{% block content %}
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td style="padding-bottom: 24px;">
+            <!-- Dynamic Color Badge based on status -->
+            <table border="0" cellpadding="0" cellspacing="0" style="
+                {% if new_status == 'Shortlisted' or new_status == 'Selected' %}
+                    background-color: #ECFDF5;
+                {% elif new_status == 'Rejected' %}
+                    background-color: #FEF2F2;
+                {% else %}
+                    background-color: #F8FAFC;
+                {% endif %}
+                border-radius: 9999px;">
+                <tr>
+                    <td style="padding: 6px 16px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+                        {% if new_status == 'Shortlisted' or new_status == 'Selected' %}
+                            color: #059669;
+                        {% elif new_status == 'Rejected' %}
+                            color: #DC2626;
+                        {% else %}
+                            color: #64748B;
+                        {% endif %}">
+                        Status Update: {{ new_status }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-bottom: 16px;">
+            <h2 style="margin: 0; color: #0F172A; font-size: 24px; font-weight: 700; line-height: 32px;">Hi {{ student_name }},</h2>
+        </td>
+    </tr>
+    <tr>
+        <td style="padding-bottom: 24px;">
+            <p style="margin: 0; color: #475569; font-size: 16px; line-height: 24px;">
+                There has been an update regarding your application for the <strong>{{ job_title }}</strong> role at <strong>{{ company_name }}</strong>.
+            </p>
+        </td>
+    </tr>
+
+    <!-- Status Highlight Box -->
+    <tr>
+        <td style="padding-bottom: 32px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #F8FAFC; border-radius: 12px; border: 1px solid #E2E8F0;">
+                <tr>
+                    <td style="padding: 24px;">
+                        <p style="margin: 0 0 8px 0; color: #64748B; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Current Status</p>
+                        <p style="margin: 0 0 16px 0; color: #0F172A; font-size: 18px; font-weight: 600;">{{ new_status }}</p>
+                        
+                        {% if remarks %}
+                        <p style="margin: 0 0 8px 0; color: #64748B; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Message from Recruiter</p>
+                        <p style="margin: 0; color: #334155; font-size: 15px; line-height: 22px; font-style: italic; border-left: 3px solid #CBD5E1; padding-left: 12px;">
+                            "{{ remarks }}"
+                        </p>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- CTA Button -->
+    <tr>
+        <td align="left">
+            <table border="0" cellpadding="0" cellspacing="0" class="button-wrapper">
+                <tr>
+                    <td align="center" style="border-radius: 8px; background-color: #6366F1;">
+                        <a href="{{ action_url|default:'https://campus-placement-system-1.onrender.com/tpo/student/dashboard/' }}" class="button" target="_blank" style="display: inline-block; padding: 14px 28px; font-family: 'Inter', sans-serif; font-size: 15px; color: #FFFFFF; text-decoration: none; font-weight: 600; border-radius: 8px; border: 1px solid #6366F1;">
+                            View Application Details
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}

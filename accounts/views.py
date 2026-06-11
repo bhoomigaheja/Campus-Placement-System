@@ -17,19 +17,24 @@ class StudentSignUpView(CreateView):
     
     def form_valid(self, form):
         user = form.save()
+        admin_user = User.objects.filter(is_superuser=True).first()
+        msg = "A new student has registered."
         login(self.request, user)
         messages.success(self.request, "Account created successfully! Welcome to the Campus Placement Platform.")
         
         # Notify student of successful signup
         NotificationService.create_and_send(
-            user=user,
-            message="Welcome to CampusConnect! Your student account has been created successfully.",
-            email_subject="Welcome to CampusConnect",
-            email_template="emails/base_notification.html",
+            user=admin_user,
+            message=msg,
+            email_subject="New Student Registration",
+            email_template='emails/tpo_notification.html',
             context={
-                'title': 'Account Created',
-                'message': 'Welcome to CampusConnect! Your student account has been created successfully.',
-                'action_url': '#'
+                'alert_title': 'New Student Registered',
+                'alert_message': 'A new student has registered and is pending approval.',
+                'details': {
+                    'Name': f"{user.first_name} {user.last_name}",
+                    'Email': user.email
+                }
             }
         )
         
@@ -60,6 +65,23 @@ class CompanySignUpView(CreateView):
                 'action_url': '#'
             }
         )
+
+        admin_user = User.objects.filter(is_superuser=True).first()
+        if admin_user:
+            NotificationService.create_and_send(
+                user=admin_user,
+                message="A new company has registered.",
+                email_subject="New Company Registration",
+                email_template='emails/tpo_notification.html',
+                context={
+                    'alert_title': 'New Company Registered',
+                    'alert_message': 'A new company has registered on the platform.',
+                    'details': {
+                        'Company Name': form.cleaned_data.get('company_name'),
+                        'HR Email': user.email
+                    }
+                }
+            )
         
         return redirect('dashboard_redirect')
 
