@@ -1,139 +1,166 @@
 {% extends 'base.html' %}
-{% block title %}{{ drive.title }} | Opportunity Details{% endblock %}
+{% block title %}{{ drive.title }} | CareerConnect{% endblock %}
+{% block page_title %}Job Opportunity{% endblock %}
+
+{% block extra_css %}
+<style>
+    .company-banner-header {
+        height: 200px;
+        background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-app) 100%);
+        border-radius: 16px 16px 0 0;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid var(--border-color);
+    }
+    .company-banner-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1) 0%, transparent 60%);
+    }
+    .company-logo-large {
+        position: absolute;
+        bottom: -40px;
+        left: 40px;
+        width: 120px;
+        height: 120px;
+        background: var(--bg-card);
+        border-radius: 20px;
+        padding: 8px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: var(--card-shadow);
+        z-index: 10;
+    }
+    .company-header-content {
+        padding: 60px 40px 30px;
+        background: var(--bg-card);
+        border-radius: 0 0 16px 16px;
+        border: 1px solid var(--border-color);
+        border-top: none;
+        margin-bottom: 2rem;
+    }
+    .badge-tag-premium {
+        background: var(--bg-input);
+        color: var(--text-title);
+        border: 1px solid var(--border-color);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+    }
+    .meta-info-card {
+        background: var(--bg-app);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 16px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row g-4">
-    <!-- Left Column: Main Job details -->
-    <div class="col-lg-8 col-md-12">
-        <div class="card premium-card p-4 p-md-5 mb-4">
-            <div class="d-flex align-items-center mb-4">
-                <div class="d-flex align-items-center justify-content-center bg-primary text-white rounded-circle fs-1 shadow-sm me-3" style="width: 70px; height: 70px; font-weight: 700;">
-                    {{ drive.company.company_name|slice:":1"|upper }}
+<div class="row">
+    <div class="col-12">
+        <a href="{% url 'student_drive_list' %}" class="text-decoration-none text-desc mb-3 d-inline-block fw-medium">
+            <i class="bi bi-arrow-left me-1"></i> Back to Opportunities
+        </a>
+        
+        <!-- Company Header Section -->
+        <div class="company-banner-header">
+            <div class="position-absolute top-0 end-0 p-4">
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill shadow-sm">
+                    <i class="bi bi-record-circle-fill me-1"></i> Actively Hiring
+                </span>
+            </div>
+            <div class="company-logo-large">
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold rounded" style="font-size: 3rem;">
+                    {{ drive.company.company_name|first|upper }}
                 </div>
+            </div>
+        </div>
+        <div class="company-header-content">
+            <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h3 class="fw-bold  mb-1">{{ drive.title }}</h3>
-                    <h5 class="text-desc mb-0">
-                        <i class="bi bi-building me-1"></i> {{ drive.company.company_name }}
+                    <h2 class="fw-bold text-title mb-1">{{ drive.title }}</h2>
+                    <h5 class="text-desc mb-0 d-flex align-items-center gap-3">
+                        <span><i class="bi bi-building"></i> {{ drive.company.company_name }}</span>
+                        {% if drive.company.industry %}
+                            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted);"></span>
+                            <span>{{ drive.company.industry }}</span>
+                        {% endif %}
                         {% if drive.company.website %}
-                        <a href="{{ drive.company.website }}" target="_blank" class="ms-2 text-decoration-none text-primary fs-6" title="Visit website">
-                            <i class="bi bi-link-45deg"></i>
-                        </a>
+                            <span style="width: 4px; height: 4px; border-radius: 50%; background: var(--text-muted);"></span>
+                            <a href="{{ drive.company.website }}" target="_blank" class="text-primary text-decoration-none"><i class="bi bi-link-45deg"></i> Website</a>
                         {% endif %}
                     </h5>
                 </div>
+                <div class="text-end d-none d-md-block">
+                    <!-- Apply Button Desktop -->
+                    {% if has_applied %}
+                        <button class="btn btn-success fw-bold px-4 py-2" disabled><i class="bi bi-check-circle-fill me-2"></i>Applied</button>
+                    {% elif not is_eligible or profile_incomplete %}
+                        <button class="btn btn-secondary fw-bold px-4 py-2" disabled><i class="bi bi-x-circle-fill me-2"></i>Not Eligible</button>
+                    {% else %}
+                        <form action="{% url 'student_drive_apply' drive.pk %}" method="post" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-premium px-4 py-2">Apply Now</button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Details -->
+    <div class="col-lg-8">
+        <div class="premium-card p-4 p-md-5 mb-4">
+            <h4 class="fw-bold text-title mb-4 border-bottom pb-3">Role Overview</h4>
+            
+            <div class="d-flex flex-wrap gap-2 mb-5">
+                <span class="badge-tag-premium"><i class="bi bi-briefcase text-primary me-2"></i> {{ drive.employment_type|default:"Full-time" }}</span>
+                <span class="badge-tag-premium"><i class="bi bi-geo-alt text-danger me-2"></i> {{ drive.location|default:"On-site" }}</span>
+                <span class="badge-tag-premium"><i class="bi bi-award text-warning me-2"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
             </div>
 
-            <div class="d-flex flex-wrap gap-2 mb-4 pb-4 border-bottom">
-                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-briefcase me-1 text-primary"></i> {{ drive.employment_type|default:"Full-time" }}</span>
-                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-geo-alt me-1 text-danger"></i> {{ drive.location|default:"On-site" }}</span>
-                <span class="badge bg-transparent  border px-3 py-2 rounded-pill"><i class="bi bi-check-circle me-1 text-success"></i> CGPA &ge; {{ drive.min_cgpa }}</span>
+            <h5 class="fw-bold text-title mb-3">Job Description</h5>
+            <div class="text-desc lh-lg mb-5" style="white-space: pre-line; font-size: 0.95rem;">
+                {{ drive.description }}
             </div>
 
-            <!-- Job Description Section -->
-            <h5 class="fw-bold  mt-2 mb-3">Job Description</h5>
-            <div class="text-desc lh-base mb-4" style="white-space: pre-line;">{{ drive.description }}</div>
-
-            <!-- Skills Required Section -->
-            <h5 class="fw-bold  mt-4 mb-3">Required Skillsets</h5>
-            <div class="d-flex flex-wrap mb-4">
+            <h5 class="fw-bold text-title mb-3">Required Skillsets</h5>
+            <div class="d-flex flex-wrap gap-2 mb-5">
                 {% for skill in drive.required_skills.all %}
-                    <span class="badge-tag-premium me-2 mb-2">{{ skill.name }}</span>
+                    <span class="badge-tag-premium">{{ skill.name }}</span>
                 {% empty %}
                     <span class="text-desc small">No specific skills listed.</span>
                 {% endfor %}
             </div>
 
-            <!-- Eligible Branches Section -->
-            <h5 class="fw-bold  mt-4 mb-3">Eligible Branches</h5>
-            <div class="d-flex flex-wrap mb-4">
+            <h5 class="fw-bold text-title mb-3">Eligible Branches</h5>
+            <div class="d-flex flex-wrap gap-2 mb-2">
                 {% for branch in drive.eligible_branches.all %}
-                    <span class="badge-branch-premium me-2 mb-2">
-                        <i class="bi bi-mortarboard-fill me-1"></i> {{ branch.name }} ({{ branch.code }})
+                    <span class="badge-tag-premium">
+                        <i class="bi bi-mortarboard-fill text-muted me-2"></i> {{ branch.name }} ({{ branch.code }})
                     </span>
                 {% empty %}
-                    <span class="badge bg-secondary">All branches are eligible to apply.</span>
+                    <span class="text-desc small">All branches are eligible to apply.</span>
                 {% endfor %}
-            </div>
-
-            <!-- Application Section -->
-            <div class="mt-5 p-4 bg-transparent rounded-xl text-center border">
-                {% if profile_incomplete %}
-                    <button class="btn btn-secondary btn-lg px-5 fw-bold shadow-sm" disabled><i class="bi bi-exclamation-triangle me-2"></i>Profile Incomplete</button>
-                    <p class="text-danger fw-bold small mt-2 mb-2"><i class="bi bi-info-circle me-1"></i>{{ ineligibility_reason }}</p>
-                    <a href="{% url 'student_profile_update' %}" class="btn btn-primary shadow-sm btn-sm mt-1 px-4 rounded-pill">Update Resume Profile</a>
-                {% elif has_applied %}
-                    <button class="btn btn-success btn-lg px-5 fw-bold shadow-sm" disabled><i class="bi bi-check-circle me-2"></i>Applied Successfully</button>
-                    <p class="text-success small fw-medium mt-2 mb-0">Your application is currently being tracked by the TPO and Recruiters.</p>
-                {% elif not is_eligible %}
-                    <button class="btn btn-secondary btn-lg px-5 fw-bold shadow-sm" disabled><i class="bi bi-x-circle me-2"></i>Not Eligible</button>
-                    <p class="text-danger fw-bold small mt-2 mb-0"><i class="bi bi-x-octagon-fill me-1"></i>Ineligibility Reason: {{ ineligibility_reason }}</p>
-                {% else %}
-                    <form action="{% url 'student_drive_apply' drive.pk %}" method="post" class="m-0">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary btn-lg px-5 fw-bold shadow-sm rounded-pill py-3">Apply to Opportunity</button>
-                    </form>
-                    <p class="text-desc small mt-2 mb-0">By clicking Apply, your GPA, skills, resume, and credentials will be sent to the recruiters.</p>
-                {% endif %}
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Compact Info Cards -->
-    <div class="col-lg-4 col-md-12">
+    <!-- Right Column: Sidebar Info -->
+    <div class="col-lg-4">
         <!-- Main Job specs card -->
-        <div class="card premium-card p-4 mb-4">
-            <h5 class="fw-bold  border-bottom pb-3 mb-3">Job Summary</h5>
-            
-            <div class="row g-3">
-                <div class="col-12">
-                    <div class="meta-info-card d-flex align-items-center">
-                        <div class="bg-success bg-opacity-10 text-success rounded p-2 me-3"><i class="bi bi-currency-rupee fs-4"></i></div>
-                        <div>
-                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Salary Package</small>
-                            <span class="fw-bold ">{{ drive.salary_package|default:"Not disclosed" }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="meta-info-card d-flex align-items-center">
-                        <div class="bg-danger bg-opacity-10 text-danger rounded p-2 me-3"><i class="bi bi-calendar-event fs-4"></i></div>
-                        <div>
-                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Application Deadline</small>
-                            <span class="fw-bold ">{{ drive.deadline_to_apply|date:"d M, Y - h:i A" }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="meta-info-card d-flex align-items-center">
-                        <div class="bg-warning bg-opacity-10 text-warning rounded p-2 me-3"><i class="bi bi-shield-check fs-4"></i></div>
-                        <div>
-                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Eligibility Limit</small>
-                            <span class="fw-bold ">Min CGPA of {{ drive.min_cgpa }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12">
-                    <div class="meta-info-card d-flex align-items-center">
-                        <div class="bg-info bg-opacity-10 text-info rounded p-2 me-3"><i class="bi bi-clock-history fs-4"></i></div>
-                        <div>
-                            <small class="text-desc d-block uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 0.05em;">Job Created On</small>
-                            <span class="fw-bold ">{{ drive.created_at|date:"d M, Y" }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recruitment insights card -->
-        <div class="card premium-card p-4 mb-4">
-            <h5 class="fw-bold  border-bottom pb-3 mb-3">Recruitment Insights</h5>
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="text-desc">Total Applicants</span>
-                <span class="badge bg-primary rounded-pill fs-6 px-3">{{ drive.applications.count }}</span>
-            </div>
             <div class="progress flex-grow-1" style="height:6px;">
                 <div class="progress-bar bg-success" style="width: 100%"></div>
             </div>

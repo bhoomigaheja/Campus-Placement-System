@@ -1,24 +1,162 @@
 {% extends 'base.html' %}
 {% block title %}Student Dashboard | CareerConnect{% endblock %}
-{% block page_title %}My Journey{% endblock %}
+{% block page_title %}Career Trajectory{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Journey Tracker Styles */
+    .journey-tracker {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        padding: 2rem 0;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+    }
+    .journey-tracker::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--border-color);
+        z-index: 1;
+        transform: translateY(-50%);
+        border-radius: 2px;
+    }
+    .journey-step {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        min-width: 120px;
+    }
+    .step-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--bg-card);
+        border: 4px solid var(--bg-app);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: var(--text-desc);
+        transition: all 0.3s ease;
+        box-shadow: 0 0 0 2px var(--border-color);
+        margin-bottom: 0.75rem;
+    }
+    .journey-step.active .step-icon {
+        background: var(--accent-primary);
+        color: white;
+        box-shadow: 0 0 0 4px var(--accent-glow);
+        border-color: var(--bg-card);
+    }
+    .journey-step.completed .step-icon {
+        background: var(--success-text);
+        color: white;
+        box-shadow: 0 0 0 2px var(--success-border);
+        border-color: var(--bg-card);
+    }
+    .journey-step.rejected .step-icon {
+        background: var(--danger-text);
+        color: white;
+        box-shadow: 0 0 0 2px var(--danger-border);
+        border-color: var(--bg-card);
+    }
+    .step-label {
+        font-weight: 600;
+        color: var(--text-desc);
+        font-size: 0.85rem;
+    }
+    .journey-step.active .step-label {
+        color: var(--accent-primary);
+    }
+    .journey-step.completed .step-label {
+        color: var(--success-text);
+    }
+    /* Company Drive Card Styles */
+    .company-card {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        background: var(--bg-card);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .company-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-hover-shadow);
+        border-color: var(--accent-primary);
+    }
+    .company-banner {
+        height: 100px;
+        background: linear-gradient(135deg, var(--bg-app) 0%, var(--border-color) 100%);
+        position: relative;
+    }
+    .company-logo-wrapper {
+        position: absolute;
+        bottom: -24px;
+        left: 20px;
+        width: 64px;
+        height: 64px;
+        background: var(--bg-card);
+        border-radius: 12px;
+        padding: 4px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .company-logo {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+    .industry-tag {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        color: var(--text-title);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+    }
+    .company-content {
+        padding: 36px 20px 20px;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Section 1: Welcome Header Banner -->
+<!-- Section 1: Welcome Header -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="premium-card p-5 overflow-hidden" style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-hover) 100%) !important; border: none;">
-            <!-- Glow circles in background -->
-            <div style="position: absolute; right: -50px; top: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.06); border-radius: 50%; filter: blur(30px); pointer-events: none;"></div>
-            <div style="position: absolute; left: 60%; bottom: -100px; width: 300px; height: 300px; background: rgba(255,255,255,0.03); border-radius: 50%; filter: blur(50px); pointer-events: none;"></div>
-            
-            <div class="row align-items-center position-relative z-1 text-white">
+        <div class="premium-card p-4 p-lg-5 position-relative overflow-hidden" style="border: 1px solid var(--border-color);">
+            <div class="row align-items-center position-relative z-1">
                 <div class="col-lg-8">
-                    <h2 class="fw-bold mb-2 text-white" style="font-size: 2rem; letter-spacing: -0.04em;">Welcome back, {{ request.user.first_name }}! 👋</h2>
-                    <p class="text-white-50 mb-0" style="font-size: 0.95rem;">Track your job applications, schedule recruiters' interviews, and discover campus opportunities.</p>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="avatar-circle bg-primary bg-opacity-10 text-primary fw-bold" style="width: 60px; height: 60px; font-size: 1.5rem;">
+                            {{ request.user.first_name|first|upper }}
+                        </div>
+                        <div>
+                            <h2 class="fw-bold mb-1 text-title" style="font-size: 2rem;">Welcome back, {{ request.user.first_name }}! 👋</h2>
+                            <p class="text-desc mb-0">Your CareerConnect dashboard is ready.</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
-                    <a href="{% url 'student_drive_list' %}" class="btn btn-premium px-4 py-2.5 fw-bold" style="background: #ffffff !important; color: var(--accent-hover) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.1);">
-                        Explore Jobs<i class="bi bi-arrow-right ms-2"></i>
+                    <a href="{% url 'student_drive_list' %}" class="btn btn-premium px-4 py-2.5 fw-bold" style="background: var(--accent-primary) !important; color: white !important;">
+                        Explore Opportunities <i class="bi bi-arrow-right ms-2"></i>
                     </a>
                 </div>
             </div>
@@ -28,91 +166,153 @@
 
 <!-- Section 2: Premium KPI Analytics Cards -->
 <div class="row g-4 mb-4">
-    <!-- Total Applications -->
     <div class="col-md-4">
-        <div class="premium-card p-4">
+        <div class="premium-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="kpi-label">Total Applications</span>
-                <span class="kpi-trend up">
-                    <i class="bi bi-send-fill"></i>Submitted
+                <span class="kpi-label text-title">Active Applications</span>
+                <span class="kpi-trend up bg-primary bg-opacity-10 text-primary border-primary border-opacity-25">
+                    <i class="bi bi-send-fill"></i> Pending
                 </span>
             </div>
-            <div class="kpi-value">{{ total_applications }}</div>
-            <div class="text-desc small mb-2">Job postings applied to</div>
-            <div class="sparkline-container">
-                <div class="saas-sparkline" data-values="[1, 2, 4, 3, {{ total_applications }}]" style="height: 100%;"></div>
-            </div>
+            <div class="kpi-value text-title">{{ total_applications }}</div>
+            <div class="text-desc small">Opportunities you've pursued</div>
         </div>
     </div>
     
-    <!-- Shortlisted -->
     <div class="col-md-4">
-        <div class="premium-card p-4">
+        <div class="premium-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="kpi-label">Shortlisted Round</span>
+                <span class="kpi-label text-title">Shortlisted</span>
                 <span class="kpi-trend up" style="background-color: var(--warning-bg); color: var(--warning-text); border-color: var(--warning-border);">
-                    <i class="bi bi-person-check-fill"></i>Interviews
+                    <i class="bi bi-person-check-fill"></i> In Progress
                 </span>
             </div>
-            <div class="kpi-value">{{ shortlisted_count }}</div>
-            <div class="text-desc small mb-2">Selected for interview rounds</div>
-            <div class="sparkline-container">
-                <div class="saas-sparkline" data-values="[0, 1, 1, 2, {{ shortlisted_count }}]" style="height: 100%;"></div>
-            </div>
+            <div class="kpi-value text-title">{{ shortlisted_count }}</div>
+            <div class="text-desc small">Selected for further rounds</div>
         </div>
     </div>
     
-    <!-- Offers -->
     <div class="col-md-4">
-        <div class="premium-card p-4">
+        <div class="premium-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-start mb-2">
-                <span class="kpi-label">Offers Received</span>
+                <span class="kpi-label text-title">Offers Received</span>
                 <span class="kpi-trend up" style="background-color: var(--success-bg); color: var(--success-text); border-color: var(--success-border);">
-                    <i class="bi bi-trophy-fill"></i>Selected
+                    <i class="bi bi-trophy-fill"></i> Selected
                 </span>
             </div>
-            <div class="kpi-value">{{ offered_count }}</div>
-            <div class="text-desc small mb-2">Active employment offers</div>
-            <div class="sparkline-container">
-                <div class="saas-sparkline" data-values="[0, 0, 1, 1, {{ offered_count }}]" style="height: 100%;"></div>
-            </div>
+            <div class="kpi-value text-title">{{ offered_count }}</div>
+            <div class="text-desc small">Active employment offers</div>
         </div>
     </div>
 </div>
 
-<!-- Section 3: Charts & Job Opportunity Trends -->
-<div class="row g-4 mb-4">
+<!-- Section 3: Signature Feature - Placement Journey Tracker -->
+<div class="row mb-4">
     <div class="col-12">
-        <div class="premium-card p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h5 class="fw-bold mb-1" style="font-size: 1.1rem;">Recruitment Calendar Activity</h5>
-                    <p class="text-desc small mb-0">Monthly active hiring drive updates</p>
+        <div class="premium-card p-4 p-lg-5">
+            <h4 class="fw-bold text-title mb-1">Placement Journey Tracker</h4>
+            {% if latest_application %}
+                <p class="text-desc mb-4">Tracking your latest application for: <strong class="text-title">{{ latest_application.job.title }} at {{ latest_application.job.company.company_name }}</strong></p>
+                
+                <div class="journey-tracker">
+                    <!-- Step 1: Profile -->
+                    <div class="journey-step completed">
+                        <div class="step-icon"><i class="bi bi-person-check-fill"></i></div>
+                        <div class="step-label">Profile Completed</div>
+                    </div>
+                    
+                    <!-- Step 2: Applied -->
+                    <div class="journey-step {% if latest_application.status != 'REJECTED' %}completed{% endif %}">
+                        <div class="step-icon"><i class="bi bi-send-fill"></i></div>
+                        <div class="step-label">Applied</div>
+                    </div>
+                    
+                    <!-- Step 3: Shortlisted -->
+                    {% if latest_application.status == 'REJECTED' %}
+                        <div class="journey-step rejected">
+                            <div class="step-icon"><i class="bi bi-x-circle-fill"></i></div>
+                            <div class="step-label">Not Selected</div>
+                        </div>
+                    {% else %}
+                        <div class="journey-step {% if latest_application.status in 'SHORTLISTED,INTERVIEW,OFFERED' %}completed{% elif latest_application.status == 'PENDING' %}active{% endif %}">
+                            <div class="step-icon"><i class="bi bi-card-checklist"></i></div>
+                            <div class="step-label">Shortlisted</div>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Step 4: Interview -->
+                    <div class="journey-step {% if latest_application.status == 'OFFERED' %}completed{% elif latest_application.status in 'SHORTLISTED,INTERVIEW' %}active{% endif %}">
+                        <div class="step-icon"><i class="bi bi-camera-video-fill"></i></div>
+                        <div class="step-label">Interview</div>
+                    </div>
+                    
+                    <!-- Step 5: Offer -->
+                    <div class="journey-step {% if latest_application.status == 'OFFERED' %}completed active{% endif %}">
+                        <div class="step-icon"><i class="bi bi-trophy-fill"></i></div>
+                        <div class="step-label">Offer Accepted</div>
+                    </div>
                 </div>
-                <div class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 rounded-pill px-2.5">
-                    H1 2026
+            {% else %}
+                <p class="text-desc mb-4">You haven't applied to any drives yet. Your journey begins here.</p>
+                <div class="journey-tracker" style="opacity: 0.5;">
+                    <div class="journey-step completed"><div class="step-icon"><i class="bi bi-person-check-fill"></i></div><div class="step-label">Profile</div></div>
+                    <div class="journey-step"><div class="step-icon"><i class="bi bi-send"></i></div><div class="step-label">Applied</div></div>
+                    <div class="journey-step"><div class="step-icon"><i class="bi bi-card-checklist"></i></div><div class="step-label">Shortlisted</div></div>
+                    <div class="journey-step"><div class="step-icon"><i class="bi bi-camera-video"></i></div><div class="step-label">Interview</div></div>
+                    <div class="journey-step"><div class="step-icon"><i class="bi bi-trophy"></i></div><div class="step-label">Offer</div></div>
                 </div>
-            </div>
-            <div class="saas-chart" data-labels='["Jan", "Feb", "Mar", "Apr", "May", "Jun"]' data-values='[4, 10, 8, 15, 12, 18]' style="height: 260px; width: 100%;"></div>
+            {% endif %}
         </div>
     </div>
 </div>
 
-<!-- Section 4: Opportunities Call-to-Action -->
-<div class="row g-4">
+<!-- Section 4: Company Branding Experience (Recommended Drives) -->
+<div class="row mb-4">
+    <div class="col-12 mb-3 d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-title mb-0">Recommended Companies</h4>
+        <a href="{% url 'student_drive_list' %}" class="btn btn-sm btn-outline-primary" style="border-color: var(--border-color); color: var(--text-title);">View All <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+    
+    {% for drive in recommended_drives %}
+    <div class="col-md-4 mb-4">
+        <a href="{% url 'student_drive_detail' drive.id %}" class="text-decoration-none">
+            <div class="company-card h-100">
+                <div class="company-banner">
+                    <span class="industry-tag"><i class="bi bi-building"></i> {{ drive.company.industry|default:"Tech" }}</span>
+                    <div class="company-logo-wrapper">
+                        <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary fw-bold fs-3 rounded">
+                            {{ drive.company.company_name|first|upper }}
+                        </div>
+                    </div>
+                </div>
+                <div class="company-content">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h5 class="fw-bold text-title mb-0">{{ drive.company.company_name }}</h5>
+                        <span class="badge" style="background: var(--success-bg); color: var(--success-text); border: 1px solid var(--success-border);">Hiring</span>
+                    </div>
+                    <p class="text-primary fw-semibold small mb-3">{{ drive.title }}</p>
+                    
+                    <div class="d-flex flex-column gap-2 mb-3">
+                        <div class="d-flex align-items-center gap-2 text-desc small">
+                            <i class="bi bi-cash-stack"></i> {{ drive.salary_package|default:"Not disclosed" }}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 text-desc small">
+                            <i class="bi bi-geo-alt"></i> {{ drive.location|default:"On-site" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% empty %}
     <div class="col-12">
         <div class="premium-card p-5 text-center">
-            <div class="py-4">
-                <div class="bg-primary bg-opacity-10 text-primary mx-auto rounded-circle d-flex align-items-center justify-content-center mb-4" style="width: 70px; height: 70px; font-size: 2rem; background: var(--sidebar-active-bg);">
-                    <i class="bi bi-compass" style="color: var(--accent-primary);"></i>
-                </div>
-                <h4 class="fw-bold text-title mb-2" style="font-size: 1.35rem;">Find Your Dream Job</h4>
-                <p class="text-desc mx-auto mb-4" style="max-width: 480px; font-size: 0.95rem;">Explore recruitment drives matching your skills, academic branches, and academic achievements.</p>
-                <a href="{% url 'student_drive_list' %}" class="btn btn-premium btn-premium-primary px-5 py-2.5">
-                    Explore Placement Opportunities
-                </a>
-            </div>
+            <i class="bi bi-inbox text-desc" style="font-size: 3rem;"></i>
+            <h5 class="text-title fw-bold mt-3">No New Drives</h5>
+            <p class="text-desc mb-0">Check back later for new placement opportunities.</p>
         </div>
     </div>
+    {% endfor %}
 </div>
+
 {% endblock %}
