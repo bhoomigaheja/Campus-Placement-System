@@ -1,10 +1,18 @@
 {% load static custom_tags %}
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CareerConnect{% endblock %}</title>
+
+    <!-- Anti-Flash Theme Script -->
+    <script>
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -151,6 +159,11 @@
                 </div>
                 
                 <div class="d-flex align-items-center gap-3">
+                    <!-- Theme Toggle Toggler -->
+                    <button type="button" class="theme-toggle-btn" id="themeToggler" title="Toggle theme">
+                        <i class="bi bi-sun" id="themeIconSun"></i>
+                        <i class="bi bi-moon d-none" id="themeIconMoon"></i>
+                    </button>
 
                     {% if user.is_authenticated %}
                         <!-- Notification Dropdown -->
@@ -326,6 +339,40 @@
             if(sidebarBtn) {
                 sidebarBtn.addEventListener('click', function() {
                     document.getElementById('sidebar').classList.toggle('active');
+                });
+            }
+
+            // Theme Toggle Logic
+            const toggler = document.getElementById('themeToggler');
+            const sunIcon = document.getElementById('themeIconSun');
+            const moonIcon = document.getElementById('themeIconMoon');
+            
+            function updateThemeIcons(theme) {
+                if (!toggler) return;
+                if (theme === 'dark') {
+                    sunIcon.classList.add('d-none');
+                    moonIcon.classList.remove('d-none');
+                    document.documentElement.style.setProperty('--theme-close-btn', 'invert(1)');
+                } else {
+                    sunIcon.classList.remove('d-none');
+                    moonIcon.classList.add('d-none');
+                    document.documentElement.style.setProperty('--theme-close-btn', 'none');
+                }
+            }
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            updateThemeIcons(currentTheme);
+            
+            if (toggler) {
+                toggler.addEventListener('click', function() {
+                    const activeTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', activeTheme);
+                    localStorage.setItem('theme', activeTheme);
+                    updateThemeIcons(activeTheme);
+                    
+                    // Trigger charts update if existing
+                    if (typeof initSaaSSparklines === 'function') initSaaSSparklines();
+                    if (typeof initSaaSCharts === 'function') initSaaSCharts();
                 });
             }
 

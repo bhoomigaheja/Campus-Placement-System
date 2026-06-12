@@ -5,19 +5,61 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-:root, [data-theme="light"], [data-theme="dark"] {
+:root {
     /* Fonts & Hierarchy */
     --font-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     
-    /* CareerConnect Deep Space Theme */
+    /* CareerConnect Light Theme */
+    --bg-app: #F8FAFC;
+    --bg-sidebar: #F8FAFC;
+    --bg-card: #FFFFFF;
+    --bg-input: #FFFFFF;
+    --border-color: #E2E8F0;
+    --border-hover: #CBD5E1;
+    --text-title: #0F172A;
+    --text-desc: #64748B;
+    
+    /* Vercel/Linear Accents */
+    --accent-primary: #8B5CF6;
+    --accent-hover: #A855F7;
+    --accent-glow: rgba(139, 92, 246, 0.25);
+    
+    /* Glass & Shadows */
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --card-hover-shadow: 0 8px 30px rgba(139, 92, 246, 0.1);
+    --glass-blur: blur(12px);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: #E2E8F0;
+    --sidebar-active-bg: rgba(139, 92, 246, 0.08);
+    --card-glow-border: rgba(139, 92, 246, 0.1);
+    --scrollbar-track: #F8FAFC;
+    --scrollbar-thumb: #CBD5E1;
+
+    /* Semantic Colors */
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --success-text: #059669;
+    --success-border: rgba(16, 185, 129, 0.2);
+    --warning-bg: rgba(245, 158, 11, 0.1);
+    --warning-text: #d97706;
+    --warning-border: rgba(245, 158, 11, 0.2);
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    --danger-text: #dc2626;
+    --danger-border: rgba(239, 68, 68, 0.2);
+    --info-bg: rgba(6, 182, 212, 0.1);
+    --info-text: #0891b2;
+    --info-border: rgba(6, 182, 212, 0.2);
+}
+
+[data-theme="dark"] {
+    /* CareerConnect Deep Space Theme (Dark) */
     --bg-app: #050816;
     --bg-sidebar: #050816;
     --bg-card: #0F172A;
     --bg-input: #131C31;
     --border-color: rgba(255, 255, 255, 0.08);
     --border-hover: rgba(255, 255, 255, 0.16);
-    --text-title: #f8fafc;
-    --text-desc: #94a3b8;
+    --text-title: #FFFFFF;
+    --text-desc: #94A3B8;
     
     /* Vercel/Linear Accents */
     --accent-primary: #8B5CF6;
