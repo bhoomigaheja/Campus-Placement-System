@@ -2,7 +2,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, View
+from django.views.generic import CreateView, View, TemplateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import StudentSignUpForm
 from .models import User
 
