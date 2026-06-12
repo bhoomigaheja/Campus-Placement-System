@@ -342,3 +342,11 @@ class ResendVerificationEmailView(View):
                 
         messages.success(request, "If an inactive account exists for this email, a verification link has been sent.")
         return redirect('login')
+
+class TPOProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/tpo_profile.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_admin:
+            return redirect('dashboard_redirect')
+        return super().dispatch(request, *args, **kwargs)

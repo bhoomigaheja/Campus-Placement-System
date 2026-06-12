@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', views.custom_logout, name='logout'),
     path('dashboard/', views.DashboardRedirectView.as_view(), name='dashboard_redirect'),
     path('init-tpo/', views.init_tpo_admin, name='init_tpo'),
+    path('tpo/profile/', views.TPOProfileView.as_view(), name='tpo_profile'),
     
     path('forgot-password/', views.ForgotPasswordView.as_view(), name='forgot_password'),
     path('reset-password/<uidb64>/<token>/', views.ResetPasswordView.as_view(), name='reset_password'),

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}TPO Profile & Settings{% endblock %}
+{% block page_title %}Account Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="premium-card p-4 text-center h-100">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 80px; height: 80px; font-size: 2rem; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)) !important; font-weight: bold;">
+                {{ user.email|make_list|first|upper }}
+            </div>
+            <h4 class="fw-bold mb-1">{{ user.first_name }} {{ user.last_name }}</h4>
+            <span class="badge bg-primary fs-6 mb-3">TPO / Admin</span>
+            
+            <ul class="list-unstyled text-start mt-4 pt-3 border-top">
+                <li class="mb-3">
+                    <span class="d-block text-desc small fw-semibold text-uppercase">Email Address</span>
+                    <strong class="text-title">{{ user.email }}</strong>
+                </li>
+                <li class="mb-3">
+                    <span class="d-block text-desc small fw-semibold text-uppercase">Account Created</span>
+                    <strong class="text-title">{{ user.date_joined|date:"d M, Y" }}</strong>
+                </li>
+                <li class="mb-3">
+                    <span class="d-block text-desc small fw-semibold text-uppercase">Last Login</span>
+                    <strong class="text-title">{{ user.last_login|date:"d M, Y - H:i" }}</strong>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="col-md-8 mb-4">
+        <div class="premium-card p-4 h-100">
+            <h5 class="fw-bold mb-4 pb-2 border-bottom">System & Security Settings</h5>
+            
+            <div class="mb-4">
+                <h6 class="fw-bold text-title">Password Management</h6>
+                <p class="text-desc small">Keep your account secure by using a strong password.</p>
+                <a href="{% url 'forgot_password' %}" class="btn btn-outline-primary btn-sm px-4 fw-semibold rounded-pill">Reset Password</a>
+            </div>
+            
+            <div class="mb-4 pt-3 border-top">
+                <h6 class="fw-bold text-title">Notification Preferences</h6>
+                <p class="text-desc small">As a TPO, you are automatically BCC'd on all critical system emails (Student Verifications, Company Registrations, Interview Schedules, etc.) to ensure complete oversight.</p>
+                <div class="d-flex align-items-center gap-2 mt-2">
+                    <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                    <span class="text-title fw-medium small">Global BCC Monitoring Enabled</span>
+                </div>
+            </div>
+            
+            <div class="pt-3 border-top">
+                <h6 class="fw-bold text-title text-danger">Danger Zone</h6>
+                <p class="text-desc small">Administrative actions related to your account.</p>
+                <button class="btn btn-outline-danger btn-sm px-4 fw-semibold rounded-pill" disabled title="Contact SuperAdmin to deactivate">Deactivate Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

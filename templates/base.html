@@ -116,6 +116,10 @@
                         <li class="{% if request.resolver_match.url_name == 'tpo_bulk_import_companies' %}active{% endif %}">
                             <a href="{% url 'tpo_bulk_import_companies' %}"><i class="bi bi-building-up"></i> <span>Import Companies</span></a>
                         </li>
+                        <li class="mt-4 px-3 mb-2 text-uppercase text-desc fw-bold menu-category-label" style="font-size: 0.65rem; letter-spacing: 0.08em;">Account</li>
+                        <li class="{% if request.resolver_match.url_name == 'tpo_profile' %}active{% endif %}">
+                            <a href="{% url 'tpo_profile' %}"><i class="bi bi-person-badge-fill"></i> <span>Profile & Settings</span></a>
+                        </li>
                     {% elif user.is_student %}
                         <li class="{% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
                             <a href="{% url 'student_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Dashboard</span></a>
