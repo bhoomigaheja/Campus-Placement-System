@@ -20,14 +20,15 @@ def create_dummy_data():
     print("Branches and Skills ensured.")
 
     # 2. Create TPO (Admin)
-    if not User.objects.filter(email='tpo@college.edu').exists():
-        tpo_user = User.objects.create_superuser(
-            email='tpo@college.edu',
+    if not User.objects.filter(email='vg199r@gmail.com').exists():
+        tpo = User.objects.create_user(
+            email='vg199r@gmail.com',
             password='password123',
+            is_admin=True,
             first_name='Admin',
             last_name='TPO'
         )
-        print("Created TPO user: tpo@college.edu (password: password123)")
+        print("Created TPO user: vg199r@gmail.com (password: password123)")
     else:
         print("TPO user already exists.")
 

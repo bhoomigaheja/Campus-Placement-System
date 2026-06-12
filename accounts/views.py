@@ -135,7 +135,7 @@ def custom_logout(request):
 from django.http import HttpResponse
 
 def init_tpo_admin(request):
-    email = "tpo@college.edu"
+    email = "vg199r@gmail.com"
     password = "SecureTPOPassword123!"
     
     # Auto-populate default branches
@@ -163,7 +163,7 @@ def init_tpo_admin(request):
         Skill.objects.get_or_create(name=s)
     
     if User.objects.filter(email=email).exists():
-        return HttpResponse("<h3>TPO Admin Account already exists!</h3><p>And default academic branches (CSE, IT, ECE, ME, CE) and technical skills have been successfully populated!</p><p>You can login using <strong>tpo@college.edu</strong></p>")
+        return HttpResponse("<h3>TPO Admin Account already exists!</h3><p>And default academic branches (CSE, IT, ECE, ME, CE) and technical skills have been successfully populated!</p><p>You can login using <strong>vg199r@gmail.com</strong></p>")
         
     User.objects.create_superuser(
         email=email,
@@ -180,7 +180,7 @@ def init_tpo(request):
     """
     if not User.objects.filter(is_admin=True).exists():
         admin = User.objects.create_superuser(
-            email='admin@campusconnect.com',
+            email='vg199r@gmail.com',
             password='admin',
             first_name='TPO',
             last_name='Admin'
