@@ -365,7 +365,7 @@ class CompanyApplicationUpdateView(LoginRequiredMixin, CompanyRequiredMixin, Upd
                     'company_name': self.object.job.company.company_name,
                     'scheduled_at': scheduled_at.strftime('%d %b, %Y - %I:%M %p'),
                     'mode': mode_display,
-                    'link': link,
+                    'link': meeting_link if mode == 'ONLINE' else venue,
                     'notes': notes,
                 }
             )

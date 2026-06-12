@@ -236,11 +236,7 @@
             <h2 class="fw-bold text-title mb-1">Create an account</h2>
             <p class="text-desc mb-4">Enter your details to register on the platform.</p>
             
-            <div class="social-divider mb-4">or continue with</div>
-            <button type="button" class="btn-social mb-4">
-                <i class="bi bi-google text-danger"></i> Google
-            </button>
-            <div class="social-divider mb-4">or register with email</div>
+
 
             <form method="post">
                 {% csrf_token %}
@@ -255,16 +251,34 @@
                 {% endif %}
                 
                 {% for field in form %}
-                <div class="floating-label-group mb-3">
+                <div class="floating-label-group mb-3" style="position: relative;">
                     {{ field }}
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {% if field.help_text %}
+                    
+                    {% if 'password' in field.name.lower() or 'pwd' in field.name.lower() %}
+                        <i class="bi bi-eye password-toggle" onclick="togglePasswordVisibility('{{ field.id_for_label }}', this)" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;"></i>
+                    {% endif %}
+
+                    {% if field.help_text and not 'password' in field.name.lower() and not 'pwd' in field.name.lower() %}
                         <div class="form-text small mt-1" style="color: var(--text-desc); opacity: 0.8;">{{ field.help_text|safe }}</div>
                     {% endif %}
                     {% if field.errors %}
                         <div class="text-danger small mt-1 fw-bold">{{ field.errors.0 }}</div>
                     {% endif %}
                 </div>
+                
+                {% if field.name == 'password' or field.name == 'password_1' or field.name == 'new_password' %}
+                <!-- Custom Password Validation UI -->
+                <div id="password-validation-rules-{{ field.id_for_label }}" class="premium-card p-3 mb-4 rounded-3 d-none" style="background: var(--bg-card); border: 1px solid var(--border-color); font-size: 0.85rem;">
+                    <div class="text-desc fw-semibold mb-2" style="font-size: 0.75rem; letter-spacing: 0.5px; text-transform: uppercase;">Password Requirements</div>
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                        <li id="rule-length" class="text-secondary"><i class="bi bi-circle me-2"></i>Minimum 8 characters</li>
+                        <li id="rule-upper" class="text-secondary"><i class="bi bi-circle me-2"></i>One uppercase letter</li>
+                        <li id="rule-lower" class="text-secondary"><i class="bi bi-circle me-2"></i>One lowercase letter</li>
+                        <li id="rule-number" class="text-secondary"><i class="bi bi-circle me-2"></i>One number</li>
+                    </ul>
+                </div>
+                {% endif %}
                 {% endfor %}
                 
                 <button type="submit" class="btn-auth mt-2">Register Now</button>
@@ -280,27 +294,65 @@
 </div>
 
 <script>
+    // Toggle Password Visibility
+    window.togglePasswordVisibility = function(inputId, iconElement) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            iconElement.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = 'password';
+            iconElement.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    };
+
     // Convert inputs to floating label style
     document.addEventListener("DOMContentLoaded", function() {
-        const inputs = document.querySelectorAll(".floating-label-group input");
+        const inputs = document.querySelectorAll('.floating-label-group input');
         inputs.forEach(input => {
             if (!input.placeholder) {
-                input.placeholder = " "; // Required for floating label CSS to work
+                input.placeholder = " ";
             }
-            if (input.type === 'password') {
-                // Add toggle icon dynamically if not present
-                if (!input.parentElement.querySelector('.password-toggle')) {
-                    const icon = document.createElement('i');
-                    icon.className = 'bi bi-eye password-toggle';
-                    icon.addEventListener('click', function() {
-                        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-                        input.setAttribute('type', type);
-                        this.classList.toggle('bi-eye');
-                        this.classList.toggle('bi-eye-slash');
-                    });
-                    input.parentElement.appendChild(icon);
+        });
+
+        // Live Password Validation
+        const pwdInputs = document.querySelectorAll('input[type="password"]');
+        pwdInputs.forEach(input => {
+            // Find the validation UI for this input (if it exists)
+            const rulesBox = document.getElementById('password-validation-rules-' + input.id);
+            if (!rulesBox) return; // Only apply to main password field
+
+            const ruleLength = document.getElementById('rule-length');
+            const ruleUpper = document.getElementById('rule-upper');
+            const ruleLower = document.getElementById('rule-lower');
+            const ruleNumber = document.getElementById('rule-number');
+
+            function updateRule(element, isValid) {
+                if (!element) return;
+                const icon = element.querySelector('i');
+                if (isValid) {
+                    element.style.color = '#10B981'; // Success Green
+                    icon.className = 'bi bi-check-circle-fill me-2';
+                } else if (input.value.length > 0) {
+                    element.style.color = '#EF4444'; // Error Red
+                    icon.className = 'bi bi-x-circle-fill me-2';
+                } else {
+                    element.style.color = '#64748B'; // Incomplete Gray
+                    icon.className = 'bi bi-circle me-2';
                 }
             }
+
+            input.addEventListener('focus', function() {
+                rulesBox.classList.remove('d-none');
+            });
+
+            input.addEventListener('input', function() {
+                const val = input.value;
+                updateRule(ruleLength, val.length >= 8);
+                updateRule(ruleUpper, /[A-Z]/.test(val));
+                updateRule(ruleLower, /[a-z]/.test(val));
+                updateRule(ruleNumber, /[0-9]/.test(val));
+            });
         });
     });
 </script>
