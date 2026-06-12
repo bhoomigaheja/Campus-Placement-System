@@ -11,6 +11,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
 
+User = get_user_model()
+
 class BulkImportService:
     @staticmethod
     def process_student_excel(file_obj):

@@ -145,6 +145,7 @@ class CompanyApplicationUpdateForm(forms.ModelForm):
     interview_mode = forms.ChoiceField(
         label="Interview Mode",
         choices=[('ONLINE', 'Online (Virtual)'), ('IN_PERSON', 'In-Person (Physical)')],
+        required=False,
         widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_interview_mode'})
     )
     interview_meeting_link = forms.URLField(

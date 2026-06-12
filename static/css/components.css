@@ -410,9 +410,6 @@ main {
     opacity: 1 !important;
 }
 
-    backdrop-filter: var(--glass-blur);
-}
-
 .premium-card:hover {
     transform: translateY(-4px);
     box-shadow: var(--card-hover-shadow);
