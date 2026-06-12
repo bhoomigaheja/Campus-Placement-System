@@ -1,0 +1,23 @@
+{% extends 'emails/base_email.html' %}
+
+{% block content %}
+<h2>Application Received</h2>
+<p>Hello {{ student.first_name|default:"Student" }},</p>
+<p>We have successfully received your application for the <strong>{{ application.job.title }}</strong> role at <strong>{{ application.job.company.company_name }}</strong>.</p>
+<p>Your profile and resume have been forwarded to the recruitment team for review.</p>
+
+<div style="background-color: #F8FAFC; border-left: 4px solid #8B5CF6; padding: 15px; margin: 20px 0; border-radius: 4px; color: #334155;">
+    <strong>Job Role:</strong> {{ application.job.title }}<br>
+    <strong>Company:</strong> {{ application.job.company.company_name }}<br>
+    <strong>Applied On:</strong> {{ application.applied_at|date:"d M Y" }}
+</div>
+
+<p>You can track the real-time status of your application from your student dashboard.</p>
+
+<div style="text-align: center;">
+    <a href="{{ domain }}/student/dashboard/" class="cta-button">Track Application Status</a>
+</div>
+
+<p>Best of luck with your application!</p>
+<p>Regards,<br>The CareerConnect Team</p>
+{% endblock %}

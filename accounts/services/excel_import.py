@@ -10,6 +10,9 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from core.services import EmailService
 
 User = get_user_model()
 
@@ -53,6 +56,13 @@ class BulkImportService:
             if not email or not name or not password:
                 results['failed'] += 1
                 results['errors'].append({'row': row_idx, 'reason': "Missing Name, Email, or Password"})
+                continue
+                
+            try:
+                validate_email(email)
+            except ValidationError:
+                results['failed'] += 1
+                results['errors'].append({'row': row_idx, 'reason': f"Invalid Email Format: {email}"})
                 continue
                 
             if User.objects.filter(email=email).exists():
@@ -103,34 +113,12 @@ class BulkImportService:
                             skill_obj, _ = Skill.objects.get_or_create(name=s_name)
                             profile.skills.add(skill_obj)
                             
-                    NotificationService.create_and_send(
-                        user=user,
-                        message=f"Welcome to CareerConnect! Your temporary password is {temp_password}. Please login and change it immediately.",
-                        email_subject="Welcome to CareerConnect - Login Instructions",
-                        email_template="emails/bulk_import_welcome.html",
-                        context={
-                            'user_email': email,
-                            'temp_password': temp_password,
-                            'login_url': 'https://campus-placement-system-1.onrender.com/login/',
-                            'name': name
-                        }
-                    )
-                    
                     token_generator = PasswordResetTokenGenerator()
                     token = token_generator.make_token(user)
                     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
                     verify_url = "https://campus-placement-system-1.onrender.com" + reverse('verify_email', kwargs={'uidb64': uidb64, 'token': token})
                     
-                    NotificationService.create_and_send(
-                        user=user,
-                        message="Please verify your email address.",
-                        email_subject="Verify Your CareerConnect Account",
-                        email_template="emails/verify_email.html",
-                        context={
-                            'user_name': getattr(user, 'first_name', '') or user.email,
-                            'verify_url': verify_url
-                        }
-                    )
+                    EmailService.send_welcome_email(user, verify_url, is_student=True, is_company=False, temp_password=temp_password)
                             
                     results['success'] += 1
             except Exception as e:
@@ -177,6 +165,13 @@ class BulkImportService:
                 results['errors'].append({'row': row_idx, 'reason': "Missing Company Name, Email, or Password"})
                 continue
                 
+            try:
+                validate_email(email)
+            except ValidationError:
+                results['failed'] += 1
+                results['errors'].append({'row': row_idx, 'reason': f"Invalid Email Format: {email}"})
+                continue
+                
             if User.objects.filter(email=email).exists():
                 results['failed'] += 1
                 results['duplicates'] += 1
@@ -207,34 +202,12 @@ class BulkImportService:
                         industry=industry
                     )
                     
-                    NotificationService.create_and_send(
-                        user=user,
-                        message=f"Welcome to CareerConnect! Your temporary password is {temp_password}. Please login and change it immediately.",
-                        email_subject="Welcome to CareerConnect - Login Instructions",
-                        email_template="emails/bulk_import_welcome.html",
-                        context={
-                            'user_email': email,
-                            'temp_password': temp_password,
-                            'login_url': 'https://campus-placement-system-1.onrender.com/login/',
-                            'name': company_name
-                        }
-                    )
-                    
                     token_generator = PasswordResetTokenGenerator()
                     token = token_generator.make_token(user)
                     uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
                     verify_url = "https://campus-placement-system-1.onrender.com" + reverse('verify_email', kwargs={'uidb64': uidb64, 'token': token})
                     
-                    NotificationService.create_and_send(
-                        user=user,
-                        message="Please verify your email address.",
-                        email_subject="Verify Your CareerConnect Account",
-                        email_template="emails/verify_email.html",
-                        context={
-                            'user_name': getattr(user, 'first_name', '') or user.email,
-                            'verify_url': verify_url
-                        }
-                    )
+                    EmailService.send_welcome_email(user, verify_url, is_student=False, is_company=True, temp_password=temp_password)
                     
                     results['success'] += 1
             except Exception as e:

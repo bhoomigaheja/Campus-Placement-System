@@ -51,3 +51,92 @@ class NotificationService:
             threading.Thread(target=_send_company_email, daemon=True).start()
 
         return notification
+
+class EmailService:
+    @staticmethod
+    def _send_email(subject, template_name, context, recipient_list):
+        if not isinstance(recipient_list, list):
+            recipient_list = [recipient_list]
+            
+        def _send():
+            try:
+                html_message = render_to_string(template_name, context)
+                plain_message = strip_tags(html_message)
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@careerconnect.com')
+                
+                send_mail(
+                    subject=subject,
+                    message=plain_message,
+                    from_email=from_email,
+                    recipient_list=recipient_list,
+                    html_message=html_message,
+                    fail_silently=False
+                )
+                logger.info(f"Email sent successfully to {recipient_list} for: {subject}")
+            except Exception as e:
+                logger.error(f"Error preparing/sending email {template_name} to {recipient_list}: {str(e)}")
+
+        import threading
+        threading.Thread(target=_send, daemon=True).start()
+        return True
+
+    @staticmethod
+    def send_welcome_email(user, verification_link, is_student=True, is_company=False, temp_password=None):
+        context = {
+            'user': user,
+            'verification_link': verification_link,
+            'is_student': is_student,
+            'is_company': is_company,
+            'temp_password': temp_password,
+        }
+        return EmailService._send_email(
+            "Welcome to CareerConnect - Verify Your Account",
+            "emails/welcome_email.html",
+            context,
+            user.email
+        )
+
+    @staticmethod
+    def send_password_reset(user, reset_link):
+        context = {
+            'user': user,
+            'reset_link': reset_link
+        }
+        return EmailService._send_email(
+            "CareerConnect - Password Reset Request",
+            "emails/password_reset.html",
+            context,
+            user.email
+        )
+
+    @staticmethod
+    def send_application_received(application):
+        context = {'application': application, 'student': application.student.user}
+        return EmailService._send_email(
+            f"Application Received: {application.job.company.company_name}",
+            "emails/application_received.html",
+            context,
+            application.student.user.email
+        )
+
+    @staticmethod
+    def send_status_update(application):
+        context = {'application': application, 'student': application.student.user}
+        subject = f"Application Update: {application.job.company.company_name}"
+        return EmailService._send_email(
+            subject,
+            "emails/status_update.html",
+            context,
+            application.student.user.email
+        )
+
+    @staticmethod
+    def send_interview_scheduled(interview, recipient_email, is_student=True):
+        context = {'interview': interview, 'is_student': is_student, 'domain': getattr(settings, 'SITE_URL', 'http://localhost:8000')}
+        subject = f"Interview Scheduled: {interview.application.job.company.company_name}"
+        return EmailService._send_email(
+            subject,
+            "emails/interview_scheduled.html",
+            context,
+            recipient_email
+        )

@@ -16,9 +16,12 @@ class StudentSignUpView(CreateView):
     success_url = reverse_lazy('login')
     
     def form_valid(self, form):
-        user = form.save()
-        admin_user = User.objects.filter(is_superuser=True).first()
-        msg = "A new student has registered."
+        user = form.save(commit=False)
+        user.is_active = False  # Enforce email verification
+        user.save()
+        
+        # Profile creation handles itself via signals or forms
+        form.save_m2m() if hasattr(form, 'save_m2m') else None
         
         # Generate token
         token_generator = PasswordResetTokenGenerator()
@@ -26,22 +29,15 @@ class StudentSignUpView(CreateView):
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         verify_url = self.request.build_absolute_uri(reverse_lazy('verify_email', kwargs={'uidb64': uidb64, 'token': token}))
         
-        # Notify student to verify
-        NotificationService.create_and_send(
-            user=user,
-            message="Please verify your email address.",
-            email_subject="Verify Your CareerConnect Account",
-            email_template="emails/verify_email.html",
-            context={
-                'user_name': user.first_name,
-                'verify_url': verify_url
-            }
-        )
+        # Notify student to verify via EmailService
+        from core.services import EmailService
+        EmailService.send_welcome_email(user, verify_url, is_student=True, is_company=False)
         
+        admin_user = User.objects.filter(is_superuser=True).first()
         if admin_user:
             NotificationService.create_and_send(
                 user=admin_user,
-                message=msg,
+                message="A new student has registered and is pending verification.",
                 email_subject="New Student Registration",
                 email_template='emails/tpo_notification.html',
                 context={
@@ -54,6 +50,7 @@ class StudentSignUpView(CreateView):
                 }
             )
         
+        messages.success(self.request, "Account created successfully. Please check your email to verify your account before logging in.")
         return render(self.request, 'accounts/registration_pending.html', {'email': user.email})
 
 from .forms import CompanySignUpForm
@@ -65,7 +62,13 @@ class CompanySignUpView(CreateView):
     success_url = reverse_lazy('login')
     
     def form_valid(self, form):
-        user = form.save()
+        user = form.save(commit=False)
+        user.is_active = False  # Enforce email verification
+        user.save()
+        
+        # Save related M2M data or related profile (CompanyProfile is handled in form.save usually or signals)
+        if hasattr(form, 'save_m2m'):
+            form.save_m2m()
         
         # Generate token
         token_generator = PasswordResetTokenGenerator()
@@ -74,27 +77,19 @@ class CompanySignUpView(CreateView):
         verify_url = self.request.build_absolute_uri(reverse_lazy('verify_email', kwargs={'uidb64': uidb64, 'token': token}))
         
         # Notify company to verify
-        NotificationService.create_and_send(
-            user=user,
-            message="Please verify your email address.",
-            email_subject="Verify Your CareerConnect Account",
-            email_template="emails/verify_email.html",
-            context={
-                'user_name': user.first_name,
-                'verify_url': verify_url
-            }
-        )
+        from core.services import EmailService
+        EmailService.send_welcome_email(user, verify_url, is_student=False, is_company=True)
 
         admin_user = User.objects.filter(is_superuser=True).first()
         if admin_user:
             NotificationService.create_and_send(
                 user=admin_user,
-                message="A new company has registered.",
+                message="A new company has registered and is pending verification.",
                 email_subject="New Company Registration",
                 email_template='emails/tpo_notification.html',
                 context={
                     'alert_title': 'New Company Registered',
-                    'alert_message': 'A new company has registered on the platform.',
+                    'alert_message': 'A new company has registered and needs email verification.',
                     'details': {
                         'Company Name': form.cleaned_data.get('company_name'),
                         'HR Email': user.email
@@ -102,6 +97,7 @@ class CompanySignUpView(CreateView):
                 }
             )
         
+        messages.success(self.request, "Account created successfully. Please check your email to verify your account before logging in.")
         return render(self.request, 'accounts/registration_pending.html', {'email': user.email})
 
 from .forms import CustomAuthenticationForm
@@ -241,16 +237,8 @@ class ForgotPasswordView(View):
                 
                 reset_url = request.build_absolute_uri(reverse_lazy('reset_password', kwargs={'uidb64': uidb64, 'token': token}))
                 
-                NotificationService.create_and_send(
-                    user=user,
-                    message="Password reset requested.",
-                    email_subject="Reset Your CareerConnect Password",
-                    email_template="emails/reset_password_email.html",
-                    context={
-                        'user_name': getattr(user, 'first_name', '') or user.email,
-                        'reset_url': reset_url,
-                    }
-                )
+                from core.services import EmailService
+                EmailService.send_password_reset(user, reset_url)
                 
             messages.success(request, "If an account exists for this email, a password reset link has been sent.")
             return render(request, 'accounts/forgot_password.html', {'form': ForgotPasswordForm()})
@@ -349,15 +337,8 @@ class ResendVerificationEmailView(View):
                 uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
                 verify_url = request.build_absolute_uri(reverse_lazy('verify_email', kwargs={'uidb64': uidb64, 'token': token}))
                 
-                NotificationService.create_and_send(
-                    user=user,
-                    message="Please verify your email address.",
-                    email_subject="Verify Your CareerConnect Account",
-                    email_template="emails/verify_email.html",
-                    context={
-                        'user_name': getattr(user, 'first_name', '') or user.email,
-                        'verify_url': verify_url
-                    }
-                )
+                from core.services import EmailService
+                EmailService.send_welcome_email(user, verify_url, is_student=user.is_student, is_company=user.is_company)
+                
         messages.success(request, "If an inactive account exists for this email, a verification link has been sent.")
         return redirect('login')
