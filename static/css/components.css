@@ -627,6 +627,16 @@ main {
     border-radius: 14px !important;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px var(--accent-glow);
+    filter: brightness(1.1);
+    color: #ffffff !important;
 }
 
 .btn-premium-primary {
@@ -644,13 +654,17 @@ main {
 .btn-premium-secondary {
     background: var(--bg-card);
     border-color: var(--border-color);
-    color: var(--text-title);
+    color: var(--text-title) !important;
+    box-shadow: none;
 }
 
 .btn-premium-secondary:hover {
     background: var(--sidebar-active-bg);
     border-color: var(--border-hover);
     transform: translateY(-1px);
+    box-shadow: var(--card-shadow);
+    color: var(--text-title) !important;
+    filter: none;
 }
 
 .form-control, .form-select {

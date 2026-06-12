@@ -116,6 +116,16 @@ class DriveDeleteView(LoginRequiredMixin, TPORequiredMixin, View):
 
 from django.views.generic import DeleteView
 
+class CompanyUpdateView(LoginRequiredMixin, TPORequiredMixin, UpdateView):
+    model = CompanyProfile
+    template_name = 'placements/tpo_company_form.html'
+    fields = ['company_name', 'industry', 'website', 'tier']
+    success_url = reverse_lazy('tpo_company_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, f"Company '{form.cleaned_data.get('company_name')}' successfully updated!")
+        return super().form_valid(form)
+
 class CompanyDeleteView(LoginRequiredMixin, TPORequiredMixin, DeleteView):
     model = CompanyProfile
     template_name = 'placements/tpo_company_confirm_delete.html'

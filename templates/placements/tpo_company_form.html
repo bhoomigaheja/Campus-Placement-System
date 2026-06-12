@@ -1,26 +1,53 @@
 {% extends 'base.html' %}
 
-{% block title %}Add Company | CareerConnect{% endblock %}
+{% block title %}{% if object %}Update Company{% else %}Add Company{% endif %} | CareerConnect{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8 col-lg-6">
-        <div class="card shadow-sm mt-4">
-            <div class="card-header bg-transparent py-3">
-                <h4 class="mb-0 fw-bold">Register New Company</h4>
-                <small class="text-desc">Enter company profile and login credentials</small>
+        <div class="card premium-card shadow-soft mt-4">
+            <div class="card-header bg-transparent py-4 border-bottom">
+                <h4 class="mb-0 fw-bold text-title">{% if object %}Update Company Profile{% else %}Register New Company{% endif %}</h4>
+                <small class="text-desc">{% if object %}Modify existing company details{% else %}Enter company profile and login credentials{% endif %}</small>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-4 p-md-5">
                 <form method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
-                    <div class="d-flex gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary px-4 fw-bold">Save Company</button>
-                        <a href="{% url 'tpo_company_list' %}" class="btn btn-premium btn-premium-secondary px-4 border">Cancel</a>
+                    
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label for="{{ field.id_for_label }}" class="form-label fw-medium text-desc mb-1" style="font-size: 0.9rem;">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.help_text %}<small class="form-text text-muted mt-1 d-block">{{ field.help_text|safe }}</small>{% endif %}
+                            {% if field.errors %}<div class="text-danger small fw-bold mt-1">{{ field.errors.0 }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-flex gap-3 mt-5">
+                        <button type="submit" class="btn btn-premium btn-premium-primary px-5 fw-bold shadow-sm w-100">
+                            {% if object %}Save Changes{% else %}Save Company{% endif %}
+                        </button>
+                        <a href="{% url 'tpo_company_list' %}" class="btn btn-outline-secondary fw-bold px-4 border" style="color: var(--text-desc); border-color: var(--border-color);">Cancel</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const inputs = document.querySelectorAll("input, select, textarea");
+    inputs.forEach(input => {
+        if(input.type !== 'checkbox' && input.type !== 'radio') {
+            input.classList.add("form-control");
+            input.style.background = "var(--bg-input)";
+            input.style.borderColor = "var(--border-color)";
+            input.style.color = "var(--text-title)";
+        }
+    });
+});
+</script>
 {% endblock %}

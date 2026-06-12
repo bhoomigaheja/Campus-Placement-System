@@ -15,6 +15,7 @@ urlpatterns = [
     path('dashboard/', views.TPODashboardView.as_view(), name='tpo_dashboard'),
     path('companies/', views.CompanyListView.as_view(), name='tpo_company_list'),
     path('companies/add/', views.CompanyCreateView.as_view(), name='tpo_company_form'),
+    path('companies/edit/<int:pk>/', views.CompanyUpdateView.as_view(), name='tpo_company_edit'),
     path('companies/delete/<int:pk>/', views.CompanyDeleteView.as_view(), name='tpo_company_delete'),
     path('drives/', views.DriveListView.as_view(), name='tpo_drive_list'),
     path('drives/add/', views.DriveCreateView.as_view(), name='tpo_drive_form'),
