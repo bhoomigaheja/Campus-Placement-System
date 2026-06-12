@@ -255,11 +255,11 @@
                     {{ field }}
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     
-                    {% if 'password' in field.name.lower() or 'pwd' in field.name.lower() %}
+                    {% if 'password' in field.name or 'pwd' in field.name %}
                         <i class="bi bi-eye password-toggle" onclick="togglePasswordVisibility('{{ field.id_for_label }}', this)" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); cursor: pointer; z-index: 10;"></i>
                     {% endif %}
 
-                    {% if field.help_text and not 'password' in field.name.lower() and not 'pwd' in field.name.lower() %}
+                    {% if field.help_text and not 'password' in field.name and not 'pwd' in field.name %}
                         <div class="form-text small mt-1" style="color: var(--text-desc); opacity: 0.8;">{{ field.help_text|safe }}</div>
                     {% endif %}
                     {% if field.errors %}
