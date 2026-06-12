@@ -30,7 +30,7 @@ class StudentSignUpView(CreateView):
         NotificationService.create_and_send(
             user=user,
             message="Please verify your email address.",
-            email_subject="Verify Your CampusSaaS Account",
+            email_subject="Verify Your CareerConnect Account",
             email_template="emails/verify_email.html",
             context={
                 'user_name': user.first_name,
@@ -77,7 +77,7 @@ class CompanySignUpView(CreateView):
         NotificationService.create_and_send(
             user=user,
             message="Please verify your email address.",
-            email_subject="Verify Your CampusSaaS Account",
+            email_subject="Verify Your CareerConnect Account",
             email_template="emails/verify_email.html",
             context={
                 'user_name': user.first_name,
@@ -244,7 +244,7 @@ class ForgotPasswordView(View):
                 NotificationService.create_and_send(
                     user=user,
                     message="Password reset requested.",
-                    email_subject="Reset Your CampusSaaS Password",
+                    email_subject="Reset Your CareerConnect Password",
                     email_template="emails/reset_password_email.html",
                     context={
                         'user_name': getattr(user, 'first_name', '') or user.email,
@@ -352,7 +352,7 @@ class ResendVerificationEmailView(View):
                 NotificationService.create_and_send(
                     user=user,
                     message="Please verify your email address.",
-                    email_subject="Verify Your CampusSaaS Account",
+                    email_subject="Verify Your CareerConnect Account",
                     email_template="emails/verify_email.html",
                     context={
                         'user_name': getattr(user, 'first_name', '') or user.email,

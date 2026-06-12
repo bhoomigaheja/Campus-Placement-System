@@ -8,7 +8,7 @@ def test_email_view(request):
         to_email = request.GET.get('to', 'gahejabhumigaheja@gmail.com')
         
         send_mail(
-            subject='CampusConnect Email Diagnostic Test',
+            subject='CareerConnect Email Diagnostic Test',
             message=f'This is a test email sent from {from_email}. If you receive this, SendGrid is working perfectly!',
             from_email=from_email,
             recipient_list=[to_email],

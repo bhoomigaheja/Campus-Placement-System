@@ -51,13 +51,13 @@ class CompanyCreateView(LoginRequiredMixin, TPORequiredMixin, CreateView):
             form.instance = company
             
             # Send notification for Company Registration
-            msg = f"Your company '{company_name}' has been successfully registered on CampusConnect. You can now log in and post job drives."
+            msg = f"Your company '{company_name}' has been successfully registered on CareerConnect. You can now log in and post job drives."
             NotificationService.create_and_send(
                 user=company.user,
                 message=msg,
                 email_subject="Company Registered Successfully",
                 email_template="emails/base_notification.html",
-                context={'title': 'Welcome to CampusConnect', 'message': msg, 'action_url': '#'}
+                context={'title': 'Welcome to CareerConnect', 'message': msg, 'action_url': '#'}
             )
         except ValueError as e:
             form.add_error('email', str(e))

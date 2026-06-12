@@ -5,71 +5,37 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
-:root {
+:root, [data-theme="light"], [data-theme="dark"] {
     /* Fonts & Hierarchy */
     --font-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     
-    /* Light Theme (Stripe/Notion style) */
-    --bg-app: #f8fafc;
-    --bg-sidebar: #ffffff;
-    --bg-card: #ffffff;
-    --bg-input: #f1f5f9;
-    --border-color: rgba(99, 102, 241, 0.08);
-    --border-hover: rgba(99, 102, 241, 0.16);
-    --text-title: #0f172a;
-    --text-desc: #475569;
-    --accent-primary: #6366f1; /* Indigo Purple */
-    --accent-hover: #4f46e5;
-    --accent-glow: rgba(99, 102, 241, 0.12);
-    --card-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 8px 24px rgba(148, 163, 184, 0.08);
-    --card-hover-shadow: 0 4px 12px rgba(99,102,241,0.03), 0 16px 48px rgba(148, 163, 184, 0.14);
-    --glass-blur: blur(20px);
-    --glass-bg: rgba(255, 255, 255, 0.8);
-    --glass-border: rgba(99, 102, 241, 0.08);
-    --sidebar-active-bg: rgba(99, 102, 241, 0.06);
-    --card-glow-border: transparent;
-    --scrollbar-track: #f1f5f9;
-    --scrollbar-thumb: #cbd5e1;
-
-    /* Semantic Colors */
-    --success-bg: rgba(16, 185, 129, 0.08);
-    --success-text: #059669;
-    --success-border: rgba(16, 185, 129, 0.2);
-    --warning-bg: rgba(245, 158, 11, 0.08);
-    --warning-text: #d97706;
-    --warning-border: rgba(245, 158, 11, 0.2);
-    --danger-bg: rgba(239, 68, 68, 0.08);
-    --danger-text: #dc2626;
-    --danger-border: rgba(239, 68, 68, 0.2);
-    --info-bg: rgba(6, 182, 212, 0.08);
-    --info-text: #0891b2;
-    --info-border: rgba(6, 182, 212, 0.2);
-}
-
-[data-theme="dark"] {
-    /* Dark Theme (Linear/Vercel style) */
-    --bg-app: #0f1117;
-    --bg-sidebar: #141620;
-    --bg-card: rgba(255, 255, 255, 0.04);
-    --bg-input: #1a1d29;
+    /* CareerConnect Deep Space Theme */
+    --bg-app: #050816;
+    --bg-sidebar: #050816;
+    --bg-card: #0F172A;
+    --bg-input: #131C31;
     --border-color: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.14);
+    --border-hover: rgba(255, 255, 255, 0.16);
     --text-title: #f8fafc;
     --text-desc: #94a3b8;
-    --accent-primary: #8b5cf6; /* Neon Purple */
-    --accent-hover: #a78bfa;
+    
+    /* Vercel/Linear Accents */
+    --accent-primary: #8B5CF6;
+    --accent-hover: #A855F7;
     --accent-glow: rgba(139, 92, 246, 0.25);
-    --card-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+    
+    /* Glass & Shadows */
+    --card-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
     --card-hover-shadow: 0 10px 40px rgba(139, 92, 246, 0.18);
-    --glass-blur: blur(20px);
-    --glass-bg: rgba(20, 22, 32, 0.65);
-    --glass-border: rgba(139, 92, 246, 0.15);
+    --glass-blur: blur(12px);
+    --glass-bg: rgba(15, 23, 42, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.08);
     --sidebar-active-bg: rgba(139, 92, 246, 0.12);
     --card-glow-border: rgba(139, 92, 246, 0.2);
-    --scrollbar-track: #141620;
-    --scrollbar-thumb: #2d3142;
+    --scrollbar-track: #050816;
+    --scrollbar-thumb: #131C31;
 
-    /* Semantic Colors for Dark Mode */
+    /* Semantic Colors */
     --success-bg: rgba(16, 185, 129, 0.15);
     --success-text: #34d399;
     --success-border: rgba(16, 185, 129, 0.3);

@@ -1,60 +1,207 @@
 {% extends 'base.html' %}
 
-{% block title %}Login | CampusConnect{% endblock %}
+{% block title %}Login | CareerConnect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--bg-app) !important;
+    }
+    #sidebar, .top-navbar, .mobile-bottom-nav {
+        display: none !important;
+    }
+    #content {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw !important;
+        min-height: 100vh !important;
+    }
+    .auth-container {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+    }
+    .auth-visual {
+        flex: 1;
+        display: none;
+        background: linear-gradient(135deg, #050816 0%, #131C31 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    @media (min-width: 992px) {
+        .auth-visual {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+        }
+    }
+    .auth-visual::before {
+        content: '';
+        position: absolute;
+        top: -20%;
+        left: -10%;
+        width: 70%;
+        height: 70%;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+        border-radius: 50%;
+        filter: blur(60px);
+    }
+    .auth-visual::after {
+        content: '';
+        position: absolute;
+        bottom: -20%;
+        right: -10%;
+        width: 60%;
+        height: 60%;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.1) 0%, rgba(168, 85, 247, 0) 70%);
+        border-radius: 50%;
+        filter: blur(60px);
+    }
+    .auth-visual-content {
+        position: relative;
+        z-index: 2;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+    .auth-form-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: var(--bg-app);
+    }
+    .auth-form-inner {
+        width: 100%;
+        max-width: 420px;
+    }
+    .floating-label-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    .floating-label-group input {
+        background: var(--bg-input) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-title) !important;
+        padding: 1.2rem 1rem 0.6rem;
+        border-radius: 12px;
+        width: 100%;
+        transition: all 0.2s ease;
+    }
+    .floating-label-group input:focus {
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 4px var(--accent-glow) !important;
+    }
+    .floating-label-group label {
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+        color: var(--text-desc);
+        transition: all 0.2s ease;
+        pointer-events: none;
+        font-size: 0.95rem;
+    }
+    .floating-label-group input:focus ~ label,
+    .floating-label-group input:not(:placeholder-shown) ~ label {
+        top: 0.8rem;
+        font-size: 0.7rem;
+        color: var(--accent-primary);
+        font-weight: 600;
+    }
+    .btn-auth {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+        border: none;
+        color: white;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 0.85rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--accent-glow);
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
-    <div class="col-md-5 col-lg-4">
-        <div class="card shadow-sm border-0">
-            <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <i class="bi bi-person-circle text-primary" style="font-size: 3rem;"></i>
-                    <h2 class="fw-bold mt-2 ">Welcome Back</h2>
-                    <p class="text-desc">Login to your CampusConnect account</p>
-                </div>
+<div class="auth-container">
+    <div class="auth-visual">
+        <div class="auth-visual-content">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <i class="bi bi-rocket-takeoff-fill" style="color: var(--accent-primary); font-size: 2.5rem;"></i>
+                <span class="fw-bold text-title" style="font-size: 2rem;">CareerConnect</span>
+            </div>
+            <h1 class="text-title fw-bold mb-3" style="font-size: 3rem; line-height: 1.1;">Accelerate your career trajectory.</h1>
+            <p class="text-desc fs-5">Join the premium placement network connecting top-tier talent with world-class engineering teams.</p>
+        </div>
+    </div>
+    
+    <div class="auth-form-wrapper">
+        <div class="auth-form-inner">
+            <div class="text-center mb-5 d-lg-none">
+                <i class="bi bi-rocket-takeoff-fill" style="color: var(--accent-primary); font-size: 2.5rem;"></i>
+                <h3 class="fw-bold text-title mt-2">CareerConnect</h3>
+            </div>
+            
+            <h2 class="fw-bold text-title mb-1">Welcome back</h2>
+            <p class="text-desc mb-4">Enter your credentials to access your account.</p>
+            
+            <form method="post">
+                {% csrf_token %}
                 
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    {% if form.non_field_errors %}
-                        {% if '|UNVERIFIED|' in form.non_field_errors.0 %}
-                            <div class="alert alert-warning py-3 px-3 small text-center mb-4">
-                                <strong>Verification Required</strong><br>
-                                Please verify your email address before logging in.
-                                <form method="post" action="{% url 'resend_verification' %}" class="mt-2">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="email" value="{{ request.POST.username }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-warning text-dark fw-bold w-100">Resend Verification Email</button>
-                                </form>
+                {% if form.non_field_errors %}
+                    {% if '|UNVERIFIED|' in form.non_field_errors.0 %}
+                        <div class="premium-card p-3 mb-4 border-warning" style="background: var(--warning-bg);">
+                            <div class="d-flex gap-2">
+                                <i class="bi bi-exclamation-triangle-fill text-warning mt-1"></i>
+                                <div>
+                                    <strong class="text-warning d-block mb-1">Verification Required</strong>
+                                    <p class="small text-desc mb-2">Please verify your email address before logging in.</p>
+                                    <form method="post" action="{% url 'resend_verification' %}" class="m-0">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="email" value="{{ request.POST.username }}">
+                                        <button type="submit" class="btn btn-sm btn-warning fw-bold w-100 rounded-pill">Resend Email</button>
+                                    </form>
+                                </div>
                             </div>
-                        {% else %}
-                            <div class="alert alert-danger py-2 px-3 small">
+                        </div>
+                    {% else %}
+                        <div class="premium-card p-3 mb-4 border-danger" style="background: var(--danger-bg);">
+                            <div class="d-flex align-items-center gap-2 text-danger small fw-medium">
+                                <i class="bi bi-x-circle-fill fs-5"></i>
                                 {{ form.non_field_errors.0 }}
                             </div>
-                        {% endif %}
-                    {% endif %}
-                    
-                    <div class="mb-3">
-                        <label class="form-label fw-medium">Email Address</label>
-                        <input type="email" name="username" class="form-control form-control-lg" placeholder="your@email.com" required autofocus>
-                    </div>
-                    <div class="mb-4">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <label class="form-label fw-medium mb-0">Password</label>
-                            <a href="{% url 'forgot_password' %}" class="small text-decoration-none text-primary">Forgot Password?</a>
                         </div>
-                        <input type="password" name="password" class="form-control form-control-lg" placeholder="••••••••" required>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm fw-bold">Sign In</button>
-                    <input type="hidden" name="next" value="{{ next }}">
-                </form>
-
-                <div class="text-center mt-4 pt-2 border-top">
-                    <p class="text-desc mb-0">Don't have an account? 
-                        <a href="{% url 'signup' %}" class="text-primary text-decoration-none fw-semibold">Sign Up</a>
-                    </p>
+                    {% endif %}
+                {% endif %}
+                
+                <div class="floating-label-group">
+                    <input type="email" name="username" id="email" placeholder=" " required autofocus>
+                    <label for="email">Email address</label>
                 </div>
+                
+                <div class="floating-label-group mb-2">
+                    <input type="password" name="password" id="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                </div>
+                
+                <div class="d-flex justify-content-end mb-4">
+                    <a href="{% url 'forgot_password' %}" class="small text-decoration-none fw-medium" style="color: var(--accent-primary);">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn-auth">Sign In</button>
+                <input type="hidden" name="next" value="{{ next }}">
+            </form>
+
+            <div class="text-center mt-5">
+                <p class="text-desc small">Don't have an account? 
+                    <a href="{% url 'signup' %}" class="text-decoration-none fw-bold" style="color: var(--accent-primary);">Create one</a>
+                </p>
             </div>
         </div>
     </div>

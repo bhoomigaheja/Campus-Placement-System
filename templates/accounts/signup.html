@@ -1,48 +1,169 @@
 {% extends 'base.html' %}
 
-{% block title %}Sign Up | CampusConnect{% endblock %}
+{% block title %}Sign Up | CareerConnect{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: var(--bg-app) !important;
+    }
+    #sidebar, .top-navbar, .mobile-bottom-nav {
+        display: none !important;
+    }
+    #content {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100vw !important;
+        min-height: 100vh !important;
+    }
+    .auth-container {
+        display: flex;
+        min-height: 100vh;
+        width: 100%;
+        flex-direction: row-reverse; /* Signup puts visual on right */
+    }
+    .auth-visual {
+        flex: 1;
+        display: none;
+        background: linear-gradient(135deg, #050816 0%, #0F172A 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    @media (min-width: 992px) {
+        .auth-visual {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+        }
+    }
+    .auth-visual::before {
+        content: '';
+        position: absolute;
+        top: -10%;
+        right: -10%;
+        width: 60%;
+        height: 60%;
+        background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0) 70%);
+        border-radius: 50%;
+        filter: blur(60px);
+    }
+    .auth-visual::after {
+        content: '';
+        position: absolute;
+        bottom: -10%;
+        left: -10%;
+        width: 50%;
+        height: 50%;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0) 70%);
+        border-radius: 50%;
+        filter: blur(60px);
+    }
+    .auth-visual-content {
+        position: relative;
+        z-index: 2;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+    .auth-form-wrapper {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        background: var(--bg-app);
+        overflow-y: auto;
+    }
+    .auth-form-inner {
+        width: 100%;
+        max-width: 420px;
+        margin: auto;
+    }
+    .btn-auth {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+        border: none;
+        color: white;
+        font-weight: 700;
+        border-radius: 12px;
+        padding: 0.85rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    .btn-auth:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px var(--accent-glow);
+    }
+    .input-premium {
+        background: var(--bg-input) !important;
+        border: 1px solid var(--border-color) !important;
+        color: var(--text-title) !important;
+        border-radius: 12px;
+        padding: 0.8rem 1rem;
+        transition: all 0.2s ease;
+    }
+    .input-premium:focus {
+        border-color: var(--accent-primary) !important;
+        box-shadow: 0 0 0 4px var(--accent-glow) !important;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center mb-5" style="min-height: 70vh;">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-sm border-0 mt-4">
-            <div class="card-body p-4 p-md-5">
-                <div class="text-center mb-4">
-                    <i class="bi bi-rocket text-primary" style="font-size: 3rem;"></i>
-                    <h2 class="fw-bold mt-2 ">Create Account</h2>
-                    <p class="text-desc">Join CampusConnect and unlock opportunities</p>
-                </div>
+<div class="auth-container">
+    <div class="auth-visual">
+        <div class="auth-visual-content">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <i class="bi bi-layers-half" style="color: var(--accent-primary); font-size: 2.5rem;"></i>
+                <span class="fw-bold text-title" style="font-size: 2rem;">CareerConnect</span>
+            </div>
+            <h1 class="text-title fw-bold mb-3" style="font-size: 3rem; line-height: 1.1;">Start building your future.</h1>
+            <p class="text-desc fs-5">Create an account to gain exclusive access to premier job drives, internships, and elite hiring events.</p>
+        </div>
+    </div>
+    
+    <div class="auth-form-wrapper">
+        <div class="auth-form-inner">
+            <div class="text-center mb-5 d-lg-none">
+                <i class="bi bi-layers-half" style="color: var(--accent-primary); font-size: 2.5rem;"></i>
+                <h3 class="fw-bold text-title mt-2">CareerConnect</h3>
+            </div>
+            
+            <h2 class="fw-bold text-title mb-1">Create an account</h2>
+            <p class="text-desc mb-4">Enter your details to register on the platform.</p>
+            
+            <form method="post">
+                {% csrf_token %}
                 
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    {% if form.non_field_errors %}
-                    <div class="alert alert-danger py-2 px-3 small">
+                {% if form.non_field_errors %}
+                <div class="premium-card p-3 mb-4 border-danger" style="background: var(--danger-bg);">
+                    <div class="d-flex align-items-center gap-2 text-danger small fw-medium">
+                        <i class="bi bi-x-circle-fill fs-5"></i>
                         {{ form.non_field_errors.0 }}
                     </div>
-                    {% endif %}
-                    
-                    {% for field in form %}
-                    <div class="mb-3">
-                        <label for="{{ field.id_for_label }}" class="form-label fw-medium">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                            <div class="form-text small">{{ field.help_text|safe }}</div>
-                        {% endif %}
-                        {% if field.errors %}
-                            <div class="text-danger small mt-1 fw-medium">{{ field.errors.0 }}</div>
-                        {% endif %}
-                    </div>
-                    {% endfor %}
-                    
-                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-3 shadow-sm fw-bold">Register Now</button>
-                </form>
-
-                <div class="text-center mt-4 pt-4 border-top">
-                    <p class="text-desc mb-0">Already have an account? 
-                        <a href="{% url 'login' %}" class="text-primary text-decoration-none fw-semibold">Sign In</a>
-                    </p>
                 </div>
+                {% endif %}
+                
+                {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label fw-medium text-desc" style="font-size: 0.9rem;">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <div class="form-text small mt-1" style="color: var(--text-desc); opacity: 0.8;">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1 fw-bold">{{ field.errors.0 }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn-auth mt-2">Register Now</button>
+            </form>
+
+            <div class="text-center mt-5">
+                <p class="text-desc small">Already have an account? 
+                    <a href="{% url 'login' %}" class="text-decoration-none fw-bold" style="color: var(--accent-primary);">Sign In</a>
+                </p>
             </div>
         </div>
     </div>
@@ -55,6 +176,7 @@
         inputs.forEach(input => {
             if (input.type !== 'checkbox' && input.type !== 'submit') {
                 input.classList.add("form-control");
+                input.classList.add("input-premium");
             } else if (input.type === 'checkbox') {
                 input.classList.add("form-check-input");
                 input.parentElement.classList.add("form-check");

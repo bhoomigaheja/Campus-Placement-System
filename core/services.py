@@ -36,7 +36,7 @@ class NotificationService:
                         plain_message = message
 
                     send_mail(
-                        subject=f"CampusConnect: {email_subject}",
+                        subject=f"CareerConnect: {email_subject}",
                         message=plain_message,
                         from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@campusconnect.com'),
                         recipient_list=[user.email],

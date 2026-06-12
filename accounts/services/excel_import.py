@@ -105,8 +105,8 @@ class BulkImportService:
                             
                     NotificationService.create_and_send(
                         user=user,
-                        message=f"Welcome to CampusSaaS! Your temporary password is {temp_password}. Please login and change it immediately.",
-                        email_subject="Welcome to CampusSaaS - Login Instructions",
+                        message=f"Welcome to CareerConnect! Your temporary password is {temp_password}. Please login and change it immediately.",
+                        email_subject="Welcome to CareerConnect - Login Instructions",
                         email_template="emails/bulk_import_welcome.html",
                         context={
                             'user_email': email,
@@ -124,7 +124,7 @@ class BulkImportService:
                     NotificationService.create_and_send(
                         user=user,
                         message="Please verify your email address.",
-                        email_subject="Verify Your CampusSaaS Account",
+                        email_subject="Verify Your CareerConnect Account",
                         email_template="emails/verify_email.html",
                         context={
                             'user_name': getattr(user, 'first_name', '') or user.email,
@@ -209,8 +209,8 @@ class BulkImportService:
                     
                     NotificationService.create_and_send(
                         user=user,
-                        message=f"Welcome to CampusSaaS! Your temporary password is {temp_password}. Please login and change it immediately.",
-                        email_subject="Welcome to CampusSaaS - Login Instructions",
+                        message=f"Welcome to CareerConnect! Your temporary password is {temp_password}. Please login and change it immediately.",
+                        email_subject="Welcome to CareerConnect - Login Instructions",
                         email_template="emails/bulk_import_welcome.html",
                         context={
                             'user_email': email,
@@ -228,7 +228,7 @@ class BulkImportService:
                     NotificationService.create_and_send(
                         user=user,
                         message="Please verify your email address.",
-                        email_subject="Verify Your CampusSaaS Account",
+                        email_subject="Verify Your CareerConnect Account",
                         email_template="emails/verify_email.html",
                         context={
                             'user_name': getattr(user, 'first_name', '') or user.email,
