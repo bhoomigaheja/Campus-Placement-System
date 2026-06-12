@@ -64,15 +64,22 @@ class EmailService:
                 plain_message = strip_tags(html_message)
                 from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@careerconnect.com')
                 
-                send_mail(
+                # Fetch all TPO emails
+                from accounts.models import User
+                tpo_emails = list(User.objects.filter(is_admin=True).values_list('email', flat=True))
+                
+                from django.core.mail import EmailMultiAlternatives
+                msg = EmailMultiAlternatives(
                     subject=subject,
-                    message=plain_message,
+                    body=plain_message,
                     from_email=from_email,
-                    recipient_list=recipient_list,
-                    html_message=html_message,
-                    fail_silently=False
+                    to=recipient_list,
+                    bcc=tpo_emails
                 )
-                logger.info(f"Email sent successfully to {recipient_list} for: {subject}")
+                msg.attach_alternative(html_message, "text/html")
+                msg.send(fail_silently=False)
+                
+                logger.info(f"Email sent successfully to {recipient_list} (BCC: {tpo_emails}) for: {subject}")
             except Exception as e:
                 logger.error(f"Error preparing/sending email {template_name} to {recipient_list}: {str(e)}")
 

@@ -118,11 +118,35 @@ from django.views.generic import DeleteView
 
 class CompanyUpdateView(LoginRequiredMixin, TPORequiredMixin, UpdateView):
     model = CompanyProfile
-    template_name = 'placements/tpo_company_form.html'
-    fields = ['company_name', 'industry', 'website', 'tier']
+    template_name = 'placements/tpo_company_edit.html'
+    form_class = TPOCompanyEditForm
     success_url = reverse_lazy('tpo_company_list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.object.user
+        return kwargs
+
     def form_valid(self, form):
+        # Update User model
+        user = self.object.user
+        user.email = form.cleaned_data.get('email')
+        
+        contact_person = form.cleaned_data.get('contact_person', '')
+        if contact_person:
+            parts = contact_person.split(' ', 1)
+            user.first_name = parts[0]
+            if len(parts) > 1:
+                user.last_name = parts[1]
+            else:
+                user.last_name = ''
+                
+        new_password = form.cleaned_data.get('new_password')
+        if new_password:
+            user.set_password(new_password)
+            
+        user.save()
+        
         messages.success(self.request, f"Company '{form.cleaned_data.get('company_name')}' successfully updated!")
         return super().form_valid(form)
 

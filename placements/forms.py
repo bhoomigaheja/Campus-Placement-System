@@ -200,3 +200,40 @@ class InterviewForm(forms.ModelForm):
         widgets = {
             'scheduled_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
         }
+
+class TPOCompanyEditForm(forms.ModelForm):
+    # User model fields
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    contact_person = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. John Doe'}))
+    
+    # Optional password reset
+    new_password = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Leave blank to keep current password'}),
+        help_text="Provide a new password if you want to reset it."
+    )
+
+    class Meta:
+        model = CompanyProfile
+        fields = ['company_name', 'industry', 'website', 'description']
+        widgets = {
+            'company_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'industry': forms.TextInput(attrs={'class': 'form-control'}),
+            'website': forms.URLInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        if self.user:
+            self.fields['email'].initial = self.user.email
+            self.fields['contact_person'].initial = f"{self.user.first_name} {self.user.last_name}".strip()
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        if User.objects.filter(email=email).exclude(pk=self.user.pk).exists():
+            raise forms.ValidationError("This email is already in use by another account.")
+        return email

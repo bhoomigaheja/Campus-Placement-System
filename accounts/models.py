@@ -80,6 +80,7 @@ class CompanyProfile(models.Model):
     industry = models.CharField(max_length=100, blank=True)
     website = models.URLField(blank=True)
     tier = models.CharField(max_length=50, blank=True)
+    description = models.TextField(blank=True)
 
     def __str__(self):
         return self.company_name
