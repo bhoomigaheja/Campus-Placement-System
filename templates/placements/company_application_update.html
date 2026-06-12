@@ -22,13 +22,20 @@
                 <h6 class="mt-4 fw-bold pb-2 border-bottom text-title">Academic Projects</h6>
                 <p class="small text-desc pt-2">{{ object.student.projects|default:"None Listed" }}</p>
 
+                <h6 class="mt-4 fw-bold pb-2 border-bottom">Current Application Status</h6>
+                <div class="mb-3 pt-2">
+                    <span class="badge {% if object.status == 'SELECTED' %}bg-success{% elif object.status == 'REJECTED' %}bg-danger{% elif object.status == 'SHORTLISTED' %}bg-primary{% else %}bg-secondary{% endif %} fs-6 py-2 px-3">
+                        {{ object.get_status_display }}
+                    </span>
+                </div>
+
                 <h6 class="mt-4 fw-bold pb-2 border-bottom">Resume</h6>
-                {% if object.student.resume|file_exists %}
+                {% if object.student.resume %}
                 <div class="mt-2">
-                    <a href="{{ object.student.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary fw-semibold px-3"><i class="bi bi-file-earmark-pdf me-2"></i>View Resume</a>
+                    <a href="{{ object.student.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary fw-semibold px-3"><i class="bi bi-file-earmark-pdf me-2"></i>View / Download Resume</a>
                 </div>
                 {% else %}
-                <p class="small text-desc pt-2"><i class="bi bi-x-circle text-danger me-1"></i> Resume Not Available</p>
+                <p class="small text-desc pt-2"><i class="bi bi-x-circle text-danger me-1"></i> Resume Not Uploaded</p>
                 {% endif %}
 
                 <h6 class="mt-4 fw-bold pb-2 border-bottom">Interview Schedule</h6>

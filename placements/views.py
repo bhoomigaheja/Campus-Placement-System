@@ -10,7 +10,7 @@ from core.mixins import TPORequiredMixin
 from accounts.models import StudentProfile, CompanyProfile
 from accounts.models import StudentProfile, CompanyProfile
 from .models import Job, Application, Interview
-from .forms import CompanyForm, JobForm, CompanyJobForm, ApplicationStatusForm, InterviewForm, CompanyApplicationUpdateForm
+from .forms import CompanyForm, JobForm, CompanyJobForm, ApplicationStatusForm, InterviewForm, CompanyApplicationUpdateForm, TPOCompanyEditForm
 from core.services import NotificationService
 from placements.services.company_services import CompanyService
 from placements.services.application_services import ApplicationService
