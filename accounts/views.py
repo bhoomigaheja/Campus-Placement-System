@@ -348,6 +348,8 @@ class TPOProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/tpo_profile.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_admin:
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        if not getattr(request.user, 'is_admin', False):
             return redirect('dashboard_redirect')
         return super().dispatch(request, *args, **kwargs)
