@@ -1,32 +1,58 @@
 {% extends 'base.html' %}
-{% block title %}My Active Jobs{% endblock %}
+{% block title %}My Job Listings{% endblock %}
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h2 class="fw-bold mb-0">Active Job Listings</h2>
-        <p class="mb-0">Note: Jobs are created natively by TPO Administrators.</p>
+        <h2 class="fw-bold mb-0 text-title">Job Postings</h2>
+        <p class="mb-0 text-desc">Manage your job drives and track their approval status.</p>
     </div>
+    <a href="{% url 'company_job_create' %}" class="btn btn-premium btn-premium-primary">
+        <i class="bi bi-plus-lg me-2"></i>Post Job Drive
+    </a>
 </div>
 <div class="row g-4">
     {% for job in jobs %}
     <div class="col-md-6 col-lg-4">
-        <div class="card h-100 shadow-sm border-0">
+        <div class="card h-100 shadow-sm border-0" style="background: var(--bg-card); border: 1px solid var(--border-color) !important; border-radius: 16px;">
             <div class="card-body">
-                <h5 class="fw-bold mb-1">{{ job.title }}</h5>
-                <p class="small mb-3">Min CGPA: {{ job.min_cgpa }} | Pkg: {{ job.salary_package }}</p>
-                <div class="d-flex justify-content-between mb-2">
-                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill fw-semibold border border-primary border-opacity-25">Applications: {{ job.applications.count }}</span>
+                <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                    <h5 class="fw-bold text-title mb-0" style="font-size: 1.1rem;">{{ job.title }}</h5>
+                    {% if job.status == 'PENDING' %}
+                        <span class="badge bg-warning bg-opacity-10 text-warning px-2.5 py-1.5 rounded-pill fw-semibold border border-warning border-opacity-25 text-nowrap" style="font-size: 0.72rem;">🟡 Pending</span>
+                    {% elif job.status == 'APPROVED' %}
+                        <span class="badge bg-success bg-opacity-10 text-success px-2.5 py-1.5 rounded-pill fw-semibold border border-success border-opacity-25 text-nowrap" style="font-size: 0.72rem;">🟢 Approved</span>
+                    {% elif job.status == 'REJECTED' %}
+                        <span class="badge bg-danger bg-opacity-10 text-danger px-2.5 py-1.5 rounded-pill fw-semibold border border-danger border-opacity-25 text-nowrap" style="font-size: 0.72rem;">🔴 Rejected</span>
+                    {% endif %}
                 </div>
+                <p class="small text-desc mb-3">Min CGPA: {{ job.min_cgpa }} | Pkg: {{ job.salary_package }}</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill fw-semibold border border-primary border-opacity-25">Applications: {{ job.applications.count }}</span>
+                    <span class="text-desc small"><i class="bi bi-geo-alt me-1"></i>{{ job.location|default:"On-site" }}</span>
+                </div>
+                
+                {% if job.status == 'REJECTED' and job.rejection_remarks %}
+                <div class="alert alert-danger py-2 px-3 small border-0 rounded-3 mb-0" style="background-color: var(--danger-bg); color: var(--danger-text);">
+                    <strong class="d-block mb-1"><i class="bi bi-exclamation-octagon-fill me-1"></i>Rejection Remarks:</strong>
+                    {{ job.rejection_remarks }}
+                </div>
+                {% endif %}
             </div>
-            <div class="card-footer border-0 py-3">
-                <a href="{% url 'company_applications' %}?job={{ job.id }}" class="btn btn-primary w-100 btn-sm fw-semibold">Filter Applicants</a>
+            <div class="card-footer border-0 bg-transparent py-3 d-flex gap-2" style="border-top: 1px solid var(--border-color) !important;">
+                <a href="{% url 'company_applications' %}?job={{ job.id }}" class="btn btn-premium btn-premium-primary btn-sm py-1.5 px-3 flex-grow-1 text-center d-flex align-items-center justify-content-center">
+                    <i class="bi bi-people-fill me-1.5"></i>Filter Applicants
+                </a>
+                <a href="{% url 'company_job_edit' job.id %}" class="btn btn-premium btn-premium-secondary btn-sm py-1.5 px-3 d-flex align-items-center justify-content-center">
+                    <i class="bi bi-pencil-fill"></i>
+                </a>
             </div>
         </div>
     </div>
     {% empty %}
-    <div class="col-12 text-center py-5 shadow-sm rounded-4">
-        <h4 class="mt-3">No active placements registered for your domain!</h4>
-        <p>Contact the TPO Administrator to have job drives actively added on behalf of your platform.</p>
+    <div class="col-12 text-center py-5 shadow-sm rounded-4" style="background: var(--bg-card); border: 1px solid var(--border-color) !important;">
+        <div class="mb-3"><i class="bi bi-briefcase display-4 text-light"></i></div>
+        <h4 class="mt-3 text-title fw-bold">No active job listings registered!</h4>
+        <p class="text-desc">Click "Post Job Drive" at the top to submit your first placement opportunity.</p>
     </div>
     {% endfor %}
 </div>

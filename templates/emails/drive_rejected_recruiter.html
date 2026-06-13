@@ -1,0 +1,20 @@
+{% extends 'emails/base_email.html' %}
+
+{% block content %}
+<h2>Job Drive Rejected</h2>
+<p>Hello Team {{ company.company_name }},</p>
+<p>We regret to inform you that your placement drive for <strong>{{ job.title }}</strong> has been rejected by the TPO Administration.</p>
+
+<div style="background-color: #FEF2F2; border-left: 4px solid #EF4444; padding: 15px; margin: 20px 0; border-radius: 4px; color: #7F1D1D;">
+    <strong>Rejection Reason / Remarks:</strong><br><br>
+    {{ rejection_remarks }}
+</div>
+
+<p>You can edit and resubmit this drive for approval through your Employer Console.</p>
+
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{{ domain }}/company/dashboard/" class="cta-button">Go to Employer Panel</a>
+</div>
+
+<p>Best regards,<br>The CareerConnect Team</p>
+{% endblock %}

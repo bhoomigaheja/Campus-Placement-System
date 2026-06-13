@@ -5,6 +5,8 @@ from core.services import NotificationService
 class ApplicationService:
     @staticmethod
     def check_eligibility(student_profile, job):
+        if job.status != 'APPROVED':
+            return False, "This placement drive is not open for applications."
         if not student_profile.branch:
             return False, "Please update your profile with your branch first."
         if student_profile.cgpa is None:

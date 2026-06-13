@@ -147,3 +147,45 @@ class EmailService:
             context,
             recipient_email
         )
+
+    @staticmethod
+    def send_drive_submitted_to_tpo(job):
+        from accounts.models import User
+        tpo_emails = list(User.objects.filter(is_admin=True).values_list('email', flat=True))
+        context = {
+            'job': job,
+            'company': job.company,
+        }
+        return EmailService._send_email(
+            "New Job Drive Awaiting Approval",
+            "emails/drive_submitted_tpo.html",
+            context,
+            tpo_emails
+        )
+
+    @staticmethod
+    def send_drive_approved_to_recruiter(job):
+        context = {
+            'job': job,
+            'company': job.company,
+        }
+        return EmailService._send_email(
+            "Job Drive Approved",
+            "emails/drive_approved_recruiter.html",
+            context,
+            job.company.user.email
+        )
+
+    @staticmethod
+    def send_drive_rejected_to_recruiter(job, reason):
+        context = {
+            'job': job,
+            'company': job.company,
+            'rejection_remarks': reason,
+        }
+        return EmailService._send_email(
+            "Job Drive Rejected",
+            "emails/drive_rejected_recruiter.html",
+            context,
+            job.company.user.email
+        )

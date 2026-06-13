@@ -137,8 +137,11 @@
                         <li class="{% if request.resolver_match.url_name == 'company_dashboard' %}active{% endif %}">
                             <a href="{% url 'company_dashboard' %}"><i class="bi bi-grid-1x2-fill"></i> <span>Employer Panel</span></a>
                         </li>
-                        <li class="{% if request.resolver_match.url_name == 'company_jobs' %}active{% endif %}">
-                            <a href="{% url 'company_jobs' %}"><i class="bi bi-megaphone-fill"></i> <span>Active Postings</span></a>
+                        <li class="{% if request.resolver_match.url_name == 'company_job_create' %}active{% endif %}">
+                            <a href="{% url 'company_job_create' %}"><i class="bi bi-plus-circle-fill"></i> <span>Post Job Drive</span></a>
+                        </li>
+                        <li class="{% if request.resolver_match.url_name == 'company_jobs' or request.resolver_match.url_name == 'company_job_edit' %}active{% endif %}">
+                            <a href="{% url 'company_jobs' %}"><i class="bi bi-megaphone-fill"></i> <span>My Listings</span></a>
                         </li>
                         <li class="{% if request.resolver_match.url_name == 'company_applications' %}active{% endif %}">
                             <a href="{% url 'company_applications' %}"><i class="bi bi-people-fill"></i> <span>Applicant Tracking</span></a>
@@ -276,7 +279,7 @@
                         <i class="bi bi-grid-1x2-fill"></i>
                         <span>Overview</span>
                     </a>
-                    <a href="{% url 'company_jobs' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'company_jobs' %}active{% endif %}">
+                    <a href="{% url 'company_jobs' %}" class="mobile-nav-link {% if request.resolver_match.url_name == 'company_jobs' or request.resolver_match.url_name == 'company_job_create' or request.resolver_match.url_name == 'company_job_edit' %}active{% endif %}">
                         <i class="bi bi-megaphone-fill"></i>
                         <span>Postings</span>
                     </a>

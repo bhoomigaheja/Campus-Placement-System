@@ -40,6 +40,12 @@ urlpatterns = [
     # Company Routes
     path('company/dashboard/', views.CompanyDashboardView.as_view(), name='company_dashboard'),
     path('company/jobs/', views.CompanyJobListView.as_view(), name='company_jobs'),
+    path('company/jobs/add/', views.CompanyJobCreateView.as_view(), name='company_job_create'),
+    path('company/jobs/edit/<int:pk>/', views.CompanyJobUpdateView.as_view(), name='company_job_edit'),
     path('company/applications/', views.CompanyApplicationListView.as_view(), name='company_applications'),
     path('company/application/<int:pk>/update/', views.CompanyApplicationUpdateView.as_view(), name='company_application_update'),
+    
+    # TPO Approval Routes
+    path('drives/<int:pk>/approve/', views.ApproveDriveView.as_view(), name='tpo_drive_approve'),
+    path('drives/<int:pk>/reject/', views.RejectDriveView.as_view(), name='tpo_drive_reject'),
 ]

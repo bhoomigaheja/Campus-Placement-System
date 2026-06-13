@@ -28,7 +28,7 @@ class StudentDashboardView(LoginRequiredMixin, StudentRequiredMixin, TemplateVie
             # Recommended Drives (just active drives not yet applied to)
             from placements.models import Job
             applied_job_ids = apps.values_list('job_id', flat=True)
-            context['recommended_drives'] = Job.objects.exclude(id__in=applied_job_ids).order_by('deadline_to_apply')[:3]
+            context['recommended_drives'] = Job.objects.filter(status='APPROVED').exclude(id__in=applied_job_ids).order_by('deadline_to_apply')[:3]
             
         return context
 

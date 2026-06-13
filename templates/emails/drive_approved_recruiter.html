@@ -1,0 +1,24 @@
+{% extends 'emails/base_email.html' %}
+
+{% block content %}
+<h2>Job Drive Approved!</h2>
+<p>Hello Team {{ company.company_name }},</p>
+<p>We are pleased to inform you that your placement drive for <strong>{{ job.title }}</strong> has been approved by the TPO Administration.</p>
+<p>Students can now view details and apply to this opportunity on CareerConnect.</p>
+
+<div style="background-color: #F8FAFC; border-left: 4px solid #10B981; padding: 15px; margin: 20px 0; border-radius: 4px; color: #334155;">
+    <strong>Drive Details:</strong><br><br>
+    <strong>Job Title:</strong> {{ job.title }}<br>
+    <strong>Package:</strong> {{ job.salary_package|default:"Not Disclosed" }}<br>
+    <strong>Location:</strong> {{ job.location }}<br>
+    <strong>Min CGPA:</strong> {{ job.min_cgpa }}
+</div>
+
+<p>You can monitor student applications from your Employer Console dashboard.</p>
+
+<div style="text-align: center; margin-top: 30px;">
+    <a href="{{ domain }}/company/dashboard/" class="cta-button">Go to Employer Panel</a>
+</div>
+
+<p>Best regards,<br>The CareerConnect Team</p>
+{% endblock %}

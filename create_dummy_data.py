@@ -71,13 +71,18 @@ def create_dummy_data():
         
         # 5. Create a Job Drive
         if not Job.objects.filter(title='Software Engineer').exists():
+            tpo_user = User.objects.filter(email='vg199r@gmail.com').first()
             job = Job.objects.create(
                 company=company_profile,
                 title='Software Engineer',
                 description='Looking for full-stack developers.',
                 min_cgpa=7.0,
                 salary_package='12 LPA',
-                deadline_to_apply=timezone.now() + timedelta(days=7)
+                deadline_to_apply=timezone.now() + timedelta(days=7),
+                status='APPROVED',
+                created_by=tpo_user,
+                approved_by=tpo_user,
+                approval_timestamp=timezone.now()
             )
             job.eligible_branches.add(branch)
             job.required_skills.add(skill_python, skill_django)

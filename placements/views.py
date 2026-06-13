@@ -7,8 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from core.mixins import StudentRequiredMixin
 # TPORequiredMixin was modified to check is_admin perfectly.
 from core.mixins import TPORequiredMixin
-from accounts.models import StudentProfile, CompanyProfile
-from accounts.models import StudentProfile, CompanyProfile
+from accounts.models import StudentProfile, CompanyProfile, AuditLog, User
 from .models import Job, Application, Interview
 from .forms import CompanyForm, JobForm, CompanyJobForm, ApplicationStatusForm, InterviewForm, CompanyApplicationUpdateForm, TPOCompanyEditForm
 from core.services import NotificationService
@@ -25,6 +24,13 @@ class TPODashboardView(LoginRequiredMixin, TPORequiredMixin, TemplateView):
         context.update(stats)
         
         context['recent_drives'] = Job.objects.select_related('company').order_by('-created_at')[:5]
+        
+        # Approval flow data and counters
+        context['pending_drives'] = Job.objects.filter(status='PENDING').select_related('company').prefetch_related('eligible_branches').order_by('-created_at')
+        context['pending_approvals_count'] = Job.objects.filter(status='PENDING').count()
+        context['approved_drives_count'] = Job.objects.filter(status='APPROVED').count()
+        context['rejected_drives_count'] = Job.objects.filter(status='REJECTED').count()
+        
         return context
 
 class CompanyListView(LoginRequiredMixin, TPORequiredMixin, ListView):
@@ -77,12 +83,24 @@ class DriveCreateView(LoginRequiredMixin, TPORequiredMixin, CreateView):
     success_url = reverse_lazy('tpo_drive_list')
 
     def form_valid(self, form):
+        from django.utils import timezone
         company_name = form.cleaned_data['company_name']
         company = CompanyProfile.objects.get(company_name=company_name)
         form.instance.company = company
+        form.instance.status = 'APPROVED'
+        form.instance.created_by = self.request.user
+        form.instance.approved_by = self.request.user
+        form.instance.approval_timestamp = timezone.now()
+        
         response = super().form_valid(form)
         
         job = self.object
+        AuditLog.objects.create(
+            user=self.request.user,
+            email=self.request.user.email,
+            action=f"Job drive '{job.title}' for '{company.company_name}' created by TPO (Approved automatically)",
+            ip_address=self.request.META.get('REMOTE_ADDR')
+        )
         messages.success(self.request, f"Placement drive for '{job.title}' created successfully!")
         
         return response
@@ -102,8 +120,17 @@ class DriveUpdateView(LoginRequiredMixin, TPORequiredMixin, UpdateView):
         company_name = form.cleaned_data['company_name']
         company = CompanyProfile.objects.get(company_name=company_name)
         form.instance.company = company
-        messages.success(self.request, f"Placement drive for '{form.cleaned_data.get('title')}' successfully updated!")
-        return super().form_valid(form)
+        response = super().form_valid(form)
+        
+        job = self.object
+        AuditLog.objects.create(
+            user=self.request.user,
+            email=self.request.user.email,
+            action=f"Job drive '{job.title}' for '{company.company_name}' updated by TPO",
+            ip_address=self.request.META.get('REMOTE_ADDR')
+        )
+        messages.success(self.request, f"Placement drive for '{job.title}' successfully updated!")
+        return response
 
 class DriveDeleteView(LoginRequiredMixin, TPORequiredMixin, View):
     def post(self, request, pk):
@@ -218,6 +245,9 @@ class StudentDriveListView(LoginRequiredMixin, StudentRequiredMixin, ListView):
     context_object_name = 'drives'
     ordering = ['-created_at']
     
+    def get_queryset(self):
+        return Job.objects.filter(status='APPROVED').select_related('company').order_by('-created_at')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if hasattr(self.request.user, 'student_profile'):
@@ -231,6 +261,9 @@ class StudentDriveDetailView(LoginRequiredMixin, StudentRequiredMixin, DetailVie
     model = Job
     template_name = 'placements/student_drive_detail.html'
     context_object_name = 'drive'
+    
+    def get_queryset(self):
+        return Job.objects.filter(status='APPROVED')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -249,7 +282,7 @@ class ApplyDriveView(LoginRequiredMixin, StudentRequiredMixin, View):
         return redirect('student_drive_detail', pk=pk)
 
     def post(self, request, pk):
-        job = get_object_or_404(Job, pk=pk)
+        job = get_object_or_404(Job, pk=pk, status='APPROVED')
         
         if not hasattr(request.user, 'student_profile'):
             messages.error(request, 'Please complete your profile first.')
@@ -295,6 +328,7 @@ class CompanyDashboardView(LoginRequiredMixin, CompanyRequiredMixin, TemplateVie
             context['shortlisted_count'] = apps.filter(status='SHORTLISTED').count()
             context['pending_count'] = apps.filter(status='APPLIED').count()
             context['recent_applications'] = apps.select_related('student__user', 'job').order_by('-applied_at')[:5]
+            context['job_drives'] = Job.objects.filter(company=profile).order_by('-created_at')[:5]
         return context
 
 class CompanyJobListView(LoginRequiredMixin, CompanyRequiredMixin, ListView):
@@ -306,6 +340,138 @@ class CompanyJobListView(LoginRequiredMixin, CompanyRequiredMixin, ListView):
         if hasattr(self.request.user, 'company_profile'):
             return Job.objects.filter(company=self.request.user.company_profile).order_by('-created_at')
         return Job.objects.none()
+
+class CompanyJobCreateView(LoginRequiredMixin, CompanyRequiredMixin, CreateView):
+    model = Job
+    form_class = CompanyJobForm
+    template_name = 'placements/company_job_form.html'
+    success_url = reverse_lazy('company_jobs')
+
+    def form_valid(self, form):
+        from django.utils import timezone
+        from accounts.models import AuditLog
+        from core.services import EmailService
+        
+        company = self.request.user.company_profile
+        form.instance.company = company
+        form.instance.created_by = self.request.user
+        form.instance.status = 'PENDING'
+        
+        response = super().form_valid(form)
+        job = self.object
+        
+        # Log action
+        AuditLog.objects.create(
+            user=self.request.user,
+            email=self.request.user.email,
+            action=f"Job drive '{job.title}' submitted by recruiter '{company.company_name}' (Pending approval)",
+            ip_address=self.request.META.get('REMOTE_ADDR')
+        )
+        
+        # Send Email notification to TPO
+        EmailService.send_drive_submitted_to_tpo(job)
+        
+        messages.success(self.request, f"Job drive for '{job.title}' submitted for approval successfully!")
+        return response
+
+class CompanyJobUpdateView(LoginRequiredMixin, CompanyRequiredMixin, UpdateView):
+    model = Job
+    form_class = CompanyJobForm
+    template_name = 'placements/company_job_form.html'
+    success_url = reverse_lazy('company_jobs')
+
+    def get_queryset(self):
+        if hasattr(self.request.user, 'company_profile'):
+            return Job.objects.filter(company=self.request.user.company_profile)
+        return Job.objects.none()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_edit'] = True
+        return context
+
+    def form_valid(self, form):
+        from django.utils import timezone
+        from accounts.models import AuditLog
+        from core.services import EmailService
+        
+        form.instance.status = 'PENDING'  # Reset to pending on edit
+        
+        response = super().form_valid(form)
+        job = self.object
+        
+        # Log action
+        AuditLog.objects.create(
+            user=self.request.user,
+            email=self.request.user.email,
+            action=f"Job drive '{job.title}' edited and re-submitted by recruiter '{job.company.company_name}'",
+            ip_address=self.request.META.get('REMOTE_ADDR')
+        )
+        
+        # Send Email notification to TPO
+        EmailService.send_drive_submitted_to_tpo(job)
+        
+        messages.success(self.request, f"Job drive for '{job.title}' updated and re-submitted for approval!")
+        return response
+
+class ApproveDriveView(LoginRequiredMixin, TPORequiredMixin, View):
+    def post(self, request, pk):
+        from django.utils import timezone
+        from accounts.models import AuditLog
+        from core.services import EmailService
+        
+        job = get_object_or_404(Job, pk=pk)
+        job.status = 'APPROVED'
+        job.approved_by = request.user
+        job.approval_timestamp = timezone.now()
+        job.rejection_remarks = None  # Clear any previous remarks
+        job.save()
+        
+        AuditLog.objects.create(
+            user=request.user,
+            email=request.user.email,
+            action=f"Job drive '{job.title}' for '{job.company.company_name}' approved by TPO",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        
+        # Send email to recruiter
+        EmailService.send_drive_approved_to_recruiter(job)
+        
+        messages.success(request, f"Job drive for '{job.title}' approved successfully!")
+        return redirect('tpo_dashboard')
+
+class RejectDriveView(LoginRequiredMixin, TPORequiredMixin, View):
+    def post(self, request, pk):
+        from django.utils import timezone
+        from accounts.models import AuditLog
+        from core.services import EmailService
+        
+        job = get_object_or_404(Job, pk=pk)
+        rejection_remarks = request.POST.get('rejection_remarks', '').strip()
+        
+        if not rejection_remarks:
+            messages.error(request, "Rejection remarks are required.")
+            return redirect('tpo_dashboard')
+            
+        job.status = 'REJECTED'
+        job.approved_by = request.user
+        job.approval_timestamp = timezone.now()
+        job.rejection_remarks = rejection_remarks
+        job.save()
+        
+        AuditLog.objects.create(
+            user=request.user,
+            email=request.user.email,
+            action=f"Job drive '{job.title}' for '{job.company.company_name}' rejected by TPO. Reason: {rejection_remarks}",
+            ip_address=request.META.get('REMOTE_ADDR')
+        )
+        
+        # Send email to recruiter
+        EmailService.send_drive_rejected_to_recruiter(job, rejection_remarks)
+        
+        messages.warning(request, f"Job drive for '{job.title}' rejected.")
+        return redirect('tpo_dashboard')
+
 
 class CompanyApplicationListView(LoginRequiredMixin, CompanyRequiredMixin, ListView):
     model = Application
