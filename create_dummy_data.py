@@ -1,5 +1,7 @@
 import os
 import django
+from django.utils import timezone
+from datetime import timedelta
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'campus_placement.settings')
 django.setup()
@@ -7,91 +9,138 @@ django.setup()
 from accounts.models import User, StudentProfile, CompanyProfile
 from students.models import Branch, Skill
 from placements.models import Job
-from django.utils import timezone
-from datetime import timedelta
 
-def create_dummy_data():
-    print("Starting to create dummy data...")
+def create_realistic_data():
+    print("Starting to create realistic company and job data...")
 
-    # 1. Ensure a Branch and Skills exist
-    branch, _ = Branch.objects.get_or_create(name="Computer Science and Engineering", defaults={"code": "CSE"})
+    # 1. Ensure Branches and Skills
+    branch_cse, _ = Branch.objects.get_or_create(name="Computer Science and Engineering", defaults={"code": "CSE"})
+    branch_it, _ = Branch.objects.get_or_create(name="Information Technology", defaults={"code": "IT"})
+    branch_ece, _ = Branch.objects.get_or_create(name="Electronics", defaults={"code": "ECE"})
+    
     skill_python, _ = Skill.objects.get_or_create(name="Python")
     skill_django, _ = Skill.objects.get_or_create(name="Django")
-    print("Branches and Skills ensured.")
+    skill_java, _ = Skill.objects.get_or_create(name="Java")
+    skill_react, _ = Skill.objects.get_or_create(name="React")
+    skill_aws, _ = Skill.objects.get_or_create(name="AWS")
+    
+    print("Branches and Skills verified.")
 
-    # 2. Create TPO (Admin)
-    if not User.objects.filter(email='vg199r@gmail.com').exists():
-        tpo = User.objects.create_user(
-            email='vg199r@gmail.com',
-            password='password123',
-            is_admin=True,
-            first_name='Admin',
-            last_name='TPO'
-        )
-        print("Created TPO user: vg199r@gmail.com (password: password123)")
-    else:
-        print("TPO user already exists.")
+    # 2. Get TPO Admin
+    tpo_user = User.objects.filter(is_admin=True).first()
+    if not tpo_user:
+        print("TPO user not found. Run /init-tpo/ first!")
+        return
 
-    # 3. Create Student
-    if not User.objects.filter(email='student@college.edu').exists():
-        student_user = User.objects.create_user(
-            email='student@college.edu',
-            password='password123',
-            first_name='John',
-            last_name='Doe',
-            is_student=True
-        )
-        profile = StudentProfile.objects.create(
-            user=student_user,
-            cgpa=8.5,
-            branch=branch,
-            resume='resumes/dummy_resume.pdf'  # Fake path just to pass validation if needed later
-        )
-        profile.skills.add(skill_python, skill_django)
-        print("Created Student user: student@college.edu (password: password123)")
-    else:
-        print("Student user already exists.")
+    # Realistic Companies Data
+    companies_data = [
+        {
+            "email": "hr@google.com",
+            "name": "Google",
+            "industry": "Technology",
+            "website": "https://careers.google.com",
+            "tier": "Tier 1",
+            "desc": "Google LLC is an American multinational technology company focusing on search engine technology, online advertising, cloud computing, computer software, quantum computing, e-commerce, artificial intelligence, and consumer electronics.",
+            "job_title": "Software Engineer (SDE I)",
+            "job_desc": "We are looking for passionate Software Engineers to build scalable systems. You will work on cutting-edge technologies and impact billions of users worldwide. Experience with algorithms and distributed systems is a plus.",
+            "salary": "24 LPA",
+            "cgpa": 8.0,
+            "skills": [skill_python, skill_java],
+            "branches": [branch_cse, branch_it]
+        },
+        {
+            "email": "careers@microsoft.com",
+            "name": "Microsoft",
+            "industry": "Software",
+            "website": "https://careers.microsoft.com",
+            "tier": "Tier 1",
+            "desc": "Microsoft Corporation is an American multinational technology corporation which produces computer software, consumer electronics, personal computers, and related services.",
+            "job_title": "Cloud Architect",
+            "job_desc": "Join the Azure team to build the future of cloud computing. You will be responsible for designing and deploying highly scalable cloud infrastructure.",
+            "salary": "45 LPA",
+            "cgpa": 8.5,
+            "skills": [skill_aws, skill_python],
+            "branches": [branch_cse, branch_it, branch_ece]
+        },
+        {
+            "email": "hiring@tcs.com",
+            "name": "Tata Consultancy Services (TCS)",
+            "industry": "IT Services",
+            "website": "https://www.tcs.com",
+            "tier": "Mass Recruiter",
+            "desc": "Tata Consultancy Services is an Indian multinational information technology services and consulting company.",
+            "job_title": "System Engineer (Ninja)",
+            "job_desc": "Looking for freshers to join our IT consulting teams. Good problem solving skills and basic programming knowledge is required.",
+            "salary": "3.36 LPA",
+            "cgpa": 6.0,
+            "skills": [skill_java],
+            "branches": [branch_cse, branch_it, branch_ece]
+        },
+        {
+            "email": "recruitment@amazon.in",
+            "name": "Amazon",
+            "industry": "E-Commerce / Tech",
+            "website": "https://amazon.jobs",
+            "tier": "Tier 1",
+            "desc": "Amazon.com, Inc. is an American multinational technology company focusing on e-commerce, cloud computing, online advertising, digital streaming, and artificial intelligence.",
+            "job_title": "Frontend Developer",
+            "job_desc": "Looking for strong frontend engineers who can build responsive and performant user interfaces for our global e-commerce platform.",
+            "salary": "18 LPA",
+            "cgpa": 7.5,
+            "skills": [skill_react, skill_django],
+            "branches": [branch_cse, branch_it]
+        }
+    ]
 
-    # 4. Create Company
-    if not User.objects.filter(email='hr@techcorp.com').exists():
-        company_user = User.objects.create_user(
-            email='hr@techcorp.com',
-            password='password123',
-            first_name='Tech',
-            last_name='Corp HR',
-            is_company=True
+    for data in companies_data:
+        # Create or Get Company User
+        company_user, created = User.objects.get_or_create(
+            email=data["email"],
+            defaults={
+                'first_name': data["name"].split()[0],
+                'last_name': 'HR',
+                'is_company': True
+            }
         )
-        company_profile = CompanyProfile.objects.create(
-            user=company_user,
-            company_name='TechCorp Innovations',
-            industry='Software',
-            website='https://techcorp.example.com'
-        )
-        print("Created Company user: hr@techcorp.com (password: password123)")
-        
-        # 5. Create a Job Drive
-        if not Job.objects.filter(title='Software Engineer').exists():
-            tpo_user = User.objects.filter(email='vg199r@gmail.com').first()
-            job = Job.objects.create(
-                company=company_profile,
-                title='Software Engineer',
-                description='Looking for full-stack developers.',
-                min_cgpa=7.0,
-                salary_package='12 LPA',
-                deadline_to_apply=timezone.now() + timedelta(days=7),
-                status='APPROVED',
-                created_by=tpo_user,
-                approved_by=tpo_user,
-                approval_timestamp=timezone.now()
+        if created:
+            company_user.set_password('password123')
+            company_user.save()
+            
+            CompanyProfile.objects.create(
+                user=company_user,
+                company_name=data["name"],
+                industry=data["industry"],
+                website=data["website"],
+                tier=data["tier"],
+                description=data["desc"]
             )
-            job.eligible_branches.add(branch)
-            job.required_skills.add(skill_python, skill_django)
-            print("Created Job Drive: Software Engineer at TechCorp Innovations")
+            print(f"Created Company: {data['name']}")
+        
+        profile = company_user.company_profile
 
-    else:
-        print("Company user already exists.")
+        # Create Job Drive
+        job, job_created = Job.objects.get_or_create(
+            company=profile,
+            title=data["job_title"],
+            defaults={
+                'description': data["job_desc"],
+                'min_cgpa': data["cgpa"],
+                'salary_package': data["salary"],
+                'deadline_to_apply': timezone.now() + timedelta(days=14),
+                'location': 'Bangalore, India',
+                'employment_type': 'Full-time',
+                'status': 'APPROVED',
+                'created_by': tpo_user,
+                'approved_by': tpo_user,
+                'approval_timestamp': timezone.now()
+            }
+        )
+        if job_created:
+            job.eligible_branches.add(*data["branches"])
+            job.required_skills.add(*data["skills"])
+            print(f"Created Job Drive: {data['job_title']} at {data['name']}")
 
-    print("Dummy data creation complete!")
+    print("\n✅ Awesome! Realistic Dummy Data successfully loaded.")
 
 if __name__ == "__main__":
-    create_dummy_data()
+    create_realistic_data()
