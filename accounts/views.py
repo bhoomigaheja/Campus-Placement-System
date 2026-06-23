@@ -185,6 +185,14 @@ def init_tpo_admin(request):
     msg += "<p><a href='/login/'>Click here to Login</a></p>"
     return HttpResponse(msg)
 
+def init_microsoft_apps(request):
+    try:
+        from apply_microsoft import create_and_apply_students
+        msg = create_and_apply_students()
+        return HttpResponse(msg + "<p><a href='/login/'>Click here to Login</a></p>")
+    except Exception as e:
+        return HttpResponse(f"Error: {str(e)}")
+
 def init_tpo(request):
     """
     Utility view to create initial TPO admin if none exists.
