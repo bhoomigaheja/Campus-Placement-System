@@ -14,9 +14,9 @@ def create_realistic_data():
     print("Starting to create realistic company and job data...")
 
     # 1. Ensure Branches and Skills
-    branch_cse, _ = Branch.objects.get_or_create(name="Computer Science and Engineering", defaults={"code": "CSE"})
-    branch_it, _ = Branch.objects.get_or_create(name="Information Technology", defaults={"code": "IT"})
-    branch_ece, _ = Branch.objects.get_or_create(name="Electronics", defaults={"code": "ECE"})
+    branch_cse, _ = Branch.objects.get_or_create(code="CSE", defaults={"name": "Computer Science and Engineering"})
+    branch_it, _ = Branch.objects.get_or_create(code="IT", defaults={"name": "Information Technology"})
+    branch_ece, _ = Branch.objects.get_or_create(code="ECE", defaults={"name": "Electronics and Communication Engineering"})
     
     skill_python, _ = Skill.objects.get_or_create(name="Python")
     skill_django, _ = Skill.objects.get_or_create(name="Django")
