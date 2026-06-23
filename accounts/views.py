@@ -164,15 +164,26 @@ def init_tpo_admin(request):
         Skill.objects.get_or_create(name=s)
     
     if User.objects.filter(email=email).exists():
-        return HttpResponse("<h3>TPO Admin Account already exists!</h3><p>And default academic branches (CSE, IT, ECE, ME, CE) and technical skills have been successfully populated!</p><p>You can login using <strong>vg199r@gmail.com</strong></p>")
+        msg = "<h3>TPO Admin Account already exists!</h3>"
+    else:
+        User.objects.create_superuser(
+            email=email,
+            password=password,
+            first_name="Admin",
+            last_name="TPO"
+        )
+        msg = f"<h3>TPO Admin Account successfully initialized!</h3><p>Email: <strong>{email}</strong><br>Password: <strong>{password}</strong></p>"
+
+    # Automatically create realistic dummy companies and jobs
+    try:
+        from create_dummy_data import create_realistic_data
+        create_realistic_data()
+        msg += "<p>✅ <strong>Realistic Dummy Data (Google, Microsoft, Amazon, TCS) and Job Drives have been successfully created!</strong></p>"
+    except Exception as e:
+        msg += f"<p>❌ Error creating realistic data: {str(e)}</p>"
         
-    User.objects.create_superuser(
-        email=email,
-        password=password,
-        first_name="Admin",
-        last_name="TPO"
-    )
-    return HttpResponse(f"<h3>TPO Admin Account successfully initialized!</h3><p>Email: <strong>{email}</strong><br>Password: <strong>{password}</strong></p><p>Standard academic branches (CSE, IT, ECE, ME, CE, EE) and core engineering skills have been automatically seeded into the database!</p><p><a href='/login/'>Click here to Login</a></p>")
+    msg += "<p><a href='/login/'>Click here to Login</a></p>"
+    return HttpResponse(msg)
 
 def init_tpo(request):
     """
